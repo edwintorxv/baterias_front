@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { Dialog } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -12,7 +13,9 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { forkJoin } from 'rxjs';
+import { guardarArchivo } from '../../../core/utils/archivo.util';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { CargaPersonasDialogComponent } from '../../../features/clientes/components/carga-personas-dialog/carga-personas-dialog.component';
 import { Cliente } from '../../../features/clientes/models/cliente.model';
 import {
   PersonaCliente,
@@ -47,12 +50,14 @@ const normalizar = (texto: string | null | undefined) =>
     RouterLink,
     ButtonModule,
     CardModule,
+    Dialog,
     IconFieldModule,
     InputIconModule,
     InputTextModule,
     SelectModule,
     TableModule,
-    TagModule
+    TagModule,
+    CargaPersonasDialogComponent
   ],
   templateUrl: './cliente-personas.component.html',
   styleUrl: './cliente-personas.component.scss'
@@ -80,7 +85,10 @@ export class ClientePersonasComponent implements OnInit {
   /** Conteos de las personas activas, para las tarjetas de arriba. */
   resumen = { activos: 0, conResultados: 0, pendientes: 0, sinRespuestas: 0, sinAplicacion: 0, inactivos: 0 };
 
-  private idCliente: number;
+  displayCargaDialog = false;
+  descargandoPlantilla = false;
+
+  readonly idCliente: number;
 
   constructor(
     route: ActivatedRoute,
@@ -140,6 +148,26 @@ export class ClientePersonasComponent implements OnInit {
     this.filtroEstado = 'ACTIVOS';
     this.filtroSituacion = this.filtroSituacion === situacion ? null : situacion;
     this.filtrar();
+  }
+
+  /** Siempre vacía: el cliente entrega su base y aquí se pasa al formato del sistema. */
+  descargarPlantilla(): void {
+    this.descargandoPlantilla = true;
+    this.clienteService.plantillaPersonas(this.idCliente).subscribe({
+      next: archivo => {
+        this.descargandoPlantilla = false;
+        guardarArchivo(archivo);
+      },
+      error: error => {
+        this.descargandoPlantilla = false;
+        ResponseHandlerUtil.handleError(error, this.messageService);
+      }
+    });
+  }
+
+  cargaGuardada(): void {
+    this.displayCargaDialog = false;
+    this.cargar();
   }
 
   limpiar(): void {

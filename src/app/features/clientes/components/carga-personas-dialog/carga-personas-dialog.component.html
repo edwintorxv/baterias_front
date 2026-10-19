@@ -1,0 +1,99 @@
+<!-- ARCHIVO -->
+<div class="archivo">
+  <input #selector type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    hidden (change)="onArchivo($event)" />
+  <p-button [label]="archivo ? 'Cambiar archivo' : 'Elegir archivo'" icon="pi pi-file-excel"
+    [severity]="archivo ? 'secondary' : 'primary'" [outlined]="!!archivo" [disabled]="validando || confirmando"
+    (onClick)="selector.click()" />
+  @if (archivo) {
+    <span class="nombre-archivo"><i class="pi pi-paperclip"></i> {{ archivo.name }}</span>
+    <p-button icon="pi pi-refresh" [text]="true" [rounded]="true" pTooltip="Validar de nuevo"
+      ariaLabel="Validar de nuevo" [disabled]="validando || confirmando" (onClick)="validar()" />
+  } @else {
+    <span class="secundario">Plantilla de personas diligenciada (.xlsx, máximo 5 MB y 2.000 personas).</span>
+  }
+</div>
+
+@if (validando) {
+  <p class="secundario"><i class="pi pi-spin pi-spinner mr-2"></i>Validando el archivo…</p>
+}
+
+@if (error; as e) {
+  <p-message severity="error" styleClass="mb-3 w-full">
+    <div>
+      <strong>{{ e.titulo }}:</strong> {{ e.mensaje }}
+      @if (e.detalles.length) {
+        <ul class="detalles">
+          @for (detalle of e.detalles; track $index) {
+            <li>{{ detalle }}</li>
+          }
+        </ul>
+      }
+    </div>
+  </p-message>
+}
+
+<!-- VISTA PREVIA -->
+@if (resultado; as r) {
+  @if (r.puedeConfirmar) {
+    <p-message severity="success" styleClass="mb-3 w-full"
+      [text]="'Archivo válido: ' + r.totalFilas + ' persona(s). Revise qué pasará con cada una y confirme la carga.'" />
+  } @else {
+    <p-message severity="warn" styleClass="mb-3 w-full"
+      [text]="r.resumen.ERROR + ' fila(s) con errores: corríjalas en el archivo y vuelva a cargarlo. No se guardará nada hasta que no haya errores.'" />
+  }
+
+  <div class="resumen">
+    @for (clave of resultados; track clave) {
+      <button type="button" class="tarjeta" [class]="resultadoFila[clave].severidad"
+        [class.activa]="filtro === clave" [disabled]="!r.resumen[clave]" (click)="filtrar(clave)"
+        [title]="resultadoFila[clave].descripcion">
+        <span class="numero">{{ r.resumen[clave] }}</span>
+        <span class="texto">{{ resultadoFila[clave].etiqueta }}</span>
+      </button>
+    }
+  </div>
+
+  <p-table [value]="lstFilas" dataKey="fila" [rows]="10" [paginator]="lstFilas.length > 10" styleClass="p-datatable-sm"
+    [tableStyle]="{ 'min-width': '50rem' }">
+    <ng-template #header>
+      <tr>
+        <th style="width: 4rem">Fila</th>
+        <th style="width: 9rem">Documento</th>
+        <th>Nombre</th>
+        <th style="width: 10rem">Resultado</th>
+        <th>Errores</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-fila>
+      <tr>
+        <td>{{ fila.fila }}</td>
+        <td>{{ fila.documento ?? '—' }}</td>
+        <td>{{ fila.nombre || '—' }}</td>
+        <td><p-tag [value]="info(fila.resultado).etiqueta" [severity]="info(fila.resultado).severidad" /></td>
+        <td>
+          @if (fila.errores.length) {
+            <ul class="errores">
+              @for (mensaje of fila.errores; track $index) {
+                <li>{{ mensaje }}</li>
+              }
+            </ul>
+          }
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  @if (r.resumen.CAMBIA_EMPRESA) {
+    <small class="secundario bloque mt-2">
+      "Cambia de empresa": la persona tenía un vínculo activo en otra empresa; allí se inactiva (su evaluación anterior
+      se conserva) y queda activa en este cliente.
+    </small>
+  }
+}
+
+<div class="acciones">
+  <p-button label="Cancelar" severity="secondary" [text]="true" [disabled]="confirmando" (onClick)="cancel.emit()" />
+  <p-button label="Confirmar carga" icon="pi pi-check" iconPos="right" [loading]="confirmando"
+    [disabled]="!resultado?.puedeConfirmar || validando" (onClick)="confirmar()" />
+</div>

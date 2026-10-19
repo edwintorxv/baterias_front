@@ -9,6 +9,7 @@ import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { AuthService } from '../../../core/services/auth.service';
+import { guardarArchivo } from '../../../core/utils/archivo.util';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
 import { DistribucionNivelesComponent } from '../../../features/clientes/components/distribucion-niveles/distribucion-niveles.component';
 import { InformeConclusionesComponent } from '../../../features/clientes/components/informe-conclusiones/informe-conclusiones.component';
@@ -114,13 +115,9 @@ export class ClienteInformeComponent implements OnInit {
     }
     this.descargando = true;
     this.informeEmpresaService.descargarWord(this.idCliente, this.anio).subscribe({
-      next: ({ blob, nombre }) => {
+      next: archivo => {
         this.descargando = false;
-        const enlace = document.createElement('a');
-        enlace.href = URL.createObjectURL(blob);
-        enlace.download = nombre;
-        enlace.click();
-        setTimeout(() => URL.revokeObjectURL(enlace.href));
+        guardarArchivo(archivo);
       },
       error: error => {
         this.descargando = false;

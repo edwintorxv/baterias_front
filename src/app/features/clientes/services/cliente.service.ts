@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse } from '../../../core/models/api-response.model';
+import { ArchivoDescargado, comoArchivo } from '../../../core/utils/archivo.util';
+import { ResultadoCarga } from '../models/carga-personas.model';
 import { Cliente, ClienteRequest } from '../models/cliente.model';
 import { PersonaCliente } from '../models/persona-cliente.model';
 
@@ -28,6 +30,23 @@ export class ClienteService {
     personas(idCliente: number): Observable<PersonaCliente[]> {
         return this.http.get<ApiResponse<PersonaCliente[]>>(`${this.url}/${idCliente}/personas`)
             .pipe(map(respuesta => respuesta.data));
+    }
+
+    /** Plantilla Excel para cargar personas: siempre vacía (nunca trae las ya cargadas). Solo el psicólogo. */
+    plantillaPersonas(idCliente: number): Observable<ArchivoDescargado> {
+        return this.http.get(`${this.url}/${idCliente}/personas/plantilla`, { responseType: 'blob', observe: 'response' })
+            .pipe(comoArchivo('plantilla_personas.xlsx'));
+    }
+
+    /**
+     * Sin confirmar: dice qué pasará con cada fila, sin guardar. Confirmando: guarda todas o ninguna
+     * (409 con las filas con error en details).
+     */
+    cargarPersonas(idCliente: number, archivo: File, confirmar: boolean): Observable<ApiResponse<ResultadoCarga>> {
+        const datos = new FormData();
+        datos.append('archivo', archivo);
+        return this.http.post<ApiResponse<ResultadoCarga>>(`${this.url}/${idCliente}/personas/carga`, datos,
+            { params: { confirmar } });
     }
 
     crear(request: ClienteRequest): Observable<ApiResponse<Cliente>> {

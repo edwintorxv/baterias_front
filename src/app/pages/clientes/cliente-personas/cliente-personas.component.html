@@ -1,10 +1,18 @@
 <div class="encabezado">
-  <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/clientes" ariaLabel="Volver a clientes" />
-  <div>
-    <h1>Personas</h1>
-    @if (cliente) {
-      <span class="secundario">{{ cliente.nombre }} · NIT {{ cliente.nit }}</span>
-    }
+  <div class="titulo">
+    <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/clientes" ariaLabel="Volver a clientes" />
+    <div>
+      <h1>Personas</h1>
+      @if (cliente) {
+        <span class="secundario">{{ cliente.nombre }} · NIT {{ cliente.nit }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="herramientas">
+    <p-button label="Descargar plantilla" icon="pi pi-download" severity="secondary" [outlined]="true"
+      [loading]="descargandoPlantilla" (onClick)="descargarPlantilla()" />
+    <p-button label="Cargar archivo" icon="pi pi-upload" (onClick)="displayCargaDialog = true" />
   </div>
 </div>
 
@@ -102,3 +110,11 @@
     </ng-template>
   </p-table>
 </p-card>
+
+<p-dialog header="Cargar personas desde archivo" [(visible)]="displayCargaDialog" [modal]="true"
+  [style]="{ width: '70rem' }" [breakpoints]="{ '1200px': '90vw', '640px': '98vw' }" [closable]="true">
+  @if (displayCargaDialog) {
+    <app-carga-personas-dialog [idCliente]="idCliente" (guardado)="cargaGuardada()"
+      (cancel)="displayCargaDialog = false" />
+  }
+</p-dialog>
