@@ -1,0 +1,21 @@
+label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.nota {
+    color: var(--p-text-muted-color);
+}
+
+.bloque {
+    display: block;
+}
+
+.acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}

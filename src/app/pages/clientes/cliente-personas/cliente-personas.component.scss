@@ -66,6 +66,15 @@
         border-left-color: var(--p-orange-400);
     }
 
+    &.inactiva {
+        border-left-style: dashed;
+    }
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.55;
+    }
+
     .numero {
         font-size: 1.6rem;
         font-weight: 600;

@@ -16,6 +16,8 @@ import { forkJoin } from 'rxjs';
 import { guardarArchivo } from '../../../core/utils/archivo.util';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
 import { CargaPersonasDialogComponent } from '../../../features/clientes/components/carga-personas-dialog/carga-personas-dialog.component';
+import { PersonaAccionesComponent } from '../../../features/clientes/components/persona-acciones/persona-acciones.component';
+import { PersonaEstadoDialogComponent } from '../../../features/clientes/components/persona-estado-dialog/persona-estado-dialog.component';
 import { VincularPersonaDialogComponent } from '../../../features/clientes/components/vincular-persona-dialog/vincular-persona-dialog.component';
 import { Cliente } from '../../../features/clientes/models/cliente.model';
 import {
@@ -59,7 +61,9 @@ const normalizar = (texto: string | null | undefined) =>
     TableModule,
     TagModule,
     CargaPersonasDialogComponent,
-    VincularPersonaDialogComponent
+    VincularPersonaDialogComponent,
+    PersonaAccionesComponent,
+    PersonaEstadoDialogComponent
   ],
   templateUrl: './cliente-personas.component.html',
   styleUrl: './cliente-personas.component.scss'
@@ -89,6 +93,10 @@ export class ClientePersonasComponent implements OnInit {
 
   displayCargaDialog = false;
   displayVincularDialog = false;
+  displayAccionesDialog = false;
+  displayEditarDialog = false;
+  displayEstadoDialog = false;
+  selectedPersona?: PersonaFila;
   descargandoPlantilla = false;
 
   readonly idCliente: number;
@@ -148,8 +156,15 @@ export class ClientePersonasComponent implements OnInit {
 
   /** Clic en una tarjeta del resumen: filtra por esa situación (o quita el filtro si ya estaba). */
   filtrarPorSituacion(situacion: SituacionPersona | null): void {
+    this.filtroSituacion = this.filtroEstado === 'ACTIVOS' && this.filtroSituacion === situacion ? null : situacion;
     this.filtroEstado = 'ACTIVOS';
-    this.filtroSituacion = this.filtroSituacion === situacion ? null : situacion;
+    this.filtrar();
+  }
+
+  /** Tarjeta "Inactivas": las que ya no están en la empresa (o vuelve a las activas si ya estaba). */
+  verInactivas(): void {
+    this.filtroEstado = this.filtroEstado === 'INACTIVOS' ? 'ACTIVOS' : 'INACTIVOS';
+    this.filtroSituacion = null;
     this.filtrar();
   }
 
@@ -166,6 +181,28 @@ export class ClientePersonasComponent implements OnInit {
         ResponseHandlerUtil.handleError(error, this.messageService);
       }
     });
+  }
+
+  openAccionesDialog(persona: PersonaFila): void {
+    this.selectedPersona = persona;
+    this.displayAccionesDialog = true;
+  }
+
+  openEditarDialog(): void {
+    this.displayAccionesDialog = false;
+    this.displayEditarDialog = true;
+  }
+
+  openEstadoDialog(): void {
+    this.displayAccionesDialog = false;
+    this.displayEstadoDialog = true;
+  }
+
+  /** Después de editar, inactivar o activar: se cierra el diálogo y se recarga la lista. */
+  personaGuardada(): void {
+    this.displayEditarDialog = false;
+    this.displayEstadoDialog = false;
+    this.cargar();
   }
 
   personaVinculada(): void {

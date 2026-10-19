@@ -1,15 +1,19 @@
 <form [formGroup]="personaForm" (ngSubmit)="vincular()">
 
   <p class="mt-0 mb-2 nota">
-    Si el documento ya existe se actualizan sus datos con los que escriba aquí; si la persona está activa en otra
-    empresa, allí se inactiva y queda en este cliente.
+    @if (isEditMode) {
+      Si corrige nombre, apellido, sexo o año de nacimiento, la corrección aplica en todas las empresas de la persona.
+    } @else {
+      Si el documento ya existe se actualizan sus datos con los que escriba aquí; si la persona está activa en otra
+      empresa, allí se inactiva y queda en este cliente.
+    }
   </p>
 
   <!-- PERSONA -->
   <h4 class="seccion">Persona</h4>
   <div class="grid">
     <div class="col-12 md:col-4">
-      <label for="numeroIdentificacion">Documento *</label>
+      <label for="numeroIdentificacion">Documento *@if (isEditMode) { <small class="nota">(no se modifica)</small> }</label>
       <p-inputgroup>
         <p-inputgroup-addon><i class="pi pi-id-card"></i></p-inputgroup-addon>
         <input id="numeroIdentificacion" pInputText maxlength="30" placeholder="1010123456"
@@ -210,7 +214,8 @@
 
   <div class="acciones">
     <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
-    <p-button label="Vincular persona" icon="pi pi-check" iconPos="right" type="submit" [loading]="guardando" />
+    <p-button [label]="isEditMode ? 'Guardar cambios' : 'Vincular persona'" icon="pi pi-check" iconPos="right"
+      type="submit" [loading]="guardando" [disabled]="cargando" />
   </div>
 
 </form>

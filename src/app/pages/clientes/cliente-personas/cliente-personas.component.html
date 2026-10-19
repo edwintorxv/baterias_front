@@ -19,7 +19,8 @@
 
 <!-- Resumen de las personas activas; cada tarjeta filtra la tabla -->
 <div class="resumen">
-  <button type="button" class="tarjeta" [class.activa]="filtroSituacion === null" (click)="filtrarPorSituacion(null)">
+  <button type="button" class="tarjeta" [class.activa]="filtroSituacion === null && filtroEstado === 'ACTIVOS'"
+    (click)="filtrarPorSituacion(null)">
     <span class="numero">{{ resumen.activos }}</span>
     <span class="texto">Personas activas</span>
   </button>
@@ -42,6 +43,11 @@
     (click)="filtrarPorSituacion('SIN_APLICACION')">
     <span class="numero">{{ resumen.sinAplicacion }}</span>
     <span class="texto">Sin aplicación</span>
+  </button>
+  <button type="button" class="tarjeta inactiva" [class.activa]="filtroEstado === 'INACTIVOS'" [disabled]="!resumen.inactivos"
+    (click)="verInactivas()">
+    <span class="numero">{{ resumen.inactivos }}</span>
+    <span class="texto">Inactivas</span>
   </button>
 </div>
 
@@ -72,6 +78,7 @@
         <th pSortableColumn="ciudadTrabajo">Ciudad <p-sortIcon field="ciudadTrabajo" /></th>
         <th pSortableColumn="fechaUltima">Última aplicación <p-sortIcon field="fechaUltima" /></th>
         <th pSortableColumn="situacion">Situación <p-sortIcon field="situacion" /></th>
+        <th style="width: 4rem"></th>
       </tr>
     </ng-template>
 
@@ -101,12 +108,16 @@
         <td>
           <p-tag [value]="persona.etiquetaSituacion" [severity]="persona.severidadSituacion" />
         </td>
+        <td>
+          <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="secondary" ariaLabel="Acciones"
+            (onClick)="openAccionesDialog(persona)" />
+        </td>
       </tr>
     </ng-template>
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="7" class="text-center p-4">No hay personas con estos filtros.</td>
+        <td colspan="8" class="text-center p-4">No hay personas con estos filtros.</td>
       </tr>
     </ng-template>
   </p-table>
@@ -125,5 +136,29 @@
   @if (displayVincularDialog) {
     <app-vincular-persona-dialog [idCliente]="idCliente" (saved)="personaVinculada()"
       (cancel)="displayVincularDialog = false" />
+  }
+</p-dialog>
+
+<p-dialog header="Acciones de la persona" [(visible)]="displayAccionesDialog" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '768px': '95vw' }">
+  @if (displayAccionesDialog && selectedPersona) {
+    <app-persona-acciones [persona]="selectedPersona" (editar)="openEditarDialog()" (cambiarEstado)="openEstadoDialog()" />
+  }
+</p-dialog>
+
+<p-dialog header="Editar persona" [(visible)]="displayEditarDialog" [modal]="true"
+  [style]="{ width: '60vw', maxWidth: '1000px' }" [breakpoints]="{ '1200px': '75vw', '960px': '90vw', '640px': '98vw' }">
+  @if (displayEditarDialog && selectedPersona) {
+    <app-vincular-persona-dialog [idCliente]="idCliente"
+      [edicion]="{ idRelacion: selectedPersona.idRelacion, idEvaluado: selectedPersona.idEvaluado }"
+      (saved)="personaGuardada()" (cancel)="displayEditarDialog = false" />
+  }
+</p-dialog>
+
+<p-dialog [header]="selectedPersona?.activo ? 'Inactivar persona' : 'Activar persona'" [(visible)]="displayEstadoDialog"
+  [modal]="true" [style]="{ width: '32rem' }" [breakpoints]="{ '640px': '95vw' }">
+  @if (displayEstadoDialog && selectedPersona) {
+    <app-persona-estado-dialog [persona]="selectedPersona" (saved)="personaGuardada()"
+      (cancel)="displayEstadoDialog = false" />
   }
 </p-dialog>

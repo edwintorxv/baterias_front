@@ -7,7 +7,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin, of, switchMap } from 'rxjs';
 import { CatalogoService } from '../../../../core/services/catalogo.service';
 import { ResponseHandlerUtil } from '../../../../core/utils/response-handler.util';
 import { ErrorCampoComponent } from '../../../../shared/components/error-campo/error-campo.component';
@@ -15,18 +15,20 @@ import { Catalogo } from '../../../../shared/models/catalogo.model';
 import { CiudadMunicipio } from '../../../../shared/models/ciudad-municipio.model';
 import { Departamento } from '../../../../shared/models/departamento.model';
 import { CustomValidators } from '../../../../shared/validators/custom-validators';
-import {
-  EDAD_MAXIMA,
-  EDAD_MINIMA,
-  VinculacionResponse,
-  VincularPersonaRequest
-} from '../../models/vincular-persona.model';
+import { EvaluadoCliente, EvaluadoClienteRequest } from '../../../evaluados/models/evaluado-cliente.model';
+import { Evaluado, EvaluadoRequest } from '../../../evaluados/models/evaluado.model';
+import { EvaluadoClienteService } from '../../../evaluados/services/evaluado-cliente.service';
+import { EvaluadoService } from '../../../evaluados/services/evaluado.service';
+import { EDAD_MAXIMA, EDAD_MINIMA, VincularPersonaRequest } from '../../models/vincular-persona.model';
 import { ClienteService } from '../../services/cliente.service';
 
 /**
  * Vincular una persona al cliente (solo PSICOLOGO). No busca ni prellena por documento: siempre se
  * recapturan los datos, y el backend decide si es nueva, ya existía, ya estaba en el cliente o cambia de
- * empresa (el mensaje lo dice). Se crea de nuevo cada vez que se abre el diálogo.
+ * empresa (el mensaje lo dice).
+ * Con {@code edicion}: edita una relación activa (PUT /evaluado-clientes/{id}); el documento no se cambia y
+ * si se corrigen nombre, apellido, sexo o año se guardan también en la persona (PUT /evaluados/{id}).
+ * Se crea de nuevo cada vez que se abre el diálogo.
  */
 @Component({
   selector: 'app-vincular-persona-dialog',
@@ -47,7 +49,9 @@ import { ClienteService } from '../../services/cliente.service';
 export class VincularPersonaDialogComponent implements OnInit {
 
   @Input({ required: true }) idCliente!: number;
-  @Output() saved = new EventEmitter<VinculacionResponse>();
+  /** Relación a editar; sin ella, se vincula una persona nueva. */
+  @Input() edicion?: { idRelacion: number; idEvaluado: number };
+  @Output() saved = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
 
   readonly anioMinimo: number;
@@ -71,11 +75,17 @@ export class VincularPersonaDialogComponent implements OnInit {
   private todasLasCiudades: CiudadMunicipio[] = [];
 
   guardando = false;
+  cargando = false;
+  /** Lo que tenía guardado, al editar. */
+  private evaluado?: Evaluado;
+  private relacion?: EvaluadoCliente;
 
   constructor(
     private formBuilder: FormBuilder,
     private catalogoService: CatalogoService,
     private clienteService: ClienteService,
+    private evaluadoService: EvaluadoService,
+    private evaluadoClienteService: EvaluadoClienteService,
     private messageService: MessageService
   ) {
     const anioActual = new Date().getFullYear();
@@ -114,8 +124,20 @@ export class VincularPersonaDialogComponent implements OnInit {
     });
   }
 
+  get isEditMode(): boolean {
+    return !!this.edicion;
+  }
+
   ngOnInit(): void {
+    const actual: Observable<{ evaluado: Evaluado; relacion: EvaluadoCliente } | null> = this.edicion
+      ? forkJoin({
+        evaluado: this.evaluadoService.obtener(this.edicion.idEvaluado),
+        relacion: this.evaluadoClienteService.obtener(this.edicion.idRelacion)
+      })
+      : of(null);
+    this.cargando = true;
     forkJoin({
+      actual,
       sexos: this.catalogoService.sexos(),
       estadosCiviles: this.catalogoService.estadosCiviles(),
       nivelesAcademicos: this.catalogoService.nivelesAcademicos(),
@@ -142,8 +164,15 @@ export class VincularPersonaDialogComponent implements OnInit {
         this.lstTiposSalario = catalogos.tiposSalario;
         this.lstDepartamentos = catalogos.departamentos;
         this.todasLasCiudades = catalogos.ciudades;
+        if (catalogos.actual) {
+          this.setFormForEdit(catalogos.actual.evaluado, catalogos.actual.relacion);
+        }
+        this.cargando = false;
       },
-      error: error => ResponseHandlerUtil.handleError(error, this.messageService)
+      error: error => {
+        this.cargando = false;
+        ResponseHandlerUtil.handleError(error, this.messageService);
+      }
     });
   }
 
@@ -163,18 +192,91 @@ export class VincularPersonaDialogComponent implements OnInit {
       this.personaForm.markAllAsTouched();
       return;
     }
+    const peticion: Observable<{ message: string }> = this.edicion ? this.guardarEdicion() : this.clienteService
+      .vincularPersona(this.idCliente, this.toRequest());
     this.guardando = true;
-    this.clienteService.vincularPersona(this.idCliente, this.toRequest()).subscribe({
+    peticion.subscribe({
       next: response => {
         this.guardando = false;
-        ResponseHandlerUtil.handleResponse(response, this.messageService);
-        this.saved.emit(response.data);
+        this.messageService.add({ severity: 'success', summary: 'Listo', detail: response.message, life: 4000 });
+        this.saved.emit();
       },
       error: error => {
         this.guardando = false;
         ResponseHandlerUtil.handleError(error, this.messageService);
       }
     });
+  }
+
+  /**
+   * Primero la relación (es la que puede fallar por fechas) y después, solo si cambió, la persona.
+   * La relación sigue activa: editar no inactiva (para eso está la acción Inactivar).
+   */
+  private guardarEdicion(): Observable<{ message: string }> {
+    const datos = this.toRequest();
+    const { numeroIdentificacion, nombre, apellido, fkSexo, anioNacimiento, ...foto } = datos;
+    const relacion: EvaluadoClienteRequest = {
+      ...foto,
+      fkEvaluado: this.relacion!.fkEvaluado,
+      fkCliente: this.relacion!.fkCliente,
+      fechaRetiro: null,
+      activo: true
+    };
+    const persona: EvaluadoRequest = {
+      numeroIdentificacion: this.evaluado!.numeroIdentificacion,
+      nombre,
+      apellido,
+      fkSexo,
+      anioNacimiento
+    };
+    const personaCambio = persona.nombre !== this.evaluado!.nombre || persona.apellido !== this.evaluado!.apellido
+      || persona.fkSexo !== this.evaluado!.fkSexo || persona.anioNacimiento !== this.evaluado!.anioNacimiento;
+
+    return this.evaluadoClienteService.actualizar(this.relacion!.id, relacion).pipe(
+      switchMap(respuesta => personaCambio
+        ? this.evaluadoService.actualizar(this.evaluado!.id, persona).pipe(
+          switchMap(() => of({ message: respuesta.message + ' (también se corrigieron los datos de la persona)' })))
+        : of(respuesta))
+    );
+  }
+
+  /** Precarga lo guardado; las cascadas se arman con el departamento de cada ciudad. El documento no se cambia. */
+  private setFormForEdit(evaluado: Evaluado, relacion: EvaluadoCliente): void {
+    this.evaluado = evaluado;
+    this.relacion = relacion;
+    const residencia = this.todasLasCiudades.find(c => c.id === relacion.fkCiudadResidencia);
+    const trabajo = this.todasLasCiudades.find(c => c.id === relacion.fkCiudadTrabajo);
+    this.lstCiudadesResidencia = this.ciudadesDe(residencia?.fkDepartamento ?? null);
+    this.lstCiudadesTrabajo = this.ciudadesDe(trabajo?.fkDepartamento ?? null);
+    const [anio, mes, dia] = relacion.fechaVinculacion.split('-').map(Number);
+    this.personaForm.patchValue({
+      numeroIdentificacion: evaluado.numeroIdentificacion,
+      nombre: evaluado.nombre,
+      apellido: evaluado.apellido,
+      fkSexo: evaluado.fkSexo,
+      anioNacimiento: evaluado.anioNacimiento === null ? '' : String(evaluado.anioNacimiento),
+      fkEstadoCivil: relacion.fkEstadoCivil,
+      fkNivelAcademico: relacion.fkNivelAcademico,
+      departamentoResidencia: residencia?.fkDepartamento ?? null,
+      fkCiudadResidencia: relacion.fkCiudadResidencia,
+      fkEstratoSocioeconomico: relacion.fkEstratoSocioeconomico,
+      fkTipoVivienda: relacion.fkTipoVivienda,
+      ocupacionProfesion: relacion.ocupacionProfesion ?? '',
+      familiaresDependientesEconomicamente: relacion.familiaresDependientesEconomicamente === null ? ''
+        : String(relacion.familiaresDependientesEconomicamente),
+      departamentoTrabajo: trabajo?.fkDepartamento ?? null,
+      fkCiudadTrabajo: relacion.fkCiudadTrabajo,
+      nombreCargo: relacion.nombreCargo ?? '',
+      fkTipoCargo: relacion.fkTipoCargo,
+      nombreArea: relacion.nombreArea ?? '',
+      antiguedadEmpresa: relacion.antiguedadEmpresa ?? '',
+      fkTiempoCargo: relacion.fkTiempoCargo,
+      fkTipoContrato: relacion.fkTipoContrato,
+      fkHorasLabor: relacion.fkHorasLabor,
+      fkTipoSalario: relacion.fkTipoSalario,
+      fechaVinculacion: new Date(anio, mes - 1, dia)
+    });
+    this.personaForm.get('numeroIdentificacion')?.disable();
   }
 
   private ciudadesDe(idDepartamento: number | null): CiudadMunicipio[] {

@@ -1,0 +1,34 @@
+<p class="mt-0 mb-3 secundario">{{ persona.apellido }} {{ persona.nombre }} · {{ persona.numeroIdentificacion }}</p>
+
+<div class="grid">
+  <div class="col-12 md:col-4">
+    <button type="button" class="action-card" [disabled]="!persona.activo" (click)="editar.emit(persona)">
+      <i class="pi pi-pencil action-icon text-orange-500"></i>
+      <h3>Editar datos</h3>
+      <p>{{ persona.activo ? 'Datos personales y laborales de esta vinculación.'
+        : 'Inactiva: conserva los datos con que se evaluó. Actívela primero.' }}</p>
+    </button>
+  </div>
+
+  <div class="col-12 md:col-4">
+    <button type="button" class="action-card" (click)="cambiarEstado.emit(persona)">
+      @if (persona.activo) {
+        <i class="pi pi-user-minus action-icon text-red-500"></i>
+        <h3>Inactivar</h3>
+        <p>Ya no trabaja en la empresa. Su evaluación se conserva.</p>
+      } @else {
+        <i class="pi pi-user-plus action-icon text-green-500"></i>
+        <h3>Activar</h3>
+        <p>Volvió a la empresa.</p>
+      }
+    </button>
+  </div>
+
+  <div class="col-12 md:col-4">
+    <button type="button" class="action-card" disabled>
+      <i class="pi pi-file-pdf action-icon text-blue-500"></i>
+      <h3>Informe individual</h3>
+      <p>PDF o Word por año. Próximamente.</p>
+    </button>
+  </div>
+</div>

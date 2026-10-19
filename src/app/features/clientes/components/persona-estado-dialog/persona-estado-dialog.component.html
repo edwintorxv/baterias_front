@@ -1,0 +1,26 @@
+<p class="mt-0 mb-3"><strong>{{ persona.apellido }} {{ persona.nombre }}</strong> · {{ persona.numeroIdentificacion }}</p>
+
+@if (inactivar) {
+  <p class="mt-0">
+    Dejará de contarse como esperada en los informes de la empresa desde la fecha de retiro. Si ya se evaluó,
+    su evaluación se conserva y sigue contando en el año en que respondió.
+  </p>
+  <label for="fechaRetiro">Fecha de retiro</label>
+  <p-datepicker inputId="fechaRetiro" styleClass="w-full" dateFormat="dd/mm/yy" [showIcon]="true" appendTo="body"
+    [minDate]="fechaVinculacion ?? null" [(ngModel)]="fechaRetiro" [disabled]="!relacion" />
+  @if (fechaVinculacion) {
+    <small class="nota bloque mt-1">Vinculada desde el {{ fechaVinculacion | date: 'dd/MM/yyyy' }}.</small>
+  }
+} @else {
+  <p class="mt-0">
+    Volverá a contarse como esperada en los informes de la empresa. Si la persona está activa en otra empresa, no se
+    puede: vincúlela desde este cliente con "Vincular persona" para cambiarla de empresa.
+  </p>
+}
+
+<div class="acciones">
+  <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
+  <p-button [label]="inactivar ? 'Inactivar' : 'Activar'" [icon]="inactivar ? 'pi pi-user-minus' : 'pi pi-user-plus'"
+    [severity]="inactivar ? 'danger' : 'success'" [loading]="guardando" [disabled]="!relacion || !fechaRetiro"
+    (onClick)="guardar()" />
+</div>
