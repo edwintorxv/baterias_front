@@ -1,0 +1,70 @@
+<h1>Usuarios</h1>
+
+@if (!esAdmin()) {
+  <p-message severity="warn" styleClass="mb-3" text="Solo el administrador gestiona los usuarios." />
+} @else {
+  <div class="table-header">
+    <div class="filtros">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input type="text" pInputText placeholder="Usuario, nombre, vínculo…" [formControl]="searchControl" />
+      </p-iconfield>
+      <p-select [options]="opcionesRol" [(ngModel)]="filtroRol" (onChange)="filtrar()" placeholder="Rol" [showClear]="true" />
+      <p-button icon="pi pi-filter-slash" severity="secondary" (onClick)="limpiar()" />
+    </div>
+    <span class="secundario">{{ lstUsuarios.length }} usuario(s)</span>
+  </div>
+
+  <p-card>
+    <p-table [value]="lstUsuarios" dataKey="id" [loading]="cargando" [rows]="25" [paginator]="lstUsuarios.length > 25"
+      [tableStyle]="{ 'min-width': '55rem' }">
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="usuario">Usuario <p-sortIcon field="usuario" /></th>
+          <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre" /></th>
+          <th pSortableColumn="nombreRol">Rol <p-sortIcon field="nombreRol" /></th>
+          <th pSortableColumn="vinculo">Vínculo <p-sortIcon field="vinculo" /></th>
+          <th pSortableColumn="clientesAsignados" class="text-right">Clientes <p-sortIcon field="clientesAsignados" /></th>
+          <th>Estado</th>
+          <th style="width: 4rem"></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-usuario>
+        <tr [class.inactiva]="!usuario.activo">
+          <td class="font-semibold">{{ usuario.usuario }}</td>
+          <td>{{ usuario.nombre }}</td>
+          <td><p-tag [value]="usuario.nombreRol" [severity]="usuario.severidadRol" /></td>
+          <td>{{ usuario.vinculo || '—' }}</td>
+          <td class="text-right">{{ usuario.clientesAsignados ?? '—' }}</td>
+          <td>
+            <p-tag [value]="usuario.activo ? 'Activo' : 'Inactivo'" [severity]="usuario.activo ? 'success' : 'secondary'" />
+          </td>
+          <td>
+            <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="secondary" ariaLabel="Acciones"
+              (onClick)="openAccionesDialog(usuario)" />
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="7" class="text-center p-4">No hay usuarios con estos filtros.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+}
+
+<p-dialog header="Acciones del usuario" [(visible)]="displayAccionesDialog" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '768px': '95vw' }">
+  @if (displayAccionesDialog && selectedUsuario) {
+    <app-usuario-acciones [usuario]="selectedUsuario" (clientes)="openClientesDialog()" />
+  }
+</p-dialog>
+
+<p-dialog header="Clientes asignados" [(visible)]="displayClientesDialog" [modal]="true"
+  [style]="{ width: '40rem' }" [breakpoints]="{ '640px': '95vw' }">
+  @if (displayClientesDialog && selectedUsuario) {
+    <app-clientes-asignados-dialog [usuario]="selectedUsuario" (saved)="clientesGuardados()"
+      (cancel)="displayClientesDialog = false" />
+  }
+</p-dialog>

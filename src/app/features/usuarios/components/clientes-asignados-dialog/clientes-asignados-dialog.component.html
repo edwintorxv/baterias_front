@@ -1,0 +1,39 @@
+<p class="mt-0 mb-2"><strong>{{ usuario.nombre }}</strong> · {{ usuario.usuario }}</p>
+
+<p-message severity="info" styleClass="mb-3 w-full"
+  text="El psicólogo verá las personas, aplicaciones e informes de los clientes marcados. Si le quita un cliente, deja de verlo; lo que ya firmó sigue firmado." />
+
+<div class="herramientas">
+  <p-iconfield>
+    <p-inputicon styleClass="pi pi-search" />
+    <input type="text" pInputText placeholder="NIT o razón social" [(ngModel)]="busqueda" (ngModelChange)="filtrar()" />
+  </p-iconfield>
+  <p-button label="Marcar todos" icon="pi pi-check-square" severity="secondary" [text]="true"
+    [disabled]="!lstOpciones.length" (onClick)="marcarVisibles(true)" />
+  <p-button label="Ninguno" icon="pi pi-stop" severity="secondary" [text]="true"
+    [disabled]="!lstOpciones.length" (onClick)="marcarVisibles(false)" />
+  <span class="secundario contador">{{ marcados }} de {{ total }} seleccionados</span>
+</div>
+
+<div class="lista">
+  @if (cargando) {
+    <p class="secundario p-3 m-0"><i class="pi pi-spin pi-spinner mr-2"></i>Cargando clientes…</p>
+  }
+  @for (opcion of lstOpciones; track opcion.cliente.id) {
+    <label class="opcion" [class.marcada]="opcion.marcado">
+      <p-checkbox [(ngModel)]="opcion.marcado" [binary]="true" />
+      <span class="nombre">{{ opcion.cliente.nombre }}</span>
+      <span class="secundario">NIT {{ opcion.cliente.nit }}</span>
+    </label>
+  } @empty {
+    @if (!cargando) {
+      <p class="secundario p-3 m-0">No hay clientes con esa búsqueda.</p>
+    }
+  }
+</div>
+
+<div class="acciones">
+  <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
+  <p-button label="Guardar" icon="pi pi-check" iconPos="right" [loading]="guardando" [disabled]="cargando"
+    (onClick)="guardar()" />
+</div>

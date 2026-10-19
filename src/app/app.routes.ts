@@ -31,7 +31,11 @@ export const routes: Routes = [
       enConstruccion('evaluados', 'Evaluados'),
       enConstruccion('aplicaciones', 'Aplicaciones'),
 
-      enConstruccion('administracion/usuarios', 'Usuarios'),
+      {
+        path: 'administracion/usuarios',
+        loadComponent: () => import('./pages/administracion/usuario-list/usuario-list.component')
+          .then(m => m.UsuarioListComponent)
+      },
       enConstruccion('administracion/evaluadores', 'Evaluadores'),
 
       enConstruccion('configuracion/catalogos', 'Catálogos'),

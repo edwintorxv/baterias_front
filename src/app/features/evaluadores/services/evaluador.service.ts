@@ -15,6 +15,10 @@ export class EvaluadorService {
 
     constructor(private http: HttpClient) { }
 
+    listar(): Observable<Evaluador[]> {
+        return this.http.get<ApiResponse<Evaluador[]>>(this.url).pipe(map(respuesta => respuesta.data));
+    }
+
     obtener(id: number): Observable<Evaluador> {
         return this.http.get<ApiResponse<Evaluador>>(`${this.url}/${id}`).pipe(map(respuesta => respuesta.data));
     }
