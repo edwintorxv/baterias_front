@@ -1,0 +1,115 @@
+/**
+ * GET /clientes/{id}/informe?anio=: solo las partes que muestra la pantalla (el resto del JSON —formas,
+ * concentración, extralaborales y síntomas por ciudad/área— va completo en el Word).
+ */
+export interface InformeEmpresa {
+    cliente: { id: number; nit: string; nombre: string };
+    anio: number;
+    cobertura: Cobertura;
+    coberturaPorCiudad: CoberturaCiudad[];
+    /** Respondieron pero aún no tienen resultados: cuentan como evaluados, no entran en las tablas. */
+    pendientesCalculo: number;
+    resultadosGlobales: ResultadosGlobales;
+    conclusiones: ConclusionesEmpresa;
+}
+
+export interface Cobertura {
+    esperados: number;
+    evaluados: number;
+    porcentaje: number;
+}
+
+export interface CoberturaCiudad extends Cobertura {
+    idCiudad: number | null;
+    ciudad: string;
+}
+
+export interface ResultadosGlobales {
+    intralaboral: DistribucionNiveles;
+    nivelEmpresa: NivelEmpresa;
+    extralaboral: DistribucionNiveles;
+    totalGeneral: DistribucionNiveles;
+    estres: DistribucionNiveles;
+}
+
+/** Personas por nivel de riesgo; el % es sobre el total de la tabla. */
+export interface DistribucionNiveles {
+    total: number;
+    niveles: NivelCantidad[];
+}
+
+export interface NivelCantidad {
+    fkNivelRiesgo: number;
+    nivel: string;
+    cantidad: number;
+    porcentaje: number;
+}
+
+/** Res. 2764 de 2022, art. 3: anual si alguna forma queda en alto o muy alto. */
+export interface NivelEmpresa {
+    formas: NivelForma[];
+    periodicidad: 'ANUAL' | 'CADA_DOS_ANIOS';
+    periodicidadDescripcion: string;
+}
+
+export interface NivelForma {
+    idCuestionario: number;
+    forma: string;
+    personas: number;
+    promedioPuntajeBruto: number;
+    puntajeTransformado: number;
+    fkNivelRiesgo: number;
+    nivel: string;
+}
+
+export interface ConclusionesEmpresa {
+    conclusiones: string | null;
+    accionesCortoPlazo: string | null;
+    accionesMedianoPlazo: string | null;
+    accionesLargoPlazo: string | null;
+    profesional: ProfesionalInforme | null;
+    /** Lo que falta para descargar el Word; vacío = se puede descargar. */
+    faltantes: string[];
+}
+
+export interface ProfesionalInforme {
+    id: number;
+    numeroIdentificacion: string;
+    nombre: string;
+    profesion: string | null;
+    tarjetaProfesional: string | null;
+    tieneFirma: boolean;
+}
+
+/** GET/PUT /clientes/{id}/informe/conclusiones?anio= */
+export interface ConclusionesInforme {
+    idCliente: number;
+    anio: number;
+    /** false = aún no se ha guardado nada para el año (todo viene vacío). */
+    guardado: boolean;
+    conclusiones: string | null;
+    accionesCortoPlazo: string | null;
+    accionesMedianoPlazo: string | null;
+    accionesLargoPlazo: string | null;
+    fkEvaluador: number | null;
+    fechaCreado: string | null;
+    fechaModificado: string | null;
+}
+
+/** El PUT reemplaza todo lo del año: lo que vaya en null queda vacío. */
+export interface ConclusionesInformeRequest {
+    conclusiones: string | null;
+    accionesCortoPlazo: string | null;
+    accionesMedianoPlazo: string | null;
+    accionesLargoPlazo: string | null;
+    fkEvaluador: number | null;
+}
+
+/** Colores semáforo del Word de empresa (DocxSoporte.COLOR_NIVEL), por fkNivelRiesgo. */
+export const COLOR_NIVEL: Record<number, string> = {
+    1: '#00B050',
+    2: '#92D050',
+    3: '#FFD700',
+    4: '#FF8C00',
+    5: '#E53935'
+};

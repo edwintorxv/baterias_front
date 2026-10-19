@@ -28,4 +28,5 @@ layout/    main-layout (menú lateral fijo + topbar), menu.ts
 ## Estado
 - ✅ Base (layout, auto-login dev, selector de usuario de prueba, tema claro/oscuro, Inicio con prueba de conexión).
 - ✅ Clientes: listado + crear/editar (ADMIN; NIT no editable) + Personas (`/clientes/:id/personas`, PSICOLOGO).
-- ⬜ Siguiente: informe de empresa del cliente (paso 3). Ver la lista completa en el CLAUDE.md del backend, sección 7.
+- ✅ Informe de empresa (`/clientes/:id/informe`, PSICOLOGO y CLIENTE): año, cobertura, nivel de la empresa y periodicidad, resultados globales (`app-distribucion-niveles`, colores `COLOR_NIVEL` del Word), conclusiones + plan de acción + firmante (`app-informe-conclusiones`; opciones: el propio si está activo y el que ya tenía), descarga del Word cuando `faltantes` está vacío (el error en Blob se convierte a `ApiError`). El detalle por forma/ciudad/área queda solo en el Word.
+- ⬜ Siguiente: vincular/editar personas e informe individual por fila. Ver la lista completa en el CLAUDE.md del backend, sección 7.

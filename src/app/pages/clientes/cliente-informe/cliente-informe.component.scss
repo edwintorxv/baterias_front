@@ -1,0 +1,96 @@
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+}
+
+.titulo,
+.herramientas {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+h2 {
+    margin: 1.5rem 0 0.5rem;
+    font-size: 1.15rem;
+}
+
+.subtitulo {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+}
+
+.secundario {
+    color: var(--p-text-muted-color);
+}
+
+.bloque {
+    display: block;
+}
+
+.recargando {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.punto {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-right: 0.4rem;
+    border-radius: 50%;
+}
+
+/* RESUMEN */
+.resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.tarjeta {
+    display: flex;
+    flex-direction: column;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--p-content-border-color);
+    border-left: 4px solid var(--p-surface-400);
+    border-radius: 10px;
+    background: var(--p-content-background);
+
+    &.exito {
+        border-left-color: var(--p-green-500);
+    }
+
+    &.aviso {
+        border-left-color: var(--p-orange-400);
+    }
+
+    &.peligro {
+        border-left-color: var(--p-red-500);
+    }
+
+    .numero {
+        font-size: 1.6rem;
+        font-weight: 600;
+    }
+
+    .periodicidad {
+        font-size: 1.25rem;
+        line-height: 1.95rem;
+    }
+
+    .texto {
+        font-size: 0.85rem;
+        color: var(--p-text-muted-color);
+    }
+}

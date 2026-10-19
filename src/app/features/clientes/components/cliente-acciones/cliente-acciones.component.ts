@@ -15,7 +15,10 @@ export class ClienteAccionesComponent {
   @Input() puedeEditar = false;
   /** Personas es del psicólogo: el administrador no ve datos de trabajadores. */
   @Input() puedeVerPersonas = false;
+  /** El informe de empresa lo ven el psicólogo y el cliente (este no llega a este listado). */
+  @Input() puedeVerInforme = false;
   @Output() editar = new EventEmitter<ClienteFila>();
   @Output() personas = new EventEmitter<ClienteFila>();
+  @Output() informe = new EventEmitter<ClienteFila>();
 
 }

@@ -22,7 +22,8 @@
   [style]="{ width: '50rem' }" [breakpoints]="{ '768px': '95vw' }">
   @if (displayAccionesDialog && selectedCliente) {
     <app-cliente-acciones [cliente]="selectedCliente" [puedeEditar]="esAdmin()" [puedeVerPersonas]="esPsicologo()"
-      (editar)="openFormEditDialog($event)" (personas)="verPersonas($event)" />
+      [puedeVerInforme]="esPsicologo()" (editar)="openFormEditDialog($event)" (personas)="verPersonas($event)"
+      (informe)="verInforme($event)" />
   }
 </p-dialog>
 

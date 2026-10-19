@@ -23,6 +23,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/clientes/cliente-personas/cliente-personas.component')
           .then(m => m.ClientePersonasComponent)
       },
+      {
+        path: 'clientes/:id/informe',
+        loadComponent: () => import('./pages/clientes/cliente-informe/cliente-informe.component')
+          .then(m => m.ClienteInformeComponent)
+      },
       enConstruccion('evaluados', 'Evaluados'),
       enConstruccion('aplicaciones', 'Aplicaciones'),
 

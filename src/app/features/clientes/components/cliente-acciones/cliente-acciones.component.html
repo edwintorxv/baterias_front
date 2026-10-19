@@ -18,10 +18,10 @@
   </div>
 
   <div class="col-12 md:col-4">
-    <button type="button" class="action-card" disabled>
+    <button type="button" class="action-card" [disabled]="!puedeVerInforme" (click)="informe.emit(cliente)">
       <i class="pi pi-chart-bar action-icon text-green-500"></i>
       <h3>Informe de empresa</h3>
-      <p>Resultados, conclusiones y Word. Próximamente.</p>
+      <p>{{ puedeVerInforme ? 'Resultados, conclusiones y Word.' : 'Solo el psicólogo.' }}</p>
     </button>
   </div>
 </div>

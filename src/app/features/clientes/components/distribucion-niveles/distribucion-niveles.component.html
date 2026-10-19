@@ -1,0 +1,22 @@
+<div class="cabecera">
+  <h3>{{ titulo }}</h3>
+  <span class="secundario">{{ distribucion.total }} personas</span>
+</div>
+
+<table>
+  <tbody>
+    @for (nivel of distribucion.niveles; track nivel.fkNivelRiesgo) {
+      <tr>
+        <td class="nivel">
+          <span class="punto" [style.background]="colorNivel[nivel.fkNivelRiesgo]"></span>
+          {{ nivel.nivel }}
+        </td>
+        <td class="numero">{{ nivel.cantidad }}</td>
+        <td class="numero porcentaje">{{ nivel.porcentaje | number: '1.1-1' }} %</td>
+        <td class="barra">
+          <span [style.width.%]="nivel.porcentaje" [style.background]="colorNivel[nivel.fkNivelRiesgo]"></span>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

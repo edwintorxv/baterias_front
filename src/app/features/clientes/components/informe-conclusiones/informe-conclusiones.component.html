@@ -1,0 +1,45 @@
+<form [formGroup]="conclusionesForm" (ngSubmit)="guardar()">
+
+  <label for="conclusiones">Conclusiones del profesional</label>
+  <textarea id="conclusiones" pTextarea rows="5" [autoResize]="true" class="w-full"
+    formControlName="conclusiones"></textarea>
+
+  <h4 class="seccion">Plan de acción</h4>
+  <div class="grid">
+    @for (campo of campos; track campo.control) {
+      <div class="col-12 lg:col-4">
+        <label [for]="campo.control">{{ campo.etiqueta }}</label>
+        <textarea [id]="campo.control" pTextarea rows="5" [autoResize]="true" class="w-full"
+          [formControlName]="campo.control"></textarea>
+      </div>
+    }
+  </div>
+
+  <div class="grid">
+    <div class="col-12 md:col-6">
+      <label for="fkEvaluador">Profesional responsable <small class="nota">(sus datos y su firma salen en el Word)</small></label>
+      @if (soloLectura) {
+        <p class="m-0">{{ profesionalActual?.nombre ?? 'Sin asignar' }}</p>
+      } @else {
+        <p-select inputId="fkEvaluador" styleClass="w-full" appendTo="body" placeholder="Sin asignar"
+          [options]="lstFirmantes" optionLabel="nombre" optionValue="id" [showClear]="true"
+          formControlName="fkEvaluador" />
+      }
+    </div>
+  </div>
+
+  <div class="acciones">
+    @if (guardado?.guardado) {
+      <small class="nota">
+        Guardado el {{ (guardado?.fechaModificado ?? guardado?.fechaCreado) | date: 'dd/MM/yyyy HH:mm' }}
+      </small>
+    } @else if (!cargando) {
+      <small class="nota">Aún no se ha guardado nada para {{ anio }}.</small>
+    }
+    @if (!soloLectura) {
+      <p-button label="Guardar conclusiones" icon="pi pi-check" iconPos="right" type="submit"
+        [loading]="guardando" [disabled]="cargando" />
+    }
+  </div>
+
+</form>

@@ -1,0 +1,161 @@
+<div class="encabezado">
+  <div class="titulo">
+    @if (puedeVolver()) {
+      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/clientes" ariaLabel="Volver a clientes" />
+    }
+    <div>
+      <h1>Informe de empresa</h1>
+      @if (informe) {
+        <span class="secundario">{{ informe.cliente.nombre }} · NIT {{ informe.cliente.nit }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="herramientas">
+    <p-select [options]="lstAnios" [(ngModel)]="anio" (onChange)="cargarInforme()" placeholder="Año"
+      [disabled]="!lstAnios.length" />
+    <p-button label="Descargar Word" icon="pi pi-file-word" [loading]="descargando"
+      [disabled]="!puedeDescargar || cargando" (onClick)="descargarWord()" />
+  </div>
+</div>
+
+@if (sinInforme) {
+  <p-message severity="warn" [text]="sinInforme" styleClass="mb-3" />
+}
+
+@if (informe && faltantes.length) {
+  <p-message severity="info" styleClass="mb-3">
+    Para descargar el Word falta diligenciar: {{ faltantes.join(', ') }}.
+  </p-message>
+}
+
+@if (cargando && !informe) {
+  <p class="secundario"><i class="pi pi-spin pi-spinner mr-2"></i>Cargando informe…</p>
+}
+
+@if (informe; as inf) {
+  <div [class.recargando]="cargando">
+
+    <!-- COBERTURA -->
+    <div class="resumen">
+      <div class="tarjeta">
+        <span class="numero">{{ inf.cobertura.esperados }}</span>
+        <span class="texto">Personas esperadas</span>
+      </div>
+      <div class="tarjeta exito">
+        <span class="numero">{{ inf.cobertura.evaluados }}</span>
+        <span class="texto">Evaluadas · {{ inf.cobertura.porcentaje | number: '1.1-1' }} %</span>
+      </div>
+      <div class="tarjeta" [class.aviso]="inf.pendientesCalculo > 0">
+        <span class="numero">{{ inf.pendientesCalculo }}</span>
+        <span class="texto">Pendientes de cálculo</span>
+      </div>
+      <div class="tarjeta" [class.peligro]="inf.resultadosGlobales.nivelEmpresa.periodicidad === 'ANUAL'">
+        <span class="numero periodicidad">{{ inf.resultadosGlobales.nivelEmpresa.periodicidadDescripcion }}</span>
+        <span class="texto">Próxima evaluación (Res. 2764 de 2022)</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- NIVEL DE LA EMPRESA -->
+      <div class="col-12 xl:col-7">
+        <p-card styleClass="h-full">
+          <h3 class="subtitulo">Nivel de riesgo intralaboral de la empresa</h3>
+          <p-table [value]="inf.resultadosGlobales.nivelEmpresa.formas" styleClass="p-datatable-sm">
+            <ng-template #header>
+              <tr>
+                <th>Forma</th>
+                <th class="text-right">Personas</th>
+                <th class="text-right">Promedio bruto</th>
+                <th class="text-right">Transformado</th>
+                <th>Nivel</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-forma>
+              <tr>
+                <td class="font-semibold">Forma {{ forma.forma }}</td>
+                <td class="text-right">{{ forma.personas }}</td>
+                <td class="text-right">{{ forma.promedioPuntajeBruto | number: '1.2-2' }}</td>
+                <td class="text-right">{{ forma.puntajeTransformado | number: '1.1-1' }}</td>
+                <td>
+                  <span class="punto" [style.background]="colorNivel[forma.fkNivelRiesgo]"></span>
+                  {{ forma.nivel }}
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr><td colspan="5" class="text-center p-3">Sin resultados intralaborales.</td></tr>
+            </ng-template>
+          </p-table>
+          <small class="secundario bloque mt-2">
+            Por forma: promedio del puntaje bruto total → transformado → baremo de la forma. Si alguna queda
+            en riesgo alto o muy alto, la evaluación es anual; si no, cada dos años.
+          </small>
+        </p-card>
+      </div>
+
+      <!-- COBERTURA POR CIUDAD -->
+      <div class="col-12 xl:col-5">
+        <p-card styleClass="h-full">
+          <h3 class="subtitulo">Cobertura por ciudad</h3>
+          <p-table [value]="inf.coberturaPorCiudad" styleClass="p-datatable-sm" [scrollable]="true" scrollHeight="14rem">
+            <ng-template #header>
+              <tr>
+                <th>Ciudad</th>
+                <th class="text-right">Esperados</th>
+                <th class="text-right">Evaluados</th>
+                <th class="text-right">%</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-ciudad>
+              <tr>
+                <td>{{ ciudad.ciudad }}</td>
+                <td class="text-right">{{ ciudad.esperados }}</td>
+                <td class="text-right">{{ ciudad.evaluados }}</td>
+                <td class="text-right">{{ ciudad.porcentaje | number: '1.1-1' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- RESULTADOS GLOBALES -->
+    <h2>Resultados globales</h2>
+    <div class="grid">
+      <div class="col-12 lg:col-6">
+        <p-card styleClass="h-full">
+          <app-distribucion-niveles titulo="Riesgo intralaboral (formas A y B)"
+            [distribucion]="inf.resultadosGlobales.intralaboral" />
+        </p-card>
+      </div>
+      <div class="col-12 lg:col-6">
+        <p-card styleClass="h-full">
+          <app-distribucion-niveles titulo="Riesgo extralaboral" [distribucion]="inf.resultadosGlobales.extralaboral" />
+        </p-card>
+      </div>
+      <div class="col-12 lg:col-6">
+        <p-card styleClass="h-full">
+          <app-distribucion-niveles titulo="Riesgo psicosocial total (intra + extralaboral)"
+            [distribucion]="inf.resultadosGlobales.totalGeneral" />
+        </p-card>
+      </div>
+      <div class="col-12 lg:col-6">
+        <p-card styleClass="h-full">
+          <app-distribucion-niveles titulo="Nivel de síntomas de estrés" [distribucion]="inf.resultadosGlobales.estres" />
+        </p-card>
+      </div>
+    </div>
+    <small class="secundario bloque">
+      El detalle por forma, dominio, dimensión, ciudad, área y síntoma está en el Word.
+    </small>
+
+    <!-- CONCLUSIONES -->
+    <h2>Conclusiones y plan de acción</h2>
+    <p-card>
+      <app-informe-conclusiones [idCliente]="idCliente" [anio]="inf.anio" [soloLectura]="!puedeEditar()"
+        [profesionalActual]="inf.conclusiones.profesional" (saved)="conclusionesGuardadas()" />
+    </p-card>
+
+  </div>
+}

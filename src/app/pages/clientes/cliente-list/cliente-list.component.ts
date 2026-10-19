@@ -137,6 +137,11 @@ export class ClienteListComponent {
     this.router.navigate(['/clientes', cliente.id, 'personas']);
   }
 
+  verInforme(cliente: ClienteFila): void {
+    this.displayAccionesDialog = false;
+    this.router.navigate(['/clientes', cliente.id, 'informe']);
+  }
+
   clienteSaved(_cliente: Cliente): void {
     this.displayFormDialog = false;
     this.cargarClientes();

@@ -1,0 +1,61 @@
+.cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    h3 {
+        margin: 0;
+        font-size: 1rem;
+    }
+}
+
+.secundario {
+    font-size: 0.85rem;
+    color: var(--p-text-muted-color);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    td {
+        padding: 0.3rem 0.25rem;
+        border-top: 1px solid var(--p-content-border-color);
+    }
+}
+
+.nivel {
+    white-space: nowrap;
+}
+
+.punto {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-right: 0.4rem;
+    border-radius: 50%;
+}
+
+.numero {
+    width: 1%;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.porcentaje {
+    padding-right: 0.75rem !important;
+    color: var(--p-text-muted-color);
+}
+
+.barra {
+    width: 35%;
+
+    span {
+        display: block;
+        height: 0.6rem;
+        border-radius: 3px;
+    }
+}
