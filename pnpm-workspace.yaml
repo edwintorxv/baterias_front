@@ -1,0 +1,6 @@
+# Scripts de instalación permitidos (herramientas de compilación del Angular CLI)
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true

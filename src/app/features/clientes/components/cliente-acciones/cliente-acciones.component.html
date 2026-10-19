@@ -1,0 +1,27 @@
+<p class="mt-0 mb-3 secundario">{{ cliente.nombre }} · NIT {{ cliente.nit }}</p>
+
+<div class="grid">
+  <div class="col-12 md:col-4">
+    <button type="button" class="action-card" [disabled]="!puedeEditar" (click)="editar.emit(cliente)">
+      <i class="pi pi-pencil action-icon text-orange-500"></i>
+      <h3>Editar datos</h3>
+      <p>{{ puedeEditar ? 'Modificar la información general del cliente.' : 'Solo el administrador.' }}</p>
+    </button>
+  </div>
+
+  <div class="col-12 md:col-4">
+    <button type="button" class="action-card" [disabled]="!puedeVerPersonas" (click)="personas.emit(cliente)">
+      <i class="pi pi-users action-icon text-blue-500"></i>
+      <h3>Personas</h3>
+      <p>{{ puedeVerPersonas ? 'Trabajadores del cliente y sus aplicaciones.' : 'Solo el psicólogo.' }}</p>
+    </button>
+  </div>
+
+  <div class="col-12 md:col-4">
+    <button type="button" class="action-card" disabled>
+      <i class="pi pi-chart-bar action-icon text-green-500"></i>
+      <h3>Informe de empresa</h3>
+      <p>Resultados, conclusiones y Word. Próximamente.</p>
+    </button>
+  </div>
+</div>

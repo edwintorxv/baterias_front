@@ -1,0 +1,11 @@
+<div class="layout" [class.sin-menu]="!sidebarVisible">
+  <app-sidebar class="layout-sidebar" />
+
+  <div class="layout-main">
+    <app-topbar (menuClick)="toggleSidebar()" />
+
+    <main class="layout-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

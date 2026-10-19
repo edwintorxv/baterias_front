@@ -1,0 +1,31 @@
+h1 {
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1rem;
+    margin: 0;
+}
+
+dt {
+    color: var(--p-text-muted-color);
+}
+
+dd {
+    margin: 0;
+    font-weight: 500;
+}
+
+.api {
+    margin-top: 0;
+    font-family: monospace;
+    color: var(--p-text-muted-color);
+}
+
+.error {
+    margin-bottom: 0;
+    color: var(--p-red-500);
+}

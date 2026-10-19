@@ -1,0 +1,30 @@
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 3.5rem;
+    padding: 0 1rem;
+    background: var(--p-content-background);
+    border-bottom: 1px solid var(--p-content-border-color);
+}
+
+.usuario {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    text-align: right;
+
+    .nombre {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .rol {
+        font-size: 0.75rem;
+        color: var(--p-text-muted-color);
+    }
+}
+
+:host ::ng-deep .selector-usuario {
+    min-width: 13rem;
+}

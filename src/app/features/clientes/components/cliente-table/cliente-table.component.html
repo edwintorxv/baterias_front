@@ -1,0 +1,44 @@
+<p-card>
+  <p-table [value]="lstClientes" dataKey="id" [loading]="cargando" [rows]="10" [paginator]="true"
+    [rowsPerPageOptions]="[10, 25, 50]" [tableStyle]="{ 'min-width': '60rem' }" sortField="nombre" [sortOrder]="1">
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="nit">NIT <p-sortIcon field="nit" /></th>
+        <th pSortableColumn="nombre">Razón social <p-sortIcon field="nombre" /></th>
+        <th pSortableColumn="industria">Industria <p-sortIcon field="industria" /></th>
+        <th pSortableColumn="ciudad">Ciudad <p-sortIcon field="ciudad" /></th>
+        <th pSortableColumn="nombreContacto">Contacto <p-sortIcon field="nombreContacto" /></th>
+        <th>Teléfono</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-cliente>
+      <tr>
+        <td>{{ cliente.nit }}</td>
+        <td class="font-semibold">{{ cliente.nombre }}</td>
+        <td>{{ cliente.industria }}</td>
+        <td>
+          {{ cliente.ciudad }}
+          @if (cliente.departamento) { <small class="secundario">{{ cliente.departamento }}</small> }
+        </td>
+        <td>
+          {{ cliente.nombreContacto }}
+          @if (cliente.cargoContacto) { <small class="secundario">{{ cliente.cargoContacto }}</small> }
+        </td>
+        <td>{{ cliente.telefonoContacto || cliente.telefono }}</td>
+        <td class="text-center">
+          <p-button icon="pi pi-cog" severity="warn" [rounded]="true" [text]="true" pTooltip="Acciones"
+            (onClick)="acciones.emit(cliente)" />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="text-center p-4">No hay clientes para mostrar.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>

@@ -1,0 +1,36 @@
+<h1>Clientes</h1>
+
+<div class="table-header">
+  @if (esAdmin()) {
+    <p-button label="Crear cliente" icon="pi pi-plus" (onClick)="openFormCreateDialog()" />
+  } @else {
+    <span></span>
+  }
+
+  <div class="search-container">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search" />
+      <input type="text" pInputText placeholder="Buscar por NIT, nombre, ciudad…" [formControl]="searchControl" />
+    </p-iconfield>
+    <p-button icon="pi pi-filter-slash" severity="secondary" (onClick)="limpiar()" />
+  </div>
+</div>
+
+<app-cliente-table [lstClientes]="lstClientes" [cargando]="cargando" (acciones)="openAccionesDialog($event)" />
+
+<p-dialog header="Acciones del cliente" [(visible)]="displayAccionesDialog" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '768px': '95vw' }">
+  @if (displayAccionesDialog && selectedCliente) {
+    <app-cliente-acciones [cliente]="selectedCliente" [puedeEditar]="esAdmin()" [puedeVerPersonas]="esPsicologo()"
+      (editar)="openFormEditDialog($event)" (personas)="verPersonas($event)" />
+  }
+</p-dialog>
+
+<p-dialog [header]="selectedCliente ? 'Editar cliente' : 'Crear cliente'" [(visible)]="displayFormDialog" [modal]="true"
+  [style]="{ width: '50vw', maxWidth: '900px' }"
+  [breakpoints]="{ '1200px': '60vw', '960px': '75vw', '640px': '95vw' }">
+  @if (displayFormDialog) {
+    <app-cliente-form-dialog [cliente]="selectedCliente" (saved)="clienteSaved($event)"
+      (cancel)="displayFormDialog = false" />
+  }
+</p-dialog>

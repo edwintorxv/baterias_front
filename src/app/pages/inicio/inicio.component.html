@@ -1,0 +1,33 @@
+<h1>Inicio</h1>
+
+<div class="grid">
+  <div class="col-12 md:col-6">
+    <p-card header="Sesión">
+      @if (usuario(); as u) {
+        <dl>
+          <dt>Nombre</dt><dd>{{ u.nombre }}</dd>
+          <dt>Usuario</dt><dd>{{ u.usuario }}</dd>
+          <dt>Rol</dt><dd>{{ nombreRol[u.rol] }}</dd>
+          @if (u.idEvaluador) { <dt>Evaluador</dt><dd>#{{ u.idEvaluador }}</dd> }
+          @if (u.idCliente) { <dt>Cliente</dt><dd>#{{ u.idCliente }}</dd> }
+        </dl>
+      } @else {
+        <p>Sin sesión. En desarrollo, revise los usuarios de <code>environment.development.ts</code>.</p>
+      }
+    </p-card>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <p-card header="Conexión con el backend">
+      <p class="api">{{ apiUrl }}</p>
+      @switch (estado) {
+        @case ('cargando') { <p-tag value="Verificando…" severity="secondary" /> }
+        @case ('ok') { <p-tag value="Conectado" severity="success" icon="pi pi-check" /> }
+        @case ('error') {
+          <p-tag value="Sin conexión" severity="danger" icon="pi pi-times" />
+          <p class="error">{{ mensajeError }}</p>
+        }
+      }
+    </p-card>
+  </div>
+</div>

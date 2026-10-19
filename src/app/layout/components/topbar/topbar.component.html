@@ -1,0 +1,33 @@
+<header class="topbar">
+  <p-button icon="pi pi-bars" [text]="true" [rounded]="true" (onClick)="openMenu()" pTooltip="Menú" />
+
+  <div class="flex-1"></div>
+
+  @if (usuariosPrueba.length) {
+    <p-tag value="DESARROLLO" severity="warn" />
+    <p-select
+      [options]="usuariosPrueba"
+      optionLabel="etiqueta"
+      optionValue="usuario"
+      [ngModel]="usuario()?.usuario"
+      (ngModelChange)="cambiarUsuario($event)"
+      [disabled]="cambiando"
+      placeholder="Usuario de prueba"
+      size="small"
+      styleClass="selector-usuario" />
+  }
+
+  @if (usuario(); as u) {
+    <div class="usuario">
+      <span class="nombre">{{ u.nombre }}</span>
+      <span class="rol">{{ rol() }}</span>
+    </div>
+  }
+
+  <p-button
+    [icon]="themeService.tema() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
+    [text]="true"
+    [rounded]="true"
+    (onClick)="themeService.toggle()"
+    pTooltip="Cambiar tema" />
+</header>

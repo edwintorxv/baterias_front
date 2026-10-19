@@ -1,0 +1,23 @@
+h1 {
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    input {
+        width: 20rem;
+    }
+}

@@ -1,0 +1,113 @@
+<form [formGroup]="clienteForm" (ngSubmit)="saveCliente()">
+
+  <h4 class="seccion">Empresa</h4>
+  <div class="grid">
+    <div class="col-12 md:col-4">
+      <label for="nit">NIT *@if (isEditMode) { <small class="nota">(no se modifica)</small> }</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-id-card"></i></p-inputgroup-addon>
+        <input id="nit" pInputText placeholder="900123456-7" maxlength="50" formControlName="nit" />
+      </p-inputgroup>
+      <app-error-campo [control]="clienteForm.get('nit')" />
+    </div>
+
+    <div class="col-12 md:col-8">
+      <label for="nombre">Razón social *</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-building"></i></p-inputgroup-addon>
+        <input id="nombre" pInputText maxlength="300" formControlName="nombre" />
+      </p-inputgroup>
+      <app-error-campo [control]="clienteForm.get('nombre')" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label for="sector">Sector económico *</label>
+      <p-select inputId="sector" styleClass="w-full" placeholder="Sector económico" appendTo="body"
+        [options]="lstSectores" optionLabel="nombre" optionValue="id"
+        formControlName="sector" (onChange)="onSectorChange($event.value)" />
+      <app-error-campo [control]="clienteForm.get('sector')" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label for="industria">Industria *</label>
+      <p-select inputId="industria" styleClass="w-full" appendTo="body"
+        [placeholder]="lstIndustrias.length ? 'Seleccione la industria' : 'Primero el sector'"
+        [options]="lstIndustrias" optionLabel="nombre" optionValue="id" [filter]="true" filterBy="nombre"
+        formControlName="fkIndustria" />
+      <app-error-campo [control]="clienteForm.get('fkIndustria')" />
+    </div>
+  </div>
+
+  <h4 class="seccion">Ubicación</h4>
+  <div class="grid">
+    <div class="col-12 md:col-6">
+      <label for="departamento">Departamento</label>
+      <p-select inputId="departamento" styleClass="w-full" placeholder="Departamento" appendTo="body" [showClear]="true"
+        [options]="lstDepartamentos" optionLabel="nombre" optionValue="id" [filter]="true" filterBy="nombre"
+        formControlName="departamento" (onChange)="onDepartamentoChange($event.value)" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label for="ciudad">Ciudad o municipio</label>
+      <p-select inputId="ciudad" styleClass="w-full" appendTo="body" [showClear]="true"
+        [placeholder]="lstCiudadMunicipio.length ? 'Ciudad o municipio' : 'Primero el departamento'"
+        [options]="lstCiudadMunicipio" optionLabel="nombre" optionValue="id" [filter]="true" filterBy="nombre"
+        formControlName="fkCiudadMunicipio" />
+    </div>
+
+    <div class="col-12 md:col-8">
+      <label for="direccion">Dirección</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-map-marker"></i></p-inputgroup-addon>
+        <input id="direccion" pInputText placeholder="Carrera 24 No. 5 - 55" maxlength="300" formControlName="direccion" />
+      </p-inputgroup>
+      <app-error-campo [control]="clienteForm.get('direccion')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="telefono">Teléfono</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-phone"></i></p-inputgroup-addon>
+        <input id="telefono" pInputText inputmode="numeric" maxlength="10" formControlName="telefono" />
+      </p-inputgroup>
+      <app-error-campo [control]="clienteForm.get('telefono')" />
+    </div>
+  </div>
+
+  <h4 class="seccion">Contacto</h4>
+  <div class="grid">
+    <div class="col-12 md:col-4">
+      <label for="nombreContacto">Nombre</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-user"></i></p-inputgroup-addon>
+        <input id="nombreContacto" pInputText maxlength="200" formControlName="nombreContacto" />
+      </p-inputgroup>
+      <app-error-campo [control]="clienteForm.get('nombreContacto')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="cargoContacto">Cargo</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-briefcase"></i></p-inputgroup-addon>
+        <input id="cargoContacto" pInputText maxlength="150" formControlName="cargoContacto" />
+      </p-inputgroup>
+      <app-error-campo [control]="clienteForm.get('cargoContacto')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="telefonoContacto">Teléfono</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-phone"></i></p-inputgroup-addon>
+        <input id="telefonoContacto" pInputText inputmode="numeric" maxlength="10" formControlName="telefonoContacto" />
+      </p-inputgroup>
+      <app-error-campo [control]="clienteForm.get('telefonoContacto')" />
+    </div>
+  </div>
+
+  <div class="acciones">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
+    <p-button [label]="isEditMode ? 'Guardar cambios' : 'Crear cliente'" icon="pi pi-check" iconPos="right"
+      type="submit" [loading]="guardando" />
+  </div>
+
+</form>

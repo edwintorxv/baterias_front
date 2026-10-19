@@ -1,0 +1,104 @@
+<div class="encabezado">
+  <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/clientes" ariaLabel="Volver a clientes" />
+  <div>
+    <h1>Personas</h1>
+    @if (cliente) {
+      <span class="secundario">{{ cliente.nombre }} · NIT {{ cliente.nit }}</span>
+    }
+  </div>
+</div>
+
+<!-- Resumen de las personas activas; cada tarjeta filtra la tabla -->
+<div class="resumen">
+  <button type="button" class="tarjeta" [class.activa]="filtroSituacion === null" (click)="filtrarPorSituacion(null)">
+    <span class="numero">{{ resumen.activos }}</span>
+    <span class="texto">Personas activas</span>
+  </button>
+  <button type="button" class="tarjeta exito" [class.activa]="filtroSituacion === 'CON_RESULTADOS'"
+    (click)="filtrarPorSituacion('CON_RESULTADOS')">
+    <span class="numero">{{ resumen.conResultados }}</span>
+    <span class="texto">Con resultados</span>
+  </button>
+  <button type="button" class="tarjeta aviso" [class.activa]="filtroSituacion === 'PENDIENTE_CALCULO'"
+    (click)="filtrarPorSituacion('PENDIENTE_CALCULO')">
+    <span class="numero">{{ resumen.pendientes }}</span>
+    <span class="texto">Pendientes de cálculo</span>
+  </button>
+  <button type="button" class="tarjeta" [class.activa]="filtroSituacion === 'SIN_RESPUESTAS'"
+    (click)="filtrarPorSituacion('SIN_RESPUESTAS')">
+    <span class="numero">{{ resumen.sinRespuestas }}</span>
+    <span class="texto">Sin respuestas</span>
+  </button>
+  <button type="button" class="tarjeta" [class.activa]="filtroSituacion === 'SIN_APLICACION'"
+    (click)="filtrarPorSituacion('SIN_APLICACION')">
+    <span class="numero">{{ resumen.sinAplicacion }}</span>
+    <span class="texto">Sin aplicación</span>
+  </button>
+</div>
+
+<div class="table-header">
+  <div class="filtros">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search" />
+      <input type="text" pInputText placeholder="Documento, nombre, cargo, área…" [formControl]="searchControl" />
+    </p-iconfield>
+    <p-select [options]="opcionesEstado" [(ngModel)]="filtroEstado" (onChange)="filtrar()" />
+    <p-select [options]="opcionesSituacion" [(ngModel)]="filtroSituacion" (onChange)="filtrar()"
+      placeholder="Situación" [showClear]="true" />
+    <p-button icon="pi pi-filter-slash" severity="secondary" (onClick)="limpiar()" />
+  </div>
+  <span class="secundario">{{ lstPersonas.length }} de {{ resumen.activos + resumen.inactivos }}</span>
+</div>
+
+<p-card>
+  <p-table [value]="lstPersonas" dataKey="idRelacion" [loading]="cargando" [rows]="25" [paginator]="true"
+    [rowsPerPageOptions]="[25, 50, 100]" [tableStyle]="{ 'min-width': '70rem' }">
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="numeroIdentificacion">Documento <p-sortIcon field="numeroIdentificacion" /></th>
+        <th pSortableColumn="nombreCompleto">Apellidos y nombres <p-sortIcon field="nombreCompleto" /></th>
+        <th pSortableColumn="nombreCargo">Cargo <p-sortIcon field="nombreCargo" /></th>
+        <th pSortableColumn="nombreArea">Área <p-sortIcon field="nombreArea" /></th>
+        <th pSortableColumn="ciudadTrabajo">Ciudad <p-sortIcon field="ciudadTrabajo" /></th>
+        <th pSortableColumn="fechaUltima">Última aplicación <p-sortIcon field="fechaUltima" /></th>
+        <th pSortableColumn="situacion">Situación <p-sortIcon field="situacion" /></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-persona>
+      <tr [class.inactiva]="!persona.activo">
+        <td>{{ persona.numeroIdentificacion }}</td>
+        <td class="font-semibold">
+          {{ persona.nombreCompleto }}
+          @if (!persona.activo) { <p-tag value="Inactivo" severity="secondary" styleClass="ml-2" /> }
+        </td>
+        <td>
+          {{ persona.nombreCargo }}
+          @if (persona.tipoCargo) { <small class="secundario bloque">{{ persona.tipoCargo }}</small> }
+        </td>
+        <td>{{ persona.nombreArea }}</td>
+        <td>{{ persona.ciudadTrabajo }}</td>
+        <td>
+          @if (persona.ultimaAplicacion; as ultima) {
+            {{ ultima.fecha | date: 'dd/MM/yyyy' }}
+            @if (persona.aplicaciones > 1) {
+              <small class="secundario bloque">{{ persona.aplicaciones }} aplicaciones</small>
+            }
+          } @else {
+            <span class="secundario">—</span>
+          }
+        </td>
+        <td>
+          <p-tag [value]="persona.etiquetaSituacion" [severity]="persona.severidadSituacion" />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="text-center p-4">No hay personas con estos filtros.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
