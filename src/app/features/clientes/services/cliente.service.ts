@@ -7,6 +7,7 @@ import { ArchivoDescargado, comoArchivo } from '../../../core/utils/archivo.util
 import { ResultadoCarga } from '../models/carga-personas.model';
 import { Cliente, ClienteRequest } from '../models/cliente.model';
 import { PersonaCliente } from '../models/persona-cliente.model';
+import { VinculacionResponse, VincularPersonaRequest } from '../models/vincular-persona.model';
 
 /** /clientes: ver lo pueden ADMIN y PSICOLOGO (solo sus clientes); crear y editar, solo ADMIN. */
 @Injectable({
@@ -30,6 +31,11 @@ export class ClienteService {
     personas(idCliente: number): Observable<PersonaCliente[]> {
         return this.http.get<ApiResponse<PersonaCliente[]>>(`${this.url}/${idCliente}/personas`)
             .pipe(map(respuesta => respuesta.data));
+    }
+
+    /** Vincula una persona al cliente (la crea si el documento no existe). Solo el psicólogo. */
+    vincularPersona(idCliente: number, request: VincularPersonaRequest): Observable<ApiResponse<VinculacionResponse>> {
+        return this.http.post<ApiResponse<VinculacionResponse>>(`${this.url}/${idCliente}/personas`, request);
     }
 
     /** Plantilla Excel para cargar personas: siempre vacía (nunca trae las ya cargadas). Solo el psicólogo. */

@@ -16,6 +16,7 @@ import { forkJoin } from 'rxjs';
 import { guardarArchivo } from '../../../core/utils/archivo.util';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
 import { CargaPersonasDialogComponent } from '../../../features/clientes/components/carga-personas-dialog/carga-personas-dialog.component';
+import { VincularPersonaDialogComponent } from '../../../features/clientes/components/vincular-persona-dialog/vincular-persona-dialog.component';
 import { Cliente } from '../../../features/clientes/models/cliente.model';
 import {
   PersonaCliente,
@@ -57,7 +58,8 @@ const normalizar = (texto: string | null | undefined) =>
     SelectModule,
     TableModule,
     TagModule,
-    CargaPersonasDialogComponent
+    CargaPersonasDialogComponent,
+    VincularPersonaDialogComponent
   ],
   templateUrl: './cliente-personas.component.html',
   styleUrl: './cliente-personas.component.scss'
@@ -86,6 +88,7 @@ export class ClientePersonasComponent implements OnInit {
   resumen = { activos: 0, conResultados: 0, pendientes: 0, sinRespuestas: 0, sinAplicacion: 0, inactivos: 0 };
 
   displayCargaDialog = false;
+  displayVincularDialog = false;
   descargandoPlantilla = false;
 
   readonly idCliente: number;
@@ -163,6 +166,11 @@ export class ClientePersonasComponent implements OnInit {
         ResponseHandlerUtil.handleError(error, this.messageService);
       }
     });
+  }
+
+  personaVinculada(): void {
+    this.displayVincularDialog = false;
+    this.cargar();
   }
 
   cargaGuardada(): void {

@@ -11,7 +11,10 @@ const MENSAJES: Record<string, (error: any) => string> = {
     texto: () => 'Tiene caracteres no permitidos',
     direccion: () => 'Use letras, números y # . , - /',
     telefono: () => 'De 7 a 10 dígitos, sin espacios',
-    correoElectronico: () => 'Correo electrónico inválido'
+    correoElectronico: () => 'Correo electrónico inválido',
+    documento: () => 'Solo letras, números y guion, sin espacios ni puntos',
+    min: e => `Mínimo ${e.min}`,
+    max: e => `Máximo ${e.max}`
 };
 
 /** Primer mensaje de los errores de un control, o null si no hay. */

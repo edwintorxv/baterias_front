@@ -33,6 +33,9 @@ export class CustomValidators {
     /** Teléfono: 7 a 10 dígitos, sin espacios ni signos (fijo o celular). */
     static telefono = patron('telefono', /^[0-9]{7,10}$/);
 
+    /** Número de identificación: letras, números y guion (cédulas, pasaportes, PPT). */
+    static documento = patron('documento', /^[0-9A-Za-z-]+$/);
+
     static correoElectronico = patron('correoElectronico', /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 
 }

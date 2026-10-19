@@ -13,6 +13,7 @@
     <p-button label="Descargar plantilla" icon="pi pi-download" severity="secondary" [outlined]="true"
       [loading]="descargandoPlantilla" (onClick)="descargarPlantilla()" />
     <p-button label="Cargar archivo" icon="pi pi-upload" (onClick)="displayCargaDialog = true" />
+    <p-button label="Vincular persona" icon="pi pi-user-plus" (onClick)="displayVincularDialog = true" />
   </div>
 </div>
 
@@ -116,5 +117,13 @@
   @if (displayCargaDialog) {
     <app-carga-personas-dialog [idCliente]="idCliente" (guardado)="cargaGuardada()"
       (cancel)="displayCargaDialog = false" />
+  }
+</p-dialog>
+
+<p-dialog header="Vincular persona" [(visible)]="displayVincularDialog" [modal]="true"
+  [style]="{ width: '60vw', maxWidth: '1000px' }" [breakpoints]="{ '1200px': '75vw', '960px': '90vw', '640px': '98vw' }">
+  @if (displayVincularDialog) {
+    <app-vincular-persona-dialog [idCliente]="idCliente" (saved)="personaVinculada()"
+      (cancel)="displayVincularDialog = false" />
   }
 </p-dialog>

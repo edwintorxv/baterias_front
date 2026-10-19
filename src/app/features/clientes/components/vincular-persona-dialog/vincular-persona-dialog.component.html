@@ -1,0 +1,216 @@
+<form [formGroup]="personaForm" (ngSubmit)="vincular()">
+
+  <p class="mt-0 mb-2 nota">
+    Si el documento ya existe se actualizan sus datos con los que escriba aquí; si la persona está activa en otra
+    empresa, allí se inactiva y queda en este cliente.
+  </p>
+
+  <!-- PERSONA -->
+  <h4 class="seccion">Persona</h4>
+  <div class="grid">
+    <div class="col-12 md:col-4">
+      <label for="numeroIdentificacion">Documento *</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-id-card"></i></p-inputgroup-addon>
+        <input id="numeroIdentificacion" pInputText maxlength="30" placeholder="1010123456"
+          formControlName="numeroIdentificacion" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('numeroIdentificacion')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="nombre">Nombres *</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-user"></i></p-inputgroup-addon>
+        <input id="nombre" pInputText maxlength="150" formControlName="nombre" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('nombre')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="apellido">Apellidos *</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-user"></i></p-inputgroup-addon>
+        <input id="apellido" pInputText maxlength="150" formControlName="apellido" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('apellido')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="fkSexo">Sexo *</label>
+      <p-select inputId="fkSexo" styleClass="w-full" placeholder="Sexo" appendTo="body"
+        [options]="lstSexos" optionLabel="nombre" optionValue="id" formControlName="fkSexo" />
+      <app-error-campo [control]="personaForm.get('fkSexo')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="anioNacimiento">Año de nacimiento *</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-calendar"></i></p-inputgroup-addon>
+        <input id="anioNacimiento" pInputText inputmode="numeric" maxlength="4"
+          [placeholder]="anioMinimo + ' a ' + anioMaximo" formControlName="anioNacimiento" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('anioNacimiento')" />
+    </div>
+  </div>
+
+  <!-- DATOS QUE CAMBIAN -->
+  <h4 class="seccion">Datos personales <small class="nota">(se guardan con esta vinculación)</small></h4>
+  <div class="grid">
+    <div class="col-12 md:col-4">
+      <label for="fkEstadoCivil">Estado civil</label>
+      <p-select inputId="fkEstadoCivil" styleClass="w-full" placeholder="Estado civil" appendTo="body" [showClear]="true"
+        [options]="lstEstadosCiviles" optionLabel="nombre" optionValue="id" formControlName="fkEstadoCivil" />
+    </div>
+
+    <div class="col-12 md:col-8">
+      <label for="fkNivelAcademico">Nivel académico *</label>
+      <p-select inputId="fkNivelAcademico" styleClass="w-full" placeholder="Último nivel de estudios alcanzado"
+        appendTo="body" [options]="lstNivelesAcademicos" optionLabel="nombre" optionValue="id"
+        formControlName="fkNivelAcademico" />
+      <app-error-campo [control]="personaForm.get('fkNivelAcademico')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="departamentoResidencia">Departamento de residencia</label>
+      <p-select inputId="departamentoResidencia" styleClass="w-full" placeholder="Departamento" appendTo="body"
+        [showClear]="true" [options]="lstDepartamentos" optionLabel="nombre" optionValue="id" [filter]="true"
+        filterBy="nombre" formControlName="departamentoResidencia"
+        (onChange)="onDepartamentoResidenciaChange($event.value)" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="fkCiudadResidencia">Ciudad de residencia</label>
+      <p-select inputId="fkCiudadResidencia" styleClass="w-full" appendTo="body" [showClear]="true"
+        [placeholder]="lstCiudadesResidencia.length ? 'Ciudad o municipio' : 'Primero el departamento'"
+        [options]="lstCiudadesResidencia" optionLabel="nombre" optionValue="id" [filter]="true" filterBy="nombre"
+        formControlName="fkCiudadResidencia" />
+    </div>
+
+    <div class="col-12 md:col-2">
+      <label for="fkEstratoSocioeconomico">Estrato</label>
+      <p-select inputId="fkEstratoSocioeconomico" styleClass="w-full" placeholder="Estrato" appendTo="body"
+        [showClear]="true" [options]="lstEstratos" optionLabel="nombre" optionValue="id"
+        formControlName="fkEstratoSocioeconomico" />
+    </div>
+
+    <div class="col-12 md:col-2">
+      <label for="fkTipoVivienda">Vivienda</label>
+      <p-select inputId="fkTipoVivienda" styleClass="w-full" placeholder="Tipo" appendTo="body" [showClear]="true"
+        [options]="lstTiposVivienda" optionLabel="nombre" optionValue="id" formControlName="fkTipoVivienda" />
+    </div>
+
+    <div class="col-12 md:col-8">
+      <label for="ocupacionProfesion">Ocupación o profesión</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-briefcase"></i></p-inputgroup-addon>
+        <input id="ocupacionProfesion" pInputText maxlength="200" formControlName="ocupacionProfesion" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('ocupacionProfesion')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="familiaresDependientesEconomicamente">Personas a cargo</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-users"></i></p-inputgroup-addon>
+        <input id="familiaresDependientesEconomicamente" pInputText inputmode="numeric" maxlength="2"
+          placeholder="Dependen económicamente" formControlName="familiaresDependientesEconomicamente" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('familiaresDependientesEconomicamente')" />
+    </div>
+  </div>
+
+  <!-- DATOS LABORALES -->
+  <h4 class="seccion">Datos laborales</h4>
+  <div class="grid">
+    <div class="col-12 md:col-6">
+      <label for="nombreCargo">Cargo</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-id-card"></i></p-inputgroup-addon>
+        <input id="nombreCargo" pInputText maxlength="200" placeholder="Como lo llama la empresa"
+          formControlName="nombreCargo" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('nombreCargo')" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label for="fkTipoCargo">Tipo de cargo * <small class="nota">(define si responde la forma A o la B)</small></label>
+      <p-select inputId="fkTipoCargo" styleClass="w-full" placeholder="Tipo de cargo" appendTo="body"
+        [options]="lstTiposCargo" optionLabel="nombre" optionValue="id" formControlName="fkTipoCargo" />
+      <app-error-campo [control]="personaForm.get('fkTipoCargo')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="nombreArea">Área</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-sitemap"></i></p-inputgroup-addon>
+        <input id="nombreArea" pInputText maxlength="200" formControlName="nombreArea" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('nombreArea')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="departamentoTrabajo">Departamento de trabajo</label>
+      <p-select inputId="departamentoTrabajo" styleClass="w-full" placeholder="Departamento" appendTo="body"
+        [showClear]="true" [options]="lstDepartamentos" optionLabel="nombre" optionValue="id" [filter]="true"
+        filterBy="nombre" formControlName="departamentoTrabajo"
+        (onChange)="onDepartamentoTrabajoChange($event.value)" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="fkCiudadTrabajo">Ciudad de trabajo</label>
+      <p-select inputId="fkCiudadTrabajo" styleClass="w-full" appendTo="body" [showClear]="true"
+        [placeholder]="lstCiudadesTrabajo.length ? 'Ciudad o municipio' : 'Primero el departamento'"
+        [options]="lstCiudadesTrabajo" optionLabel="nombre" optionValue="id" [filter]="true" filterBy="nombre"
+        formControlName="fkCiudadTrabajo" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="antiguedadEmpresa">Antigüedad en la empresa</label>
+      <p-inputgroup>
+        <p-inputgroup-addon><i class="pi pi-history"></i></p-inputgroup-addon>
+        <input id="antiguedadEmpresa" pInputText maxlength="100" placeholder="Años" formControlName="antiguedadEmpresa" />
+      </p-inputgroup>
+      <app-error-campo [control]="personaForm.get('antiguedadEmpresa')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="fkTiempoCargo">Tiempo en el cargo</label>
+      <p-select inputId="fkTiempoCargo" styleClass="w-full" placeholder="Tiempo en el cargo" appendTo="body"
+        [showClear]="true" [options]="lstTiemposCargo" optionLabel="nombre" optionValue="id"
+        formControlName="fkTiempoCargo" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="fkHorasLabor">Horas de trabajo diarias</label>
+      <p-select inputId="fkHorasLabor" styleClass="w-full" placeholder="Horas" appendTo="body" [showClear]="true"
+        [options]="lstHorasLabor" optionLabel="nombre" optionValue="id" formControlName="fkHorasLabor" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label for="fkTipoContrato">Tipo de contrato</label>
+      <p-select inputId="fkTipoContrato" styleClass="w-full" placeholder="Tipo de contrato" appendTo="body"
+        [showClear]="true" [options]="lstTiposContrato" optionLabel="nombre" optionValue="id"
+        formControlName="fkTipoContrato" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label for="fkTipoSalario">Tipo de salario</label>
+      <p-select inputId="fkTipoSalario" styleClass="w-full" placeholder="Tipo de salario" appendTo="body"
+        [showClear]="true" [options]="lstTiposSalario" optionLabel="nombre" optionValue="id"
+        formControlName="fkTipoSalario" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="fechaVinculacion">Fecha de vinculación <small class="nota">(vacía = hoy)</small></label>
+      <p-datepicker inputId="fechaVinculacion" styleClass="w-full" dateFormat="dd/mm/yy" [showIcon]="true"
+        [showButtonBar]="true" appendTo="body" formControlName="fechaVinculacion" />
+    </div>
+  </div>
+
+  <div class="acciones">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
+    <p-button label="Vincular persona" icon="pi pi-check" iconPos="right" type="submit" [loading]="guardando" />
+  </div>
+
+</form>

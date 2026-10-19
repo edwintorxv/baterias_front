@@ -2,7 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Catalogo, CiudadMunicipio, Departamento, Industria } from '../../shared/models/catalogo.model';
+import { Catalogo } from '../../shared/models/catalogo.model';
+import { CiudadMunicipio } from '../../shared/models/ciudad-municipio.model';
+import { Departamento } from '../../shared/models/departamento.model';
+import { Industria } from '../../shared/models/industria.model';
 import { ApiResponse } from '../models/api-response.model';
 
 /**
@@ -36,10 +39,57 @@ export class CatalogoService {
         return this.listar<Industria>('industrias');
     }
 
-    private listar<T>(ruta: string): Observable<T[]> {
+    // Catálogos de la ficha de datos generales de la batería: en su orden (por id), no alfabético
+    // ("Primaria incompleta, Primaria completa…", "Uno, Dos, Tres…", horas 1 a 12).
+
+    sexos(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('sexos', 'id');
+    }
+
+    estadosCiviles(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('estados-civiles', 'id');
+    }
+
+    nivelesAcademicos(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('niveles-academicos', 'id');
+    }
+
+    estratos(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('estratos-socioeconomicos', 'id');
+    }
+
+    tiposVivienda(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('tipos-viviendas', 'id');
+    }
+
+    /** De él sale el grupo ocupacional: jefatura y profesional → forma A; auxiliar y operario → forma B. */
+    tiposCargo(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('tipo-cargo', 'id');
+    }
+
+    tiemposCargo(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('tiempo-cargo', 'id');
+    }
+
+    tiposContrato(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('tipo-contrato', 'id');
+    }
+
+    horasLabor(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('horas-labor', 'id');
+    }
+
+    tiposSalario(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('tipo-salario', 'id');
+    }
+
+    private listar<T extends Catalogo>(ruta: string, orden: 'nombre' | 'id' = 'nombre'): Observable<T[]> {
         if (!this.cache.has(ruta)) {
+            const comparar = orden === 'id'
+                ? (a: T, b: T) => a.id - b.id
+                : (a: T, b: T) => a.nombre.localeCompare(b.nombre, 'es');
             const peticion = this.http.get<ApiResponse<T[]>>(`${environment.apiUrl}/${ruta}`).pipe(
-                map(respuesta => [...respuesta.data].sort((a: any, b: any) => a.nombre.localeCompare(b.nombre, 'es'))),
+                map(respuesta => [...respuesta.data].sort(comparar)),
                 shareReplay({ bufferSize: 1, refCount: false })
             );
             this.cache.set(ruta, peticion);
