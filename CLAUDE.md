@@ -2,6 +2,8 @@
 
 > Forma de trabajo: **paso a paso** (diseño → código → el usuario revisa → commit cuando lo pide).
 > Backend y reglas de negocio: `/Users/edwingacha/proyectos/backend/baterias_backend/CLAUDE.md` (sección 7 = estado del front).
+> Repo `https://github.com/edwintorxv/baterias_front.git`, rama `main`. Última actualización: 2026-10-19 (todo en `origin/main`).
+> **Para retomar**: siguiente paso a elegir por el usuario: crear/editar usuarios y contraseña, o administración de evaluadores. El informe individual está en pausa (ver Estado).
 
 ## Puesta en marcha
 - Angular 19 + PrimeNG 19 (tema Aura, `@primeuix/themes`), primeflex, primeicons. **pnpm** (`pnpm install`, `pnpm run dev` → 4200). Scripts de build aprobados en `pnpm-workspace.yaml` (`allowBuilds`).
