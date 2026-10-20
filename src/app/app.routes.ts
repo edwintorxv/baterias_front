@@ -30,6 +30,13 @@ export const routes: Routes = [
       },
       enConstruccion('evaluados', 'Evaluados'),
       enConstruccion('aplicaciones', 'Aplicaciones'),
+      {
+        path: 'aplicaciones/:id',
+        loadComponent: () => import('./pages/aplicaciones/aplicacion-digitar/aplicacion-digitar.component')
+          .then(m => m.AplicacionDigitarComponent),
+        canDeactivate: [(pagina: { hayCambios: boolean }) =>
+          !pagina.hayCambios || confirm('Hay respuestas sin guardar. ¿Salir de todas formas?')]
+      },
 
       {
         path: 'administracion/usuarios',

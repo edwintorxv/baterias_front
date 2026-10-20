@@ -14,5 +14,6 @@ export class PersonaAccionesComponent {
   @Output() editar = new EventEmitter<PersonaCliente>();
   @Output() cambiarEstado = new EventEmitter<PersonaCliente>();
   @Output() informe = new EventEmitter<PersonaCliente>();
+  @Output() aplicaciones = new EventEmitter<PersonaCliente>();
 
 }

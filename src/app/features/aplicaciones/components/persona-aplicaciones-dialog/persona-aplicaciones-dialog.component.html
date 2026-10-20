@@ -1,0 +1,66 @@
+<p class="mt-0 mb-3 secundario">{{ persona.apellido }} {{ persona.nombre }} · {{ persona.numeroIdentificacion }}</p>
+
+@if (cargando) {
+  <p class="secundario"><i class="pi pi-spin pi-spinner mr-2"></i>Cargando…</p>
+} @else {
+  @if (lstAplicaciones.length) {
+    <h4 class="seccion">Aplicaciones</h4>
+    <ul class="aplicaciones">
+      @for (aplicacion of lstAplicaciones; track aplicacion.id) {
+        <li>
+          <span>
+            <strong>{{ aplicacion.fechaAplicacion | date: 'dd/MM/yyyy' }}</strong>
+            <small class="secundario"> · Aplicación {{ aplicacion.id }}</small>
+          </span>
+          <p-button label="Abrir" icon="pi pi-arrow-right" iconPos="right" size="small" [text]="true" (onClick)="abrir(aplicacion)" />
+        </li>
+      }
+    </ul>
+  } @else if (!persona.activo) {
+    <p class="secundario">Sin aplicaciones. La relación está inactiva: actívela para crear una.</p>
+  }
+
+  @if (!creando) {
+    <div class="acciones">
+      <p-button label="Nueva aplicación" icon="pi pi-plus" [outlined]="true" [disabled]="!persona.activo"
+        (onClick)="creando = true" />
+    </div>
+  } @else {
+    <h4 class="seccion">Nueva aplicación</h4>
+    <form [formGroup]="nuevaForm" (ngSubmit)="crear()">
+      <div class="grid">
+        <div class="col-12 md:col-5">
+          <label for="fecha">Fecha de aplicación *</label>
+          <p-datepicker inputId="fecha" styleClass="w-full" dateFormat="dd/mm/yy" [showIcon]="true" [maxDate]="hoy"
+            appendTo="body" formControlName="fecha" />
+          <app-error-campo [control]="nuevaForm.get('fecha')" />
+        </div>
+        <div class="col-12 md:col-7">
+          <label for="fkEvaluador">Evaluador <small class="nota">(opcional; también se asigna después)</small></label>
+          <p-select inputId="fkEvaluador" styleClass="w-full" appendTo="body" placeholder="Sin asignar" [showClear]="true"
+            [options]="lstFirmantes" optionLabel="nombre" optionValue="id" formControlName="fkEvaluador"
+            emptyMessage="Su usuario no tiene un evaluador activo" />
+        </div>
+      </div>
+
+      <p class="mb-2 mt-3 nota">Preguntas filtro del cuestionario (definen si se responden algunas preguntas):</p>
+      <div class="filtro">
+        <span>{{ preguntaClientes }} *</span>
+        <p-selectbutton [options]="siNo" optionLabel="label" optionValue="value" formControlName="atiendeClientes" />
+      </div>
+      <app-error-campo [control]="nuevaForm.get('atiendeClientes')" />
+      <div class="filtro">
+        <span>{{ preguntaJefe }} * <small class="nota">(solo cuenta en la forma A)</small></span>
+        <p-selectbutton [options]="siNo" optionLabel="label" optionValue="value" formControlName="esJefe" />
+      </div>
+      <app-error-campo [control]="nuevaForm.get('esJefe')" />
+
+      <div class="acciones">
+        @if (lstAplicaciones.length) {
+          <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="creando = false" />
+        }
+        <p-button label="Crear y digitar" icon="pi pi-arrow-right" iconPos="right" type="submit" [loading]="guardando" />
+      </div>
+    </form>
+  }
+}

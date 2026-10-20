@@ -1,0 +1,166 @@
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+
+    .titulo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        h1 {
+            margin: 0;
+        }
+    }
+}
+
+.secundario {
+    color: var(--p-text-muted-color);
+}
+
+.ayuda {
+    font-size: 0.85rem;
+
+    kbd {
+        padding: 0 0.3rem;
+        border: 1px solid var(--p-content-border-color);
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 0.8rem;
+    }
+}
+
+.avance {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--p-text-muted-color);
+
+    &.completo {
+        color: var(--p-green-500);
+        font-weight: 600;
+    }
+}
+
+.sin-guardar {
+    margin-left: 0.35rem;
+    font-size: 0.5rem;
+    color: var(--p-orange-500);
+}
+
+/* Fija arriba mientras se recorre la lista. */
+.barra-cuestionario {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    background: var(--p-content-background);
+    border-bottom: 1px solid var(--p-content-border-color);
+
+    .nombre {
+        flex: 1;
+    }
+
+    :host ::ng-deep .progreso {
+        height: 0.4rem;
+        margin-top: 0.4rem;
+    }
+}
+
+.filtro {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.75rem 0 0.25rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    background: var(--p-highlight-background);
+}
+
+.pregunta {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.5rem;
+    border-bottom: 1px solid var(--p-content-border-color);
+    border-left: 3px solid transparent;
+    outline: none;
+
+    &.actual {
+        background: var(--p-highlight-background);
+        border-left-color: var(--p-primary-color);
+    }
+
+    &.sin-responder .numero {
+        color: var(--p-orange-500);
+    }
+
+    &.no-aplica {
+        opacity: 0.5;
+    }
+
+    .numero {
+        font-weight: 600;
+        text-align: right;
+    }
+}
+
+.opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: flex-end;
+}
+
+.opcion {
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 6px;
+    padding: 0.3rem 0.55rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+
+    small {
+        color: var(--p-text-muted-color);
+        margin-right: 0.2rem;
+    }
+
+    &:hover {
+        border-color: var(--p-primary-color);
+    }
+
+    &.elegida {
+        background: var(--p-primary-color);
+        border-color: var(--p-primary-color);
+        color: var(--p-primary-contrast-color);
+
+        small {
+            color: inherit;
+        }
+    }
+}
+
+.pie {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+@media (max-width: 960px) {
+    .pregunta {
+        grid-template-columns: 2.5rem 1fr;
+
+        .opciones {
+            grid-column: 1 / -1;
+            justify-content: flex-start;
+        }
+    }
+}

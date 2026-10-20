@@ -1,0 +1,92 @@
+<div class="encabezado">
+  <div class="titulo">
+    @if (idCliente) {
+      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" [routerLink]="['/clientes', idCliente, 'personas']"
+        ariaLabel="Volver a personas" />
+    }
+    <div>
+      <h1>Aplicación {{ idAplicacion }}</h1>
+      @if (persona) {
+        <span class="secundario">{{ persona }} · {{ documento }} · {{ empresa }}
+          @if (aplicacion?.fechaAplicacion) { · {{ aplicacion?.fechaAplicacion | date: 'dd/MM/yyyy' }} }
+        </span>
+      }
+    </div>
+  </div>
+  @if (formulario) {
+    <p-tag [value]="estados[formulario.estado].etiqueta" [severity]="estados[formulario.estado].severidad" />
+  }
+</div>
+
+@if (cargando && !formulario) {
+  <p class="secundario"><i class="pi pi-spin pi-spinner mr-2"></i>Cargando…</p>
+}
+
+@if (formulario) {
+  <p class="ayuda secundario">
+    <i class="pi pi-info-circle mr-1"></i>
+    Teclado: <kbd>1</kbd>–<kbd>5</kbd> responde y pasa a la siguiente · <kbd>↑</kbd> <kbd>↓</kbd> moverse ·
+    <kbd>0</kbd> borrar. Guarde cada cuestionario antes de salir.
+  </p>
+
+  <p-tabs [value]="pestana ?? 0" (valueChange)="cambiarPestana($event)">
+    <p-tablist>
+      @for (c of formulario.cuestionarios; track c.id) {
+        <p-tab [value]="c.id">
+          {{ tituloForma[c.forma] ?? c.forma }}
+          <span class="avance" [class.completo]="respondidas(c) === c.aplicables">{{ respondidas(c) }}/{{ c.aplicables }}</span>
+          @if (conCambios.has(c.id)) { <i class="pi pi-circle-fill sin-guardar" title="Cambios sin guardar"></i> }
+        </p-tab>
+      }
+    </p-tablist>
+  </p-tabs>
+
+  @if (cuestionario; as c) {
+    <div class="barra-cuestionario">
+      <div class="nombre">
+        <strong>{{ c.nombre }}</strong>
+        <p-progressbar [value]="c.aplicables ? (respondidas(c) * 100 / c.aplicables) : 0" [showValue]="false"
+          styleClass="progreso" />
+      </div>
+      <p-button label="Guardar" icon="pi pi-check" iconPos="right" [loading]="guardando"
+        [disabled]="!conCambios.has(c.id)" (onClick)="guardar()" />
+    </div>
+
+    <div class="preguntas">
+      @for (fila of filas; track fila.pregunta.id; let i = $index) {
+        @if (fila.filtroAntes; as condicion) {
+          <div class="filtro">
+            <span><i class="pi pi-filter mr-1"></i><strong>Pregunta filtro:</strong> {{ preguntaFiltro[condicion].texto }}</span>
+            <p-selectbutton [options]="siNo" optionLabel="label" optionValue="value" [allowEmpty]="false"
+              [ngModel]="valorFiltro(condicion)" (ngModelChange)="cambiarFiltro(condicion, $event)"
+              [disabled]="hayCambios || guardandoFiltro" />
+            @if (hayCambios) { <small class="secundario">Guarde los cambios para cambiarla.</small> }
+          </div>
+        }
+        <div #filaDom class="pregunta" tabindex="0" [class.actual]="i === actual" [class.no-aplica]="!fila.pregunta.aplica"
+          [class.sin-responder]="fila.pregunta.aplica && seleccion.get(fila.pregunta.id) == null"
+          (keydown)="teclado($event, i)" (focus)="actual = i">
+          <span class="numero">{{ fila.pregunta.numero }}</span>
+          <span class="texto">{{ fila.pregunta.descripcion }}</span>
+          <div class="opciones">
+            @if (fila.pregunta.aplica) {
+              @for (opcion of fila.pregunta.opciones; track opcion.id; let k = $index) {
+                <button type="button" class="opcion" tabindex="-1"
+                  [class.elegida]="seleccion.get(fila.pregunta.id) === opcion.id" (click)="actual = i; elegir(i, opcion.id)">
+                  <small>{{ k + 1 }}</small> {{ opcion.nombre }}
+                </button>
+              }
+            } @else {
+              <small class="secundario">No aplica (pregunta filtro en "No")</small>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="pie">
+      <p-button label="Guardar" icon="pi pi-check" iconPos="right" [loading]="guardando"
+        [disabled]="!conCambios.has(c.id)" (onClick)="guardar()" />
+    </div>
+  }
+}

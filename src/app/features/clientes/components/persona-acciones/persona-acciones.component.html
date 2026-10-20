@@ -1,7 +1,15 @@
 <p class="mt-0 mb-3 secundario">{{ persona.apellido }} {{ persona.nombre }} · {{ persona.numeroIdentificacion }}</p>
 
 <div class="grid">
-  <div class="col-12 md:col-4">
+  <div class="col-12 md:col-6">
+    <button type="button" class="action-card" (click)="aplicaciones.emit(persona)">
+      <i class="pi pi-file-edit action-icon text-purple-500"></i>
+      <h3>Aplicaciones</h3>
+      <p>{{ persona.aplicaciones ? 'Digitar o corregir respuestas; crear una nueva.' : 'Crear la aplicación y digitar los cuestionarios.' }}</p>
+    </button>
+  </div>
+
+  <div class="col-12 md:col-6">
     <button type="button" class="action-card" [disabled]="!persona.activo" (click)="editar.emit(persona)">
       <i class="pi pi-pencil action-icon text-orange-500"></i>
       <h3>Editar datos</h3>
@@ -10,7 +18,7 @@
     </button>
   </div>
 
-  <div class="col-12 md:col-4">
+  <div class="col-12 md:col-6">
     <button type="button" class="action-card" (click)="cambiarEstado.emit(persona)">
       @if (persona.activo) {
         <i class="pi pi-user-minus action-icon text-red-500"></i>
@@ -24,7 +32,7 @@
     </button>
   </div>
 
-  <div class="col-12 md:col-4">
+  <div class="col-12 md:col-6">
     <button type="button" class="action-card" [disabled]="!persona.aplicaciones" (click)="informe.emit(persona)">
       <i class="pi pi-file-pdf action-icon text-blue-500"></i>
       <h3>Informe individual</h3>

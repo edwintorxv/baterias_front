@@ -16,6 +16,7 @@ import { forkJoin } from 'rxjs';
 import { guardarArchivo } from '../../../core/utils/archivo.util';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
 import { CargaPersonasDialogComponent } from '../../../features/clientes/components/carga-personas-dialog/carga-personas-dialog.component';
+import { PersonaAplicacionesDialogComponent } from '../../../features/aplicaciones/components/persona-aplicaciones-dialog/persona-aplicaciones-dialog.component';
 import { InformeIndividualDialogComponent } from '../../../features/clientes/components/informe-individual-dialog/informe-individual-dialog.component';
 import { PersonaAccionesComponent } from '../../../features/clientes/components/persona-acciones/persona-acciones.component';
 import { PersonaEstadoDialogComponent } from '../../../features/clientes/components/persona-estado-dialog/persona-estado-dialog.component';
@@ -65,7 +66,8 @@ const normalizar = (texto: string | null | undefined) =>
     VincularPersonaDialogComponent,
     PersonaAccionesComponent,
     PersonaEstadoDialogComponent,
-    InformeIndividualDialogComponent
+    InformeIndividualDialogComponent,
+    PersonaAplicacionesDialogComponent
   ],
   templateUrl: './cliente-personas.component.html',
   styleUrl: './cliente-personas.component.scss'
@@ -99,6 +101,7 @@ export class ClientePersonasComponent implements OnInit {
   displayEditarDialog = false;
   displayEstadoDialog = false;
   displayInformeDialog = false;
+  displayAplicacionesDialog = false;
   selectedPersona?: PersonaFila;
   descargandoPlantilla = false;
 
@@ -199,6 +202,11 @@ export class ClientePersonasComponent implements OnInit {
   openEstadoDialog(): void {
     this.displayAccionesDialog = false;
     this.displayEstadoDialog = true;
+  }
+
+  openAplicacionesDialog(): void {
+    this.displayAccionesDialog = false;
+    this.displayAplicacionesDialog = true;
   }
 
   openInformeDialog(): void {
