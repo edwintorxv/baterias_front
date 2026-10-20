@@ -1,0 +1,110 @@
+<form [formGroup]="usuarioForm" (ngSubmit)="guardar()">
+
+  <h4 class="seccion">Acceso</h4>
+  <div class="grid">
+    <div class="col-12 md:col-5">
+      <label for="usuario">Usuario * <small class="nota">(para entrar)</small></label>
+      <input id="usuario" pInputText class="w-full" maxlength="100" placeholder="rrhh.cardins" autocomplete="off"
+        formControlName="usuario" />
+      <app-error-campo [control]="usuarioForm.get('usuario')" />
+    </div>
+
+    <div class="col-12 md:col-7">
+      <label for="nombre">Nombre *</label>
+      <input id="nombre" pInputText class="w-full" maxlength="200" formControlName="nombre" />
+      <app-error-campo [control]="usuarioForm.get('nombre')" />
+    </div>
+  </div>
+
+  <h4 class="seccion">Rol y vínculo</h4>
+  <div class="grid">
+    <div class="col-12 md:col-5">
+      <label for="rol">Rol *
+        @if (esYo) { <small class="nota">(no se cambia el propio)</small> }
+      </label>
+      <p-select inputId="rol" styleClass="w-full" placeholder="Seleccione el rol" appendTo="body"
+        [options]="lstRoles" optionLabel="label" optionValue="value"
+        formControlName="rol" (onChange)="onRolChange($event.value)" />
+      <app-error-campo [control]="usuarioForm.get('rol')" />
+    </div>
+
+    <div class="col-12 md:col-7">
+      @switch (rol) {
+        @case ('PSICOLOGO') {
+          <label for="idEvaluador">Evaluador * <small class="nota">(activo y sin otro usuario)</small></label>
+          <p-select inputId="idEvaluador" styleClass="w-full" placeholder="Seleccione el evaluador" appendTo="body"
+            [options]="lstEvaluadores" optionLabel="nombre" optionValue="id" [filter]="true" filterBy="nombre,numeroIdentificacion"
+            emptyMessage="No hay evaluadores activos sin usuario" formControlName="idEvaluador" />
+          <app-error-campo [control]="usuarioForm.get('idEvaluador')" />
+        }
+        @case ('CLIENTE') {
+          <label for="idCliente">Empresa * <small class="nota">(solo ve el informe de esta empresa)</small></label>
+          <p-select inputId="idCliente" styleClass="w-full" placeholder="Seleccione la empresa" appendTo="body"
+            [options]="clientes" optionLabel="nombre" optionValue="id" [filter]="true" filterBy="nombre,nit"
+            formControlName="idCliente" />
+          <app-error-campo [control]="usuarioForm.get('idCliente')" />
+        }
+        @case ('EVALUADO') {
+          <label>Persona evaluada</label>
+          <p class="m-0 secundario">Vinculada a una persona (el administrador no ve sus datos; no se cambia aquí).</p>
+        }
+        @case ('ADMIN') {
+          <label>Vínculo</label>
+          <p class="m-0 secundario">El administrador no tiene vínculo.</p>
+        }
+      }
+    </div>
+  </div>
+  @if (pierdeClientes) {
+    <p-message severity="warn" styleClass="mt-2"
+      [text]="'Deja de ser psicólogo: perderá sus ' + clientesAsignados + ' cliente(s) asignado(s).'" />
+  }
+
+  @if (!isEditMode) {
+    <h4 class="seccion">Contraseña</h4>
+    <div class="grid">
+      <div class="col-12 md:col-5">
+        <label for="contrasena">Contraseña * <small class="nota">(mínimo {{ contrasenaMinimo }})</small></label>
+        <p-password inputId="contrasena" styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true"
+          [feedback]="false" autocomplete="new-password" formControlName="contrasena" />
+        <app-error-campo [control]="usuarioForm.get('contrasena')" />
+      </div>
+      <div class="col-12 md:col-5">
+        <label for="confirmacion">Confirmar contraseña *</label>
+        <p-password inputId="confirmacion" styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true"
+          [feedback]="false" autocomplete="new-password" formControlName="confirmacion" />
+        <app-error-campo [control]="usuarioForm.get('confirmacion')" />
+      </div>
+      <div class="col-12 md:col-2 flex align-items-start">
+        <p-button label="Generar" icon="pi pi-refresh" severity="secondary" [outlined]="true" styleClass="w-full boton-alineado"
+          (onClick)="generar()" />
+      </div>
+    </div>
+    @if (contrasenaGenerada && usuarioForm.get('contrasena')?.value === contrasenaGenerada) {
+      <div class="generada">
+        <span>Contraseña generada: <code>{{ contrasenaGenerada }}</code></span>
+        <p-button icon="pi pi-copy" [text]="true" size="small" ariaLabel="Copiar" (onClick)="copiar(contrasenaGenerada)" />
+        <small class="secundario">Entréguela al usuario por un medio seguro.</small>
+      </div>
+    }
+  }
+
+  @if (isEditMode) {
+    <h4 class="seccion">Estado</h4>
+    <div class="estado">
+      <p-toggleswitch inputId="activo" formControlName="activo" />
+      <label for="activo" class="m-0">{{ usuarioForm.get('activo')?.value ? 'Activo' : 'Inactivo' }}</label>
+      @if (esYo) { <small class="nota">(no se inactiva a sí mismo)</small> }
+    </div>
+    @if (inactivando) {
+      <p-message severity="warn" styleClass="mt-2" text="Pierde el acceso de inmediato, aunque tenga una sesión abierta." />
+    }
+  }
+
+  <div class="acciones">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
+    <p-button [label]="isEditMode ? 'Guardar cambios' : 'Crear usuario'" icon="pi pi-check" iconPos="right"
+      type="submit" [loading]="guardando" />
+  </div>
+
+</form>

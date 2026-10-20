@@ -17,8 +17,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
 import { ClienteService } from '../../../features/clientes/services/cliente.service';
 import { EvaluadorService } from '../../../features/evaluadores/services/evaluador.service';
+import { Cliente } from '../../../features/clientes/models/cliente.model';
+import { Evaluador } from '../../../features/evaluadores/models/evaluador.model';
 import { ClientesAsignadosDialogComponent } from '../../../features/usuarios/components/clientes-asignados-dialog/clientes-asignados-dialog.component';
 import { UsuarioAccionesComponent } from '../../../features/usuarios/components/usuario-acciones/usuario-acciones.component';
+import { UsuarioContrasenaDialogComponent } from '../../../features/usuarios/components/usuario-contrasena-dialog/usuario-contrasena-dialog.component';
+import { UsuarioFormDialogComponent } from '../../../features/usuarios/components/usuario-form-dialog/usuario-form-dialog.component';
 import { SEVERIDAD_ROL, Usuario } from '../../../features/usuarios/models/usuario.model';
 import { UsuarioService } from '../../../features/usuarios/services/usuario.service';
 
@@ -35,8 +39,8 @@ const normalizar = (texto: string | null | undefined) =>
   (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 /**
- * Usuarios del sistema (solo ADMIN): listado y clientes asignados a cada psicólogo. Crear, editar y cambiar
- * la contraseña vienen en el paso siguiente.
+ * Usuarios del sistema (solo ADMIN): listado, crear y editar (rol, vínculo y estado), cambiar la contraseña
+ * y clientes asignados a cada psicólogo.
  */
 @Component({
   selector: 'app-usuario-list',
@@ -55,7 +59,9 @@ const normalizar = (texto: string | null | undefined) =>
     TableModule,
     TagModule,
     ClientesAsignadosDialogComponent,
-    UsuarioAccionesComponent
+    UsuarioAccionesComponent,
+    UsuarioContrasenaDialogComponent,
+    UsuarioFormDialogComponent
   ],
   templateUrl: './usuario-list.component.html',
   styleUrl: './usuario-list.component.scss'
@@ -68,13 +74,19 @@ export class UsuarioListComponent {
   filtroRol: Rol | null = null;
 
   private usuarioOriginal: UsuarioFila[] = [];
+  /** Para el formulario: evaluadores sin usuario y empresas a vincular. */
+  lstEvaluadores: Evaluador[] = [];
+  lstClientes: Cliente[] = [];
   lstUsuarios: UsuarioFila[] = [];
   cargando = false;
 
   esAdmin: Signal<boolean>;
+  idUsuarioSesion: Signal<number | null>;
 
   displayAccionesDialog = false;
   displayClientesDialog = false;
+  displayFormDialog = false;
+  displayContrasenaDialog = false;
   selectedUsuario?: UsuarioFila;
 
   constructor(
@@ -85,6 +97,7 @@ export class UsuarioListComponent {
     authService: AuthService
   ) {
     this.esAdmin = computed(() => authService.usuario()?.rol === 'ADMIN');
+    this.idUsuarioSesion = computed(() => authService.usuario()?.id ?? null);
     this.searchControl.valueChanges.subscribe(() => this.filtrar());
     // Se recarga al cambiar de usuario de prueba: solo el administrador puede ver esta pantalla.
     effect(() => {
@@ -109,6 +122,8 @@ export class UsuarioListComponent {
       clientes: this.clienteService.listar()
     }).subscribe({
       next: ({ usuarios, evaluadores, clientes }) => {
+        this.lstEvaluadores = evaluadores;
+        this.lstClientes = [...clientes].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
         const evaluador = new Map(evaluadores.map(e => [e.id, e.nombre]));
         const cliente = new Map(clientes.map(c => [c.id, c.nombre]));
         const psicologos = usuarios.filter(u => u.rol === 'PSICOLOGO');
@@ -143,6 +158,11 @@ export class UsuarioListComponent {
       && (!termino || [u.usuario, u.nombre, u.vinculo].some(campo => normalizar(campo).includes(termino))));
   }
 
+  /** Todos (sin filtros): el formulario los usa para saber qué evaluadores ya tienen usuario. */
+  get lstUsuariosTodos(): UsuarioFila[] {
+    return this.usuarioOriginal;
+  }
+
   limpiar(): void {
     this.filtroRol = null;
     this.searchControl.setValue('');
@@ -156,6 +176,26 @@ export class UsuarioListComponent {
   openClientesDialog(): void {
     this.displayAccionesDialog = false;
     this.displayClientesDialog = true;
+  }
+
+  openCrearDialog(): void {
+    this.selectedUsuario = undefined;
+    this.displayFormDialog = true;
+  }
+
+  openEditarDialog(): void {
+    this.displayAccionesDialog = false;
+    this.displayFormDialog = true;
+  }
+
+  openContrasenaDialog(): void {
+    this.displayAccionesDialog = false;
+    this.displayContrasenaDialog = true;
+  }
+
+  usuarioGuardado(): void {
+    this.displayFormDialog = false;
+    this.cargar();
   }
 
   clientesGuardados(): void {

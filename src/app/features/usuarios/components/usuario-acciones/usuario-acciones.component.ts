@@ -12,6 +12,8 @@ export class UsuarioAccionesComponent {
 
   @Input({ required: true }) usuario!: Usuario;
   @Output() clientes = new EventEmitter<Usuario>();
+  @Output() editar = new EventEmitter<Usuario>();
+  @Output() contrasena = new EventEmitter<Usuario>();
 
   get esPsicologo(): boolean {
     return this.usuario.rol === 'PSICOLOGO';

@@ -1,0 +1,40 @@
+<p class="mt-0 mb-3 secundario">{{ usuario.nombre }} · {{ usuario.usuario }}</p>
+
+@if (guardada) {
+  <p-message severity="success" text="Contraseña cambiada. La anterior ya no sirve." />
+  <div class="generada mt-3">
+    <span>Nueva contraseña: <code>{{ guardada }}</code></span>
+    <p-button icon="pi pi-copy" [text]="true" size="small" ariaLabel="Copiar" (onClick)="copiar()" />
+  </div>
+  <small class="secundario">Se muestra solo esta vez: entréguela al usuario por un medio seguro.</small>
+
+  <div class="acciones">
+    <p-button label="Listo" icon="pi pi-check" iconPos="right" (onClick)="done.emit()" />
+  </div>
+} @else {
+  <form [formGroup]="contrasenaForm" (ngSubmit)="guardar()">
+    <div class="grid">
+      <div class="col-12 md:col-5">
+        <label for="contrasena">Contraseña nueva * <small class="nota">(mínimo {{ contrasenaMinimo }})</small></label>
+        <p-password inputId="contrasena" styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true"
+          [feedback]="false" autocomplete="new-password" formControlName="contrasena" />
+        <app-error-campo [control]="contrasenaForm.get('contrasena')" />
+      </div>
+      <div class="col-12 md:col-5">
+        <label for="confirmacion">Confirmar *</label>
+        <p-password inputId="confirmacion" styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true"
+          [feedback]="false" autocomplete="new-password" formControlName="confirmacion" />
+        <app-error-campo [control]="contrasenaForm.get('confirmacion')" />
+      </div>
+      <div class="col-12 md:col-2 flex align-items-start">
+        <p-button label="Generar" icon="pi pi-refresh" severity="secondary" [outlined]="true" styleClass="w-full boton-alineado"
+          (onClick)="generar()" />
+      </div>
+    </div>
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
+      <p-button label="Cambiar contraseña" icon="pi pi-key" iconPos="right" type="submit" [loading]="guardando" />
+    </div>
+  </form>
+}

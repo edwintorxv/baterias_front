@@ -38,4 +38,18 @@ export class CustomValidators {
 
     static correoElectronico = patron('correoElectronico', /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 
+    /** Nombre de usuario para entrar: minúsculas, números y . _ - sin espacios (rrhh.cardins). */
+    static usuario = patron('usuario', /^[a-z0-9._-]+$/);
+
+    /** Igual al campo hermano indicado (confirmar contraseña). Vacío pasa: para eso está required. */
+    static igualA(campo: string): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const otro = control.parent?.get(campo);
+            if (!otro || !control.value) {
+                return null;
+            }
+            return control.value === otro.value ? null : { igualA: true };
+        };
+    }
+
 }

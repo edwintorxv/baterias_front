@@ -1,4 +1,9 @@
-<h1>Usuarios</h1>
+<div class="encabezado">
+  <h1>Usuarios</h1>
+  @if (esAdmin()) {
+    <p-button label="Nuevo usuario" icon="pi pi-user-plus" (onClick)="openCrearDialog()" />
+  }
+</div>
 
 @if (!esAdmin()) {
   <p-message severity="warn" styleClass="mb-3" text="Solo el administrador gestiona los usuarios." />
@@ -57,7 +62,25 @@
 <p-dialog header="Acciones del usuario" [(visible)]="displayAccionesDialog" [modal]="true"
   [style]="{ width: '50rem' }" [breakpoints]="{ '768px': '95vw' }">
   @if (displayAccionesDialog && selectedUsuario) {
-    <app-usuario-acciones [usuario]="selectedUsuario" (clientes)="openClientesDialog()" />
+    <app-usuario-acciones [usuario]="selectedUsuario" (clientes)="openClientesDialog()" (editar)="openEditarDialog()"
+      (contrasena)="openContrasenaDialog()" />
+  }
+</p-dialog>
+
+<p-dialog [header]="selectedUsuario ? 'Editar usuario' : 'Nuevo usuario'" [(visible)]="displayFormDialog" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '960px': '90vw', '640px': '98vw' }">
+  @if (displayFormDialog) {
+    <app-usuario-form-dialog [usuario]="selectedUsuario" [usuarios]="lstUsuariosTodos" [evaluadores]="lstEvaluadores"
+      [clientes]="lstClientes" [idUsuarioSesion]="idUsuarioSesion()" [clientesAsignados]="selectedUsuario?.clientesAsignados ?? null"
+      (saved)="usuarioGuardado()" (cancel)="displayFormDialog = false" />
+  }
+</p-dialog>
+
+<p-dialog header="Cambiar contraseña" [(visible)]="displayContrasenaDialog" [modal]="true"
+  [style]="{ width: '44rem' }" [breakpoints]="{ '768px': '95vw' }">
+  @if (displayContrasenaDialog && selectedUsuario) {
+    <app-usuario-contrasena-dialog [usuario]="selectedUsuario" (done)="displayContrasenaDialog = false"
+      (cancel)="displayContrasenaDialog = false" />
   }
 </p-dialog>
 

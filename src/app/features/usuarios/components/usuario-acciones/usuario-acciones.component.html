@@ -10,18 +10,18 @@
   </div>
 
   <div class="col-12 md:col-4">
-    <button type="button" class="action-card" disabled>
+    <button type="button" class="action-card" (click)="editar.emit(usuario)">
       <i class="pi pi-pencil action-icon text-orange-500"></i>
       <h3>Editar datos</h3>
-      <p>Nombre, rol, vínculo y estado. Próximamente.</p>
+      <p>Usuario, nombre, rol, vínculo y estado.</p>
     </button>
   </div>
 
   <div class="col-12 md:col-4">
-    <button type="button" class="action-card" disabled>
+    <button type="button" class="action-card" (click)="contrasena.emit(usuario)">
       <i class="pi pi-key action-icon text-green-500"></i>
       <h3>Cambiar contraseña</h3>
-      <p>Asignar una contraseña nueva. Próximamente.</p>
+      <p>Asignar una contraseña nueva (la anterior deja de servir).</p>
     </button>
   </div>
 </div>

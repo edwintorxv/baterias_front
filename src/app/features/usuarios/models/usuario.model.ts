@@ -21,3 +21,22 @@ export const SEVERIDAD_ROL: Record<Rol, 'contrast' | 'info' | 'success' | 'secon
     CLIENTE: 'success',
     EVALUADO: 'secondary'
 };
+
+/** PUT /usuarios/{id}: sin contraseña (va por PUT /usuarios/{id}/contrasena). Un solo vínculo según el rol. */
+export interface UsuarioRequest {
+    usuario: string;
+    nombre: string;
+    rol: Rol;
+    idEvaluador: number | null;
+    idCliente: number | null;
+    idEvaluado: number | null;
+    activo: boolean | null;
+}
+
+/** POST /usuarios */
+export interface UsuarioCrearRequest extends UsuarioRequest {
+    contrasena: string;
+}
+
+/** Roles que se pueden crear desde la pantalla: EVALUADO queda para cuando se responda en línea. */
+export const ROLES_CREABLES: Rol[] = ['ADMIN', 'PSICOLOGO', 'CLIENTE'];
