@@ -90,7 +90,7 @@
 
 .pregunta {
     display: grid;
-    grid-template-columns: 2.5rem 1fr auto;
+    grid-template-columns: 1.25rem 1fr auto;
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0.5rem;
@@ -103,7 +103,7 @@
         border-left-color: var(--p-primary-color);
     }
 
-    &.sin-responder .numero {
+    &.sin-responder .marca {
         color: var(--p-orange-500);
     }
 
@@ -111,9 +111,14 @@
         opacity: 0.5;
     }
 
-    .numero {
-        font-weight: 600;
-        text-align: right;
+    /* Respondida o no; sin número de pregunta en pantalla (decisión del usuario, para evitar confusiones). */
+    .marca {
+        font-size: 0.9rem;
+        color: var(--p-green-500);
+    }
+
+    &.no-aplica .marca {
+        visibility: hidden;
     }
 }
 
@@ -162,7 +167,7 @@
 
 @media (max-width: 960px) {
     .pregunta {
-        grid-template-columns: 2.5rem 1fr;
+        grid-template-columns: 1.25rem 1fr;
 
         .opciones {
             grid-column: 1 / -1;
@@ -170,3 +175,4 @@
         }
     }
 }
+

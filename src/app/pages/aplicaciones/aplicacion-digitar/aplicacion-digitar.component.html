@@ -82,7 +82,8 @@
         <div #filaDom class="pregunta" tabindex="0" [class.actual]="i === actual" [class.no-aplica]="!fila.pregunta.aplica"
           [class.sin-responder]="fila.pregunta.aplica && seleccion.get(fila.pregunta.id) == null"
           (keydown)="teclado($event, i)" (focus)="actual = i">
-          <span class="numero">{{ fila.pregunta.numero }}</span>
+          <i class="marca pi" [class.pi-check-circle]="seleccion.get(fila.pregunta.id) != null"
+            [class.pi-circle]="seleccion.get(fila.pregunta.id) == null"></i>
           <span class="texto">{{ fila.pregunta.descripcion }}</span>
           <div class="opciones">
             @if (fila.pregunta.aplica) {
