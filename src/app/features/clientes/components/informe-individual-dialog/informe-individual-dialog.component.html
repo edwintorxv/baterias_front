@@ -1,0 +1,174 @@
+<div class="encabezado">
+  <div>
+    <p class="m-0 font-semibold">{{ persona.apellido }} {{ persona.nombre }}</p>
+    <small class="secundario">Documento {{ persona.numeroIdentificacion }}</small>
+  </div>
+  <div class="anio">
+    <label for="anio">Año</label>
+    <p-select inputId="anio" [options]="lstAnios" [(ngModel)]="anio" (onChange)="consultar()" [disabled]="cargando"
+      appendTo="body" />
+  </div>
+</div>
+
+<p-message severity="secondary" icon="pi pi-lock" styleClass="mb-3">
+  Confidencial: hace parte de la historia clínica ocupacional del trabajador. No se comparte con la empresa.
+</p-message>
+
+@if (cargando && !informe) {
+  <p class="secundario text-center p-4"><i class="pi pi-spin pi-spinner mr-2"></i>Cargando informe…</p>
+} @else if (!lstAnios.length && !cargando) {
+  <p class="secundario text-center p-4">La persona no tiene aplicaciones con este cliente.</p>
+}
+
+@for (ficha of fichas; track ficha.aplicacion.fkAplicacion) {
+  @let aplicacion = ficha.aplicacion;
+  <section class="aplicacion" [class.cargando]="cargando">
+
+    <div class="aplicacion-cabecera">
+      <h3>Aplicación del {{ aplicacion.fechaAplicacion | date: 'dd/MM/yyyy' }}</h3>
+      @if (aplicacion.estadoResultados === 'CALCULADO') {
+        <p-tag value="Con resultados" severity="success" />
+      } @else {
+        <p-tag value="Pendiente de cálculo" severity="warn" />
+      }
+    </div>
+    <p class="datos secundario">
+      {{ aplicacion.nombreCargo ?? 'Sin cargo' }} · {{ aplicacion.nombreArea ?? 'Sin área' }}
+      @if (aplicacion.edad) { · {{ aplicacion.edad }} años }
+      @if (aplicacion.grupoOcupacional) { · {{ aplicacion.grupoOcupacional }} }
+    </p>
+
+    <!-- Resultados por cuestionario -->
+    @if (aplicacion.resultados; as resultados) {
+      <table class="resultados">
+        <thead>
+          <tr>
+            <th>Cuestionario</th>
+            <th class="numero">Puntaje transformado</th>
+            <th>Nivel</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cuestionario of cuestionarios(aplicacion); track cuestionario.fkCuestionario) {
+            @let clave = aplicacion.fkAplicacion + '-' + cuestionario.forma;
+            <tr>
+              <td class="font-semibold">{{ tituloForma[cuestionario.forma] ?? cuestionario.forma }}</td>
+              <td class="numero">{{ cuestionario.puntajeTransformado | number: '1.1-1' }}</td>
+              <td>
+                <span class="punto" [style.background]="colorNivel[cuestionario.fkNivelRiesgo]"></span>
+                {{ nivel(cuestionario) }}
+              </td>
+              <td class="alternar">
+                @if (tieneDetalle(cuestionario, aplicacion)) {
+                  <p-button [label]="abiertos.has(clave) ? 'Ocultar detalle' : 'Ver detalle'" [text]="true" size="small"
+                    [icon]="abiertos.has(clave) ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" iconPos="right"
+                    (onClick)="alternar(clave)" />
+                }
+              </td>
+            </tr>
+            @if (abiertos.has(clave) && cuestionario.forma === 'D') {
+              <tr class="subtitulo"><td colspan="4">Síntomas reportados con frecuencia (Siempre o Casi siempre)</td></tr>
+              @if (sinSintomasFrecuentes(aplicacion)) {
+                <tr class="detalle"><td colspan="4" class="secundario">No reportó síntomas con frecuencia.</td></tr>
+              } @else {
+                @for (grupo of aplicacion.sintomasFrecuentes; track grupo.nombre) {
+                  <tr class="detalle grupo-sintomas">
+                    <td class="font-semibold">{{ grupo.nombre }}</td>
+                    <td colspan="3">
+                      @for (sintoma of grupo.sintomas; track sintoma.numero) {
+                        <span class="sintoma">{{ sintoma.descripcion }} <small class="secundario">({{ sintoma.frecuencia }})</small></span>
+                      } @empty {
+                        <span class="secundario">—</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              }
+            } @else if (abiertos.has(clave)) {
+              @for (grupo of [{ titulo: 'Dominios', filas: cuestionario.dominios }, { titulo: 'Dimensiones', filas: cuestionario.dimensiones }]; track grupo.titulo) {
+                @if (grupo.filas.length) {
+                  <tr class="subtitulo"><td colspan="4">{{ grupo.titulo }}</td></tr>
+                  @for (fila of grupo.filas; track fila.id) {
+                    <tr class="detalle">
+                      <td>{{ fila.nombre }}</td>
+                      <td class="numero">{{ fila.puntajeTransformado | number: '1.1-1' }}</td>
+                      <td>
+                        <span class="punto" [style.background]="colorNivel[fila.fkNivelRiesgo]"></span>
+                        {{ fila.nivelRiesgo }}
+                      </td>
+                      <td></td>
+                    </tr>
+                  }
+                }
+              }
+            }
+          }
+          @if (resultados.totalGeneral; as total) {
+            <tr class="total">
+              <td>Total general (intralaboral {{ total.formaIntralaboral }} + extralaboral)</td>
+              <td class="numero">{{ total.puntajeTransformado | number: '1.1-1' }}</td>
+              <td>
+                <span class="punto" [style.background]="colorNivel[total.fkNivelRiesgo]"></span>
+                {{ total.nivelRiesgo }}
+              </td>
+              <td></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <p class="secundario">Las respuestas aún no tienen resultados calculados: el informe no sale hasta calcularlos.</p>
+    }
+
+    <!-- Lo que completa el profesional -->
+    <form [formGroup]="ficha.form" (ngSubmit)="guardar(ficha)">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <label [for]="'firmante-' + aplicacion.fkAplicacion">
+            Profesional que firma <small class="secundario">(sus datos y su firma salen en el informe)</small>
+          </label>
+          <p-select [inputId]="'firmante-' + aplicacion.fkAplicacion" styleClass="w-full" appendTo="body"
+            placeholder="Sin asignar" [options]="ficha.firmantes" optionLabel="nombre" optionValue="id"
+            formControlName="fkEvaluador" emptyMessage="No tiene un evaluador activo asociado a su usuario" />
+        </div>
+        <div class="col-12 lg:col-6">
+          <label [for]="'observaciones-' + aplicacion.fkAplicacion">Observaciones</label>
+          <textarea [id]="'observaciones-' + aplicacion.fkAplicacion" pTextarea rows="4" [autoResize]="true"
+            class="w-full" formControlName="observaciones"></textarea>
+        </div>
+        <div class="col-12 lg:col-6">
+          <label [for]="'recomendaciones-' + aplicacion.fkAplicacion">Recomendaciones</label>
+          <textarea [id]="'recomendaciones-' + aplicacion.fkAplicacion" pTextarea rows="4" [autoResize]="true"
+            class="w-full" formControlName="recomendaciones"></textarea>
+        </div>
+      </div>
+      <div class="acciones">
+        <p-button label="Guardar" icon="pi pi-check" iconPos="right" type="submit" size="small"
+          [loading]="ficha.guardando" [disabled]="cargando || !ficha.form.dirty" />
+      </div>
+    </form>
+
+  </section>
+}
+
+@if (fichas.length) {
+  <div class="pie">
+    <div class="pendientes">
+      @for (faltante of faltantes; track faltante) {
+        <small class="faltante"><i class="pi pi-exclamation-circle mr-1"></i>{{ faltante }}</small>
+      }
+      @for (aviso of avisos; track aviso) {
+        <small class="aviso"><i class="pi pi-info-circle mr-1"></i>{{ aviso }}</small>
+      }
+    </div>
+    <div class="botones">
+      <p-button label="Descargar Word" icon="pi pi-file-word" severity="secondary" [outlined]="true"
+        [loading]="descargando === 'docx'" [disabled]="cargando || !!descargando || faltantes.length > 0"
+        (onClick)="descargar('docx')" />
+      <p-button label="Descargar PDF" icon="pi pi-file-pdf"
+        [loading]="descargando === 'pdf'" [disabled]="cargando || !!descargando || faltantes.length > 0"
+        (onClick)="descargar('pdf')" />
+    </div>
+  </div>
+}

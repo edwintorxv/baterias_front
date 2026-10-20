@@ -13,5 +13,6 @@ export class PersonaAccionesComponent {
   @Input({ required: true }) persona!: PersonaCliente;
   @Output() editar = new EventEmitter<PersonaCliente>();
   @Output() cambiarEstado = new EventEmitter<PersonaCliente>();
+  @Output() informe = new EventEmitter<PersonaCliente>();
 
 }

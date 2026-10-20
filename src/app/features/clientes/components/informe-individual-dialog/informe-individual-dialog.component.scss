@@ -1,0 +1,150 @@
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .anio {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+.secundario {
+    color: var(--p-text-muted-color);
+}
+
+label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 500;
+}
+
+.aplicacion {
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    transition: opacity 0.2s;
+
+    &.cargando {
+        opacity: 0.6;
+    }
+}
+
+.aplicacion-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    h3 {
+        margin: 0;
+        font-size: 1.05rem;
+    }
+}
+
+.datos {
+    margin: 0.25rem 0 0.75rem;
+    font-size: 0.9rem;
+}
+
+.resultados {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+
+    th {
+        text-align: left;
+        font-weight: 600;
+        color: var(--p-text-muted-color);
+        border-bottom: 1px solid var(--p-content-border-color);
+        padding: 0.4rem 0.5rem;
+    }
+
+    td {
+        padding: 0.35rem 0.5rem;
+        border-bottom: 1px solid var(--p-content-border-color);
+    }
+
+    .numero {
+        text-align: right;
+        width: 11rem;
+    }
+
+    .alternar {
+        width: 9rem;
+        text-align: right;
+    }
+
+    .subtitulo td {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--p-text-muted-color);
+        padding-left: 1.5rem;
+    }
+
+    .detalle td:first-child {
+        padding-left: 1.5rem;
+    }
+
+    .grupo-sintomas td {
+        vertical-align: top;
+    }
+
+    .sintoma {
+        display: block;
+        padding: 0.1rem 0;
+    }
+
+    .total td {
+        font-weight: 600;
+        border-bottom: none;
+    }
+}
+
+.punto {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+}
+
+.acciones {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pie {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+
+    .pendientes {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .faltante {
+        color: var(--p-red-500);
+    }
+
+    .aviso {
+        color: var(--p-text-muted-color);
+    }
+
+    .botones {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: auto;
+    }
+}

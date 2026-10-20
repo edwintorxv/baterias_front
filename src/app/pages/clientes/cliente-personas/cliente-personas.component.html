@@ -142,7 +142,8 @@
 <p-dialog header="Acciones de la persona" [(visible)]="displayAccionesDialog" [modal]="true"
   [style]="{ width: '50rem' }" [breakpoints]="{ '768px': '95vw' }">
   @if (displayAccionesDialog && selectedPersona) {
-    <app-persona-acciones [persona]="selectedPersona" (editar)="openEditarDialog()" (cambiarEstado)="openEstadoDialog()" />
+    <app-persona-acciones [persona]="selectedPersona" (editar)="openEditarDialog()" (cambiarEstado)="openEstadoDialog()"
+      (informe)="openInformeDialog()" />
   }
 </p-dialog>
 
@@ -152,6 +153,13 @@
     <app-vincular-persona-dialog [idCliente]="idCliente"
       [edicion]="{ idRelacion: selectedPersona.idRelacion, idEvaluado: selectedPersona.idEvaluado }"
       (saved)="personaGuardada()" (cancel)="displayEditarDialog = false" />
+  }
+</p-dialog>
+
+<p-dialog header="Informe individual" [(visible)]="displayInformeDialog" [modal]="true"
+  [style]="{ width: '70rem' }" [breakpoints]="{ '1200px': '90vw', '640px': '98vw' }">
+  @if (displayInformeDialog && selectedPersona) {
+    <app-informe-individual-dialog [idCliente]="idCliente" [persona]="selectedPersona" />
   }
 </p-dialog>
 

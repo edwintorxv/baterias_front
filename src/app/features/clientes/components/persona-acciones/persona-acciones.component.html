@@ -25,10 +25,10 @@
   </div>
 
   <div class="col-12 md:col-4">
-    <button type="button" class="action-card" disabled>
+    <button type="button" class="action-card" [disabled]="!persona.aplicaciones" (click)="informe.emit(persona)">
       <i class="pi pi-file-pdf action-icon text-blue-500"></i>
       <h3>Informe individual</h3>
-      <p>PDF o Word por año. Próximamente.</p>
+      <p>{{ persona.aplicaciones ? 'Resultados, observaciones y firma; PDF o Word por año.' : 'Sin aplicaciones.' }}</p>
     </button>
   </div>
 </div>
