@@ -51,6 +51,50 @@ export const PREGUNTA_FILTRO: Record<CondicionAplicacion, { control: 'atiendeCli
     ES_JEFE: { control: 'esJefe', texto: 'Soy jefe de otras personas en mi trabajo' }
 };
 
+/** Qué forma responde la persona, con la descripción de los grupos ocupacionales del manual. El id es el grupo ocupacional. */
+export const FORMA_GRUPO: { id: number; forma: string; grupos: { nombre: string; descripcion: string }[] }[] = [
+    {
+        id: 1,
+        forma: 'A',
+        grupos: [
+            {
+                nombre: 'Jefes',
+                descripcion: 'Comprende los cargos de dirección o jefatura. Se caracterizan por tener personas a cargo y por '
+                    + 'asegurar la gestión y los resultados de una determinada sección o por la supervisión de otras personas. '
+                    + 'Por ejemplo, gerentes, directores, jefes de oficina, de departamento, de sección, de taller, '
+                    + 'supervisores, capataces o coordinadores, entre otros.'
+            },
+            {
+                nombre: 'Profesionales o técnicos',
+                descripcion: 'Personal calificado que ocupa cargos en los que hay dominio de una técnica, conocimiento o '
+                    + 'destreza particular y en los que el trabajador tiene un buen grado de autonomía, por lo cual, en su '
+                    + 'actividad laboral toma decisiones basándose en su criterio profesional o técnico. Sin embargo, no '
+                    + 'supervisa y no responde por el trabajo de otras personas. Por ejemplo, profesionales, analistas, '
+                    + 'técnicos o tecnólogos, entre otros.'
+            }
+        ]
+    },
+    {
+        id: 2,
+        forma: 'B',
+        grupos: [
+            {
+                nombre: 'Auxiliares',
+                descripcion: 'Cargos en los que se requiere el conocimiento de una técnica o destreza particular. Quienes '
+                    + 'ocupan estos cargos tienen menor autonomía, por lo cual su actividad laboral está guiada por las '
+                    + 'orientaciones o instrucciones dadas por un nivel superior. Por ejemplo, secretarias, recepcionistas, '
+                    + 'conductores, almacenistas, digitadores, entre otros.'
+            },
+            {
+                nombre: 'Operarios',
+                descripcion: 'Comprende cargos en los que no se requieren conocimientos especiales. El trabajador sigue '
+                    + 'instrucciones precisas de un superior. Por ejemplo, ayudantes de máquina, conserjes, personal de '
+                    + 'servicios generales, obreros o vigilantes, entre otros.'
+            }
+        ]
+    }
+];
+
 /** PUT /aplicaciones/{id}/respuestas/{idCuestionario}: reemplaza las de ese cuestionario (lo que no venga queda sin responder). */
 export interface RespuestaDigitada {
     fkPregunta: number;

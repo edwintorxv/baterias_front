@@ -43,17 +43,46 @@
         </div>
       </div>
 
+      <div class="forma-encabezado">
+        <label class="mb-0">¿Qué forma responde? *</label>
+        <small class="nota">Tipo de cargo registrado: {{ persona.tipoCargo ?? 'sin registrar' }}</small>
+      </div>
+      <div class="formas">
+        @for (opcion of formas; track opcion.id) {
+          <button type="button" class="forma" [class.elegida]="grupoElegido === opcion.id"
+            [attr.aria-pressed]="grupoElegido === opcion.id"
+            (click)="nuevaForm.get('fkGrupoOcupacional')!.setValue(opcion.id)">
+            <span class="titulo">
+              <i class="pi" [class.pi-check-circle]="grupoElegido === opcion.id" [class.pi-circle]="grupoElegido !== opcion.id"></i>
+              Forma {{ opcion.forma }}
+            </span>
+            @for (grupo of opcion.grupos; track grupo.nombre) {
+              <span class="grupo"><strong>{{ grupo.nombre }}:</strong> {{ grupo.descripcion }}</span>
+            }
+          </button>
+        }
+      </div>
+      <app-error-campo [control]="nuevaForm.get('fkGrupoOcupacional')" />
+      @if (formaNoCoincide) {
+        <p-message severity="warn" styleClass="mt-2" icon="pi pi-exclamation-triangle">
+          El tipo de cargo registrado corresponde a la forma {{ forma(grupoRegistrado) }}; la aplicación quedará en
+          forma {{ forma(grupoElegido) }}.
+        </p-message>
+      }
+
       <p class="mb-2 mt-3 nota">Preguntas filtro del cuestionario (definen si se responden algunas preguntas):</p>
       <div class="filtro">
         <span>{{ preguntaClientes }} *</span>
         <p-selectbutton [options]="siNo" optionLabel="label" optionValue="value" formControlName="atiendeClientes" />
       </div>
       <app-error-campo [control]="nuevaForm.get('atiendeClientes')" />
-      <div class="filtro">
-        <span>{{ preguntaJefe }} * <small class="nota">(solo cuenta en la forma A)</small></span>
-        <p-selectbutton [options]="siNo" optionLabel="label" optionValue="value" formControlName="esJefe" />
-      </div>
-      <app-error-campo [control]="nuevaForm.get('esJefe')" />
+      @if (grupoElegido === 1) {
+        <div class="filtro">
+          <span>{{ preguntaJefe }} *</span>
+          <p-selectbutton [options]="siNo" optionLabel="label" optionValue="value" formControlName="esJefe" />
+        </div>
+        <app-error-campo [control]="nuevaForm.get('esJefe')" />
+      }
 
       <div class="acciones">
         @if (lstAplicaciones.length) {

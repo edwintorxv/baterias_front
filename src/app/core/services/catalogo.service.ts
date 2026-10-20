@@ -6,6 +6,7 @@ import { Catalogo } from '../../shared/models/catalogo.model';
 import { CiudadMunicipio } from '../../shared/models/ciudad-municipio.model';
 import { Departamento } from '../../shared/models/departamento.model';
 import { Industria } from '../../shared/models/industria.model';
+import { TipoCargo } from '../../shared/models/tipo-cargo.model';
 import { ApiResponse } from '../models/api-response.model';
 
 /**
@@ -63,8 +64,8 @@ export class CatalogoService {
     }
 
     /** De él sale el grupo ocupacional: jefatura y profesional → forma A; auxiliar y operario → forma B. */
-    tiposCargo(): Observable<Catalogo[]> {
-        return this.listar<Catalogo>('tipo-cargo', 'id');
+    tiposCargo(): Observable<TipoCargo[]> {
+        return this.listar<TipoCargo>('tipo-cargo', 'id');
     }
 
     tiemposCargo(): Observable<Catalogo[]> {
