@@ -1,0 +1,36 @@
+.secundario {
+    color: var(--p-text-muted-color);
+}
+
+.seccion {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--p-text-muted-color);
+}
+
+/* Fondo blanco también en modo oscuro: así se ve la firma como saldrá en el informe. */
+.lienzo {
+    height: 9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed var(--p-content-border-color);
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 0.5rem;
+
+    img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+}
+
+.acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}

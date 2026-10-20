@@ -36,7 +36,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/administracion/usuario-list/usuario-list.component')
           .then(m => m.UsuarioListComponent)
       },
-      enConstruccion('administracion/evaluadores', 'Evaluadores'),
+      {
+        path: 'administracion/evaluadores',
+        loadComponent: () => import('./pages/administracion/evaluador-list/evaluador-list.component')
+          .then(m => m.EvaluadorListComponent)
+      },
 
       enConstruccion('configuracion/catalogos', 'Catálogos'),
       enConstruccion('configuracion/cuestionarios', 'Cuestionarios'),

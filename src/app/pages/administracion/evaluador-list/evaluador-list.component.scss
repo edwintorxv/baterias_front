@@ -1,0 +1,38 @@
+.secundario {
+    color: var(--p-text-muted-color);
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.filtros {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    input {
+        width: 18rem;
+    }
+}
+
+tr.inactiva td {
+    opacity: 0.6;
+}
+
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.bloque {
+    display: block;
+}

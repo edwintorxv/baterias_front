@@ -1,0 +1,73 @@
+<form [formGroup]="evaluadorForm" (ngSubmit)="guardar()">
+
+  <h4 class="seccion">Profesional</h4>
+  <div class="grid">
+    <div class="col-12 md:col-4">
+      <label for="numeroIdentificacion">Número de identificación *</label>
+      <input id="numeroIdentificacion" pInputText class="w-full" maxlength="30" formControlName="numeroIdentificacion" />
+      <app-error-campo [control]="evaluadorForm.get('numeroIdentificacion')" />
+    </div>
+
+    <div class="col-12 md:col-8">
+      <label for="nombre">Nombre completo *</label>
+      <input id="nombre" pInputText class="w-full" maxlength="200" formControlName="nombre" />
+      <app-error-campo [control]="evaluadorForm.get('nombre')" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label for="profesion">Profesión *</label>
+      <input id="profesion" pInputText class="w-full" maxlength="200" placeholder="Psicóloga"
+        formControlName="profesion" />
+      <app-error-campo [control]="evaluadorForm.get('profesion')" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label for="posgrado">Posgrado</label>
+      <input id="posgrado" pInputText class="w-full" maxlength="200" placeholder="Especialista en seguridad y salud en el trabajo"
+        formControlName="posgrado" />
+      <app-error-campo [control]="evaluadorForm.get('posgrado')" />
+    </div>
+  </div>
+
+  <h4 class="seccion">Habilitación <small class="nota">(sale en los informes)</small></h4>
+  <div class="grid">
+    <div class="col-12 md:col-4">
+      <label for="tarjetaProfesional">No. tarjeta profesional *</label>
+      <input id="tarjetaProfesional" pInputText class="w-full" maxlength="50" formControlName="tarjetaProfesional" />
+      <app-error-campo [control]="evaluadorForm.get('tarjetaProfesional')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="licenciaSaludOcupacional">No. licencia en salud ocupacional *</label>
+      <input id="licenciaSaludOcupacional" pInputText class="w-full" maxlength="50"
+        formControlName="licenciaSaludOcupacional" />
+      <app-error-campo [control]="evaluadorForm.get('licenciaSaludOcupacional')" />
+    </div>
+
+    <div class="col-12 md:col-4">
+      <label for="fechaExpedicionLicencia">Expedición de la licencia *</label>
+      <p-datepicker inputId="fechaExpedicionLicencia" styleClass="w-full" dateFormat="dd/mm/yy" [showIcon]="true"
+        [maxDate]="hoy" appendTo="body" formControlName="fechaExpedicionLicencia" />
+      <app-error-campo [control]="evaluadorForm.get('fechaExpedicionLicencia')" />
+    </div>
+  </div>
+
+  @if (isEditMode) {
+    <h4 class="seccion">Estado</h4>
+    <div class="estado">
+      <p-toggleswitch inputId="activo" formControlName="activo" />
+      <label for="activo" class="m-0">{{ evaluadorForm.get('activo')?.value ? 'Activo' : 'Inactivo' }}</label>
+    </div>
+    @if (inactivando) {
+      <p-message severity="warn" styleClass="mt-2"
+        text="Las aplicaciones e informes que ya firmó lo conservan; no se le podrán asignar nuevos." />
+    }
+  }
+
+  <div class="acciones">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
+    <p-button [label]="isEditMode ? 'Guardar cambios' : 'Crear evaluador'" icon="pi pi-check" iconPos="right"
+      type="submit" [loading]="guardando" />
+  </div>
+
+</form>

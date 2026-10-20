@@ -1,0 +1,21 @@
+<p class="mt-0 mb-3 secundario">{{ evaluador.nombre }} · {{ evaluador.numeroIdentificacion }}</p>
+
+<div class="grid">
+  <div class="col-12 md:col-6">
+    <button type="button" class="action-card" [disabled]="!esAdmin" (click)="editar.emit(evaluador)">
+      <i class="pi pi-pencil action-icon text-orange-500"></i>
+      <h3>Editar datos</h3>
+      <p>{{ esAdmin ? 'Datos profesionales, licencia y estado.' : 'Solo el administrador.' }}</p>
+    </button>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <button type="button" class="action-card" [disabled]="!puedeFirma" (click)="firma.emit(evaluador)">
+      <i class="pi pi-pen-to-square action-icon text-blue-500"></i>
+      <h3>Firma</h3>
+      <p>{{ puedeFirma
+        ? (evaluador.tieneFirma ? 'Ver o reemplazar la firma de los informes.' : 'Cargar la firma de los informes.')
+        : 'Solo el propio evaluador.' }}</p>
+    </button>
+  </div>
+</div>

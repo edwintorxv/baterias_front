@@ -1,0 +1,41 @@
+<p class="mt-0 mb-3 secundario">{{ evaluador.nombre }} · {{ evaluador.numeroIdentificacion }}</p>
+
+<div class="grid">
+  <div class="col-12 md:col-6">
+    <h4 class="seccion">Firma actual</h4>
+    <div class="lienzo">
+      @if (cargando) {
+        <i class="pi pi-spin pi-spinner secundario"></i>
+      } @else if (urlActual) {
+        <img [src]="urlActual" alt="Firma actual" />
+      } @else {
+        <span class="secundario">Sin firma cargada</span>
+      }
+    </div>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <h4 class="seccion">Nueva firma</h4>
+    <div class="lienzo">
+      @if (urlNueva) {
+        <img [src]="urlNueva" alt="Nueva firma" />
+      } @else {
+        <span class="secundario">PNG o JPG, hasta 1 MB</span>
+      }
+    </div>
+    <input #selector type="file" class="hidden" [accept]="tiposAceptados" (change)="elegir($event)" />
+    <p-button [label]="archivo ? 'Elegir otra imagen' : 'Elegir imagen'" icon="pi pi-image" severity="secondary"
+      [outlined]="true" size="small" styleClass="mt-2" (onClick)="selector.click()" />
+    @if (errorArchivo) {
+      <p-message severity="error" styleClass="mt-2" [text]="errorArchivo" />
+    }
+  </div>
+</div>
+
+<small class="secundario">Sale en los informes individuales y de empresa que firme. Mejor sobre fondo blanco o transparente.</small>
+
+<div class="acciones">
+  <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="cancel.emit()" />
+  <p-button label="Guardar firma" icon="pi pi-check" iconPos="right" [disabled]="!archivo" [loading]="guardando"
+    (onClick)="guardar()" />
+</div>

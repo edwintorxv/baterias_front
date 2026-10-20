@@ -1,0 +1,99 @@
+<div class="encabezado">
+  <h1>Evaluadores</h1>
+  @if (esAdmin()) {
+    <p-button label="Nuevo evaluador" icon="pi pi-plus" (onClick)="openCrearDialog()" />
+  }
+</div>
+
+@if (!puedeVer()) {
+  <p-message severity="warn" styleClass="mb-3" text="Solo el administrador y los psicólogos ven los evaluadores." />
+} @else {
+  <div class="table-header">
+    <div class="filtros">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input type="text" pInputText placeholder="Nombre, documento, tarjeta…" [formControl]="searchControl" />
+      </p-iconfield>
+      <p-select [options]="opcionesEstado" [(ngModel)]="filtroEstado" (onChange)="filtrar()" />
+      <p-button icon="pi pi-filter-slash" severity="secondary" (onClick)="limpiar()" />
+    </div>
+    <span class="secundario">{{ lstEvaluadores.length }} evaluador(es)</span>
+  </div>
+
+  <p-card>
+    <p-table [value]="lstEvaluadores" dataKey="id" [loading]="cargando" [rows]="25" [paginator]="lstEvaluadores.length > 25"
+      [tableStyle]="{ 'min-width': '60rem' }">
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="numeroIdentificacion">Documento <p-sortIcon field="numeroIdentificacion" /></th>
+          <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre" /></th>
+          <th pSortableColumn="profesion">Profesión <p-sortIcon field="profesion" /></th>
+          <th>Tarjeta profesional</th>
+          <th>Licencia SO</th>
+          <th>Estado</th>
+          <th>Firma</th>
+          <th style="width: 4rem"></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-evaluador>
+        <tr [class.inactiva]="!evaluador.activo">
+          <td>{{ evaluador.numeroIdentificacion }}</td>
+          <td class="font-semibold">
+            {{ evaluador.nombre }}
+            @if (esPropio(evaluador)) { <small class="secundario">(usted)</small> }
+          </td>
+          <td>
+            {{ evaluador.profesion }}
+            @if (evaluador.posgrado) { <small class="secundario bloque">{{ evaluador.posgrado }}</small> }
+          </td>
+          <td>{{ evaluador.tarjetaProfesional }}</td>
+          <td>
+            {{ evaluador.licenciaSaludOcupacional }}
+            @if (evaluador.fechaExpedicionLicencia) {
+              <small class="secundario bloque">Expedida {{ evaluador.fechaExpedicionLicencia | date: 'dd/MM/yyyy' }}</small>
+            }
+          </td>
+          <td>
+            <p-tag [value]="evaluador.activo ? 'Activo' : 'Inactivo'" [severity]="evaluador.activo ? 'success' : 'secondary'" />
+          </td>
+          <td>
+            <p-tag [value]="evaluador.tieneFirma ? 'Con firma' : 'Sin firma'" [severity]="evaluador.tieneFirma ? 'info' : 'warn'" />
+          </td>
+          <td>
+            <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="secondary" ariaLabel="Acciones"
+              (onClick)="openAccionesDialog(evaluador)" />
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="8" class="text-center p-4">No hay evaluadores con estos filtros.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+}
+
+<p-dialog [header]="selectedEvaluador ? 'Editar evaluador' : 'Nuevo evaluador'" [(visible)]="displayFormDialog" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '960px': '90vw', '640px': '98vw' }">
+  @if (displayFormDialog) {
+    <app-evaluador-form-dialog [evaluador]="selectedEvaluador" (saved)="evaluadorGuardado()"
+      (cancel)="displayFormDialog = false" />
+  }
+</p-dialog>
+
+<p-dialog header="Acciones del evaluador" [(visible)]="displayAccionesDialog" [modal]="true"
+  [style]="{ width: '40rem' }" [breakpoints]="{ '768px': '95vw' }">
+  @if (displayAccionesDialog && selectedEvaluador) {
+    <app-evaluador-acciones [evaluador]="selectedEvaluador" [esAdmin]="esAdmin()" [esPropio]="esPropio(selectedEvaluador)"
+      (editar)="openEditarDialog()" (firma)="openFirmaDialog()" />
+  }
+</p-dialog>
+
+<p-dialog header="Firma del evaluador" [(visible)]="displayFirmaDialog" [modal]="true"
+  [style]="{ width: '44rem' }" [breakpoints]="{ '768px': '95vw' }">
+  @if (displayFirmaDialog && selectedEvaluador) {
+    <app-evaluador-firma-dialog [evaluador]="selectedEvaluador" (saved)="evaluadorGuardado()"
+      (cancel)="displayFirmaDialog = false" />
+  }
+</p-dialog>
