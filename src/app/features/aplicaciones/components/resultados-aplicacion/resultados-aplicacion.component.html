@@ -1,0 +1,31 @@
+<div class="resultados">
+  <div class="cabecera">
+    <strong><i class="pi pi-chart-bar mr-1"></i>Resultados</strong>
+    <small class="secundario">Calculados el {{ resultados.fechaCalculo | date: 'dd/MM/yyyy HH:mm' }} · el detalle está en el informe individual</small>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Cuestionario</th>
+        <th class="numero">Puntaje transformado</th>
+        <th>Nivel</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (c of cuestionarios; track c.fkCuestionario) {
+        <tr>
+          <td>{{ tituloForma[c.forma] ?? c.forma }}</td>
+          <td class="numero">{{ c.puntajeTransformado | number: '1.1-1' }}</td>
+          <td><span class="punto" [style.background]="colorNivel[c.fkNivelRiesgo]"></span>{{ nivel(c) }}</td>
+        </tr>
+      }
+      @if (resultados.totalGeneral; as total) {
+        <tr class="total">
+          <td>Total general (intralaboral + extralaboral)</td>
+          <td class="numero">{{ total.puntajeTransformado | number: '1.1-1' }}</td>
+          <td><span class="punto" [style.background]="colorNivel[total.fkNivelRiesgo]"></span>{{ total.nivelRiesgo }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

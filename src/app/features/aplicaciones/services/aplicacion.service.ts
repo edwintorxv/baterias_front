@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable, map, switchMap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse } from '../../../core/models/api-response.model';
+import { ResultadosAplicacion } from '../../clientes/models/informe-individual.model';
 import { Aplicacion, AplicacionRequest } from '../models/aplicacion.model';
+import { AplicacionListado } from '../models/aplicacion-listado.model';
 import { FormularioAplicacion, RespuestaDigitada } from '../models/formulario-aplicacion.model';
 
 /** Lo que el profesional completa para el informe individual. */
@@ -26,6 +28,26 @@ export class AplicacionService {
     /** Las de una relación persona-cliente. */
     listarPorRelacion(fkEvaluadoCliente: number): Observable<Aplicacion[]> {
         return this.http.get<ApiResponse<Aplicacion[]>>(this.url, { params: { fkEvaluadoCliente } })
+            .pipe(map(respuesta => respuesta.data));
+    }
+
+    /** Listado general: las de sus clientes asignados (o de uno), del año si viene. */
+    listado(filtros: { idCliente?: number; anio?: number } = {}): Observable<AplicacionListado[]> {
+        const params: Record<string, number> = {};
+        if (filtros.idCliente) { params['idCliente'] = filtros.idCliente; }
+        if (filtros.anio) { params['anio'] = filtros.anio; }
+        return this.http.get<ApiResponse<AplicacionListado[]>>(`${this.url}/listado`, { params })
+            .pipe(map(respuesta => respuesta.data));
+    }
+
+    /** Solo con la aplicación completa (409 con lo que falta); reemplaza los resultados anteriores. */
+    calcular(id: number): Observable<ApiResponse<ResultadosAplicacion>> {
+        return this.http.post<ApiResponse<ResultadosAplicacion>>(`${this.url}/${id}/resultados`, null);
+    }
+
+    /** Sin resultados, viene con la lista de cuestionarios vacía. */
+    resultados(id: number): Observable<ResultadosAplicacion> {
+        return this.http.get<ApiResponse<ResultadosAplicacion>>(`${this.url}/${id}/resultados`)
             .pipe(map(respuesta => respuesta.data));
     }
 

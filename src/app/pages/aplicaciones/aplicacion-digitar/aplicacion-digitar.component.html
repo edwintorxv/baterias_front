@@ -1,9 +1,6 @@
 <div class="encabezado">
   <div class="titulo">
-    @if (idCliente) {
-      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" [routerLink]="['/clientes', idCliente, 'personas']"
-        ariaLabel="Volver a personas" />
-    }
+    <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" ariaLabel="Volver" (onClick)="volver()" />
     <div>
       <h1>Aplicación {{ idAplicacion }}</h1>
       @if (persona) {
@@ -14,9 +11,28 @@
     </div>
   </div>
   @if (formulario) {
-    <p-tag [value]="estados[formulario.estado].etiqueta" [severity]="estados[formulario.estado].severidad" />
+    <div class="calculo">
+      <p-tag [value]="estados[formulario.estado].etiqueta" [severity]="estados[formulario.estado].severidad" />
+      @if (formulario.estado !== 'CALCULADA') {
+        <p-button label="Calcular resultados" icon="pi pi-calculator" [loading]="calculando"
+          [disabled]="!puedeCalcular" (onClick)="calcular()" />
+      }
+    </div>
   }
 </div>
+
+@if (formulario && formulario.estado !== 'CALCULADA') {
+  @if (hayCambios) {
+    <p-message severity="warn" styleClass="mb-3" text="Guarde los cambios para poder calcular." />
+  } @else if (faltantes > 0) {
+    <p-message severity="info" styleClass="mb-3"
+      [text]="'Faltan ' + faltantes + (faltantes === 1 ? ' pregunta' : ' preguntas') + ' por responder. Solo se calcula con la aplicación completa.'" />
+  }
+}
+
+@if (resultados && resultados.cuestionarios.length) {
+  <app-resultados-aplicacion [resultados]="resultados" />
+}
 
 @if (cargando && !formulario) {
   <p class="secundario"><i class="pi pi-spin pi-spinner mr-2"></i>Cargando…</p>

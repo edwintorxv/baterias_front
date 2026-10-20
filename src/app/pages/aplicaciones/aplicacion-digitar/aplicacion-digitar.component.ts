@@ -1,7 +1,7 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { Component, ElementRef, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
@@ -11,6 +11,7 @@ import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
 import { forkJoin, switchMap } from 'rxjs';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { ResultadosAplicacionComponent } from '../../../features/aplicaciones/components/resultados-aplicacion/resultados-aplicacion.component';
 import { Aplicacion } from '../../../features/aplicaciones/models/aplicacion.model';
 import {
   CondicionAplicacion,
@@ -21,7 +22,7 @@ import {
   PreguntaFormulario
 } from '../../../features/aplicaciones/models/formulario-aplicacion.model';
 import { AplicacionService } from '../../../features/aplicaciones/services/aplicacion.service';
-import { TITULO_FORMA } from '../../../features/clientes/models/informe-individual.model';
+import { ResultadosAplicacion, TITULO_FORMA } from '../../../features/clientes/models/informe-individual.model';
 import { ClienteService } from '../../../features/clientes/services/cliente.service';
 import { EvaluadoClienteService } from '../../../features/evaluados/services/evaluado-cliente.service';
 import { EvaluadoService } from '../../../features/evaluados/services/evaluado.service';
@@ -36,12 +37,13 @@ interface Fila {
  * Digitación de una aplicación (cuestionarios en papel): una pestaña por cuestionario, opciones como botones
  * y teclado (1–5 responde y pasa a la siguiente; ↑ ↓ mueven; 0 o Supr borran). Guardar reemplaza las
  * respuestas del cuestionario; si cambian y había resultados, el backend los borra (pendiente de cálculo).
+ * Calcular solo con todo respondido y guardado (el backend también lo exige).
  */
 @Component({
   selector: 'app-aplicacion-digitar',
   standalone: true,
-  imports: [DatePipe, FormsModule, RouterLink, ButtonModule, MessageModule, ProgressBarModule, SelectButtonModule,
-    TabsModule, TagModule],
+  imports: [DatePipe, FormsModule, ButtonModule, MessageModule, ProgressBarModule, SelectButtonModule,
+    TabsModule, TagModule, ResultadosAplicacionComponent],
   templateUrl: './aplicacion-digitar.component.html',
   styleUrl: './aplicacion-digitar.component.scss'
 })
@@ -55,6 +57,8 @@ export class AplicacionDigitarComponent implements OnInit {
   readonly siNo = [{ label: 'Sí', value: true }, { label: 'No', value: false }];
 
   readonly idAplicacion: number;
+  /** Se llegó navegando dentro de la app (no por URL ni recargando): la flecha vuelve a donde estaba. */
+  private readonly vieneDeLaApp: boolean;
   aplicacion?: Aplicacion;
   formulario?: FormularioAplicacion;
   persona = '';
@@ -72,12 +76,18 @@ export class AplicacionDigitarComponent implements OnInit {
   actual = 0;
   filas: Fila[] = [];
 
+  /** Solo cuando la aplicación está calculada. */
+  resultados?: ResultadosAplicacion;
+
   cargando = false;
   guardando = false;
   guardandoFiltro = false;
+  calculando = false;
 
   constructor(
     route: ActivatedRoute,
+    private router: Router,
+    private location: Location,
     private aplicacionService: AplicacionService,
     private evaluadoClienteService: EvaluadoClienteService,
     private evaluadoService: EvaluadoService,
@@ -85,6 +95,16 @@ export class AplicacionDigitarComponent implements OnInit {
     private messageService: MessageService
   ) {
     this.idAplicacion = Number(route.snapshot.paramMap.get('id'));
+    this.vieneDeLaApp = !!router.getCurrentNavigation()?.previousNavigation;
+  }
+
+  /** A la pantalla anterior (Personas o el listado); entrando por URL, a Personas de su empresa. */
+  volver(): void {
+    if (this.vieneDeLaApp) {
+      this.location.back();
+    } else {
+      this.router.navigate(this.idCliente ? ['/clientes', this.idCliente, 'personas'] : ['/aplicaciones']);
+    }
   }
 
   ngOnInit(): void {
@@ -121,6 +141,38 @@ export class AplicacionDigitarComponent implements OnInit {
 
   get hayCambios(): boolean {
     return this.conCambios.size > 0;
+  }
+
+  /** Preguntas que aplican sin respuesta guardada, de todos los cuestionarios. */
+  get faltantes(): number {
+    return (this.formulario?.cuestionarios ?? []).reduce((total, c) => total + c.aplicables - c.respondidas, 0);
+  }
+
+  get puedeCalcular(): boolean {
+    return this.formulario?.estado === 'PENDIENTE_CALCULO' && !this.hayCambios && !this.calculando;
+  }
+
+  calcular(): void {
+    if (!this.puedeCalcular) {
+      return;
+    }
+    this.calculando = true;
+    this.aplicacionService.calcular(this.idAplicacion).pipe(
+      switchMap(response => {
+        ResponseHandlerUtil.handleResponse(response, this.messageService);
+        this.resultados = response.data;
+        return this.aplicacionService.formulario(this.idAplicacion);
+      })
+    ).subscribe({
+      next: formulario => {
+        this.calculando = false;
+        this.aplicarFormulario(formulario);
+      },
+      error: error => {
+        this.calculando = false;
+        ResponseHandlerUtil.handleError(error, this.messageService);
+      }
+    });
   }
 
   /** Respondidas en pantalla (incluye lo no guardado) de las que aplican. */
@@ -239,6 +291,7 @@ export class AplicacionDigitarComponent implements OnInit {
   /** Toma lo guardado del backend; conserva lo no guardado de los demás cuestionarios. */
   private aplicarFormulario(formulario: FormularioAplicacion): void {
     this.formulario = formulario;
+    this.cargarResultados(formulario);
     for (const c of formulario.cuestionarios) {
       if (!this.conCambios.has(c.id)) {
         c.preguntas.forEach(p => this.seleccion.set(p.id, p.respuesta));
@@ -246,6 +299,18 @@ export class AplicacionDigitarComponent implements OnInit {
     }
     const primeraIncompleta = formulario.cuestionarios.find(c => c.respondidas < c.aplicables) ?? formulario.cuestionarios[0];
     this.cambiarPestana(this.pestana ?? primeraIncompleta?.id);
+  }
+
+  /** Al corregir, el backend borra los resultados: el resumen se va con ellos. */
+  private cargarResultados(formulario: FormularioAplicacion): void {
+    if (formulario.estado !== 'CALCULADA') {
+      this.resultados = undefined;
+    } else if (!this.resultados) {
+      this.aplicacionService.resultados(this.idAplicacion).subscribe({
+        next: resultados => this.resultados = resultados,
+        error: error => ResponseHandlerUtil.handleError(error, this.messageService)
+      });
+    }
   }
 
   private armarFilas(): void {
