@@ -16,7 +16,6 @@ export const MENU: MenuItem[] = [
         expanded: true,
         items: [
             { label: 'Clientes', icon: 'pi pi-building', routerLink: '/clientes' },
-            { label: 'Evaluados', icon: 'pi pi-users', routerLink: '/evaluados' },
             { label: 'Aplicaciones', icon: 'pi pi-file-edit', routerLink: '/aplicaciones' }
         ]
     },

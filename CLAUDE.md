@@ -3,7 +3,7 @@
 > Forma de trabajo: **paso a paso** (diseño → código → el usuario revisa → commit cuando lo pide).
 > Backend y reglas de negocio: `/Users/edwingacha/proyectos/backend/baterias_backend/CLAUDE.md` (sección 7 = estado del front).
 > Repo `https://github.com/edwintorxv/baterias_front.git`, rama `main`. Última actualización: 2026-10-20.
-> **Para retomar**: Aplicaciones completa (pasos 1–3); siguiente: Evaluados o menú por rol + login real (ver backend, sección 7).
+> **Para retomar**: Aplicaciones completa (pasos 1–3); Evaluados quitado del menú (Personas lo cubre). Siguiente: **Estadísticas por empresa** (propuesta del 2026-10-20, falta que el usuario decida si va como entrada propia del menú —recomendado: "Estadísticas" en Trabajo, con selector de empresa y año y una pestaña por bloque: Población, Intralaboral A/B + concentración, Extralaboral, Estrés— o como pestañas dentro del informe de empresa): sin cambios en el backend, muestra lo que ya trae `GET /clientes/{id}/informe` y hoy no se ve en el front (`poblacion`, `formas`, `concentracionIntralaboral`, `factoresExtralaborales`, `sintomasEstres`); tabla + barras agrupadas por nivel con los colores semáforo; necesita `chart.js` en el front (`pnpm add chart.js`); por pasos (primero selector + Población). Más adelante el CLIENTE podría verla (ya tiene permiso sobre ese JSON). Luego catálogos/cuestionarios en lectura, menú por rol + login real (ver backend, sección 7).
 
 ## Puesta en marcha
 - Angular 19 + PrimeNG 19 (tema Aura, `@primeuix/themes`), primeflex, primeicons. **pnpm** (`pnpm install`, `pnpm run dev` → 4200). Scripts de build aprobados en `pnpm-workspace.yaml` (`allowBuilds`).

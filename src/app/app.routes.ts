@@ -28,7 +28,6 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/clientes/cliente-informe/cliente-informe.component')
           .then(m => m.ClienteInformeComponent)
       },
-      enConstruccion('evaluados', 'Evaluados'),
       {
         path: 'aplicaciones',
         loadComponent: () => import('./pages/aplicaciones/aplicacion-list/aplicacion-list.component')
