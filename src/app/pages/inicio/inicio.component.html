@@ -1,33 +1,191 @@
-<h1>Inicio</h1>
-
-<div class="grid">
-  <div class="col-12 md:col-6">
-    <p-card header="Sesión">
-      @if (usuario(); as u) {
-        <dl>
-          <dt>Nombre</dt><dd>{{ u.nombre }}</dd>
-          <dt>Usuario</dt><dd>{{ u.usuario }}</dd>
-          <dt>Rol</dt><dd>{{ nombreRol[u.rol] }}</dd>
-          @if (u.idEvaluador) { <dt>Evaluador</dt><dd>#{{ u.idEvaluador }}</dd> }
-          @if (u.idCliente) { <dt>Cliente</dt><dd>#{{ u.idCliente }}</dd> }
-        </dl>
-      } @else {
-        <p>Sin sesión. En desarrollo, revise los usuarios de <code>environment.development.ts</code>.</p>
-      }
-    </p-card>
+<div class="encabezado">
+  <div>
+    <h1>{{ saludo }}{{ primerNombre ? ', ' + primerNombre : '' }}</h1>
+    <span class="secundario">{{ hoy | date: "EEEE d 'de' MMMM 'de' y" }}</span>
   </div>
-
-  <div class="col-12 md:col-6">
-    <p-card header="Conexión con el backend">
-      <p class="api">{{ apiUrl }}</p>
-      @switch (estado) {
-        @case ('cargando') { <p-tag value="Verificando…" severity="secondary" /> }
-        @case ('ok') { <p-tag value="Conectado" severity="success" icon="pi pi-check" /> }
-        @case ('error') {
-          <p-tag value="Sin conexión" severity="danger" icon="pi pi-times" />
-          <p class="error">{{ mensajeError }}</p>
-        }
-      }
-    </p-card>
-  </div>
+  @if (rol() === 'PSICOLOGO' && opcionesAnio.length) {
+    <p-select [options]="opcionesAnio" [(ngModel)]="anio" (onChange)="cambiarAnio()" ariaLabel="Año" />
+  }
 </div>
+
+@switch (rol()) {
+  @case ('PSICOLOGO') {
+    @if (sinFirma) {
+      <p-message severity="warn" styleClass="mb-3">
+        Su firma no está cargada: los informes salen sin ella.
+        <a routerLink="/administracion/evaluadores" class="ml-1">Cargarla en Evaluadores</a>
+      </p-message>
+    }
+
+    <!-- APLICACIONES DEL AÑO POR ESTADO -->
+    <h2>Aplicaciones de {{ anio }}</h2>
+    <div class="estados">
+      @for (estado of ordenEstados; track estado) {
+        <a class="tarjeta" [class]="estados[estado].severidad" routerLink="/aplicaciones"
+          [queryParams]="{ anio, estado }">
+          <span class="numero">{{ cargando ? '…' : conteo[estado] }}</span>
+          <span class="texto">{{ estados[estado].etiqueta }}</span>
+        </a>
+      }
+    </div>
+
+    <div class="grid mt-2">
+      <!-- PARA CONTINUAR -->
+      <div class="col-12 xl:col-7">
+        <p-card>
+          <div class="cabecera">
+            <h3>Para continuar</h3>
+            @if (sinTerminarDelAnio > paraContinuar.length) {
+              <a routerLink="/aplicaciones" [queryParams]="{ anio }">Ver las {{ sinTerminarDelAnio }}</a>
+            }
+          </div>
+          @if (!paraContinuar.length) {
+            <p class="secundario mb-0">
+              {{ cargando ? 'Cargando…' : 'No hay aplicaciones sin terminar en ' + anio + '.' }}
+            </p>
+          } @else {
+            <ul class="lista">
+              @for (a of paraContinuar; track a.id) {
+                <li>
+                  <div class="persona">
+                    <span class="font-semibold">{{ a.apellido }} {{ a.nombre }}</span>
+                    <small class="secundario">
+                      {{ a.cliente }} · {{ a.fechaAplicacion | date: 'dd/MM/yyyy' }}{{ a.forma ? ' · Forma ' + a.forma : '' }}
+                    </small>
+                  </div>
+                  <div class="avance">
+                    <p-progressbar [value]="a.avance" [showValue]="false" styleClass="h-05rem" />
+                    <small class="secundario">{{ a.respondidas }}/{{ a.aplicables }}</small>
+                  </div>
+                  <p-tag [value]="estados[a.estado].etiqueta" [severity]="estados[a.estado].severidad" />
+                  <p-button icon="pi pi-arrow-right" [rounded]="true" [text]="true" ariaLabel="Abrir"
+                    [routerLink]="['/aplicaciones', a.id]" />
+                </li>
+              }
+            </ul>
+          }
+        </p-card>
+      </div>
+
+      <!-- MIS CLIENTES -->
+      <div class="col-12 xl:col-5">
+        <p-card>
+          <div class="cabecera">
+            <h3>Mis clientes</h3>
+            <a routerLink="/clientes">Ver todos</a>
+          </div>
+          @if (!misClientes.length) {
+            <p class="secundario mb-0">{{ cargando ? 'Cargando…' : 'No tiene clientes asignados.' }}</p>
+          } @else {
+            <ul class="lista">
+              @for (c of misClientes; track c.id) {
+                <li>
+                  <div class="persona">
+                    <span class="font-semibold">{{ c.nombre }}</span>
+                    <small class="secundario">
+                      @if (c.aplicaciones) {
+                        {{ c.calculadas }} calculada(s)
+                        @if (c.sinTerminar) { · <a routerLink="/aplicaciones" [queryParams]="{ anio, idCliente: c.id }">{{ c.sinTerminar }} sin terminar</a> }
+                      } @else {
+                        Sin aplicaciones en {{ anio }}
+                      }
+                    </small>
+                  </div>
+                  <div class="acciones">
+                    <p-button icon="pi pi-users" [rounded]="true" [text]="true" severity="secondary" ariaLabel="Personas"
+                      title="Personas" [routerLink]="['/clientes', c.id, 'personas']" />
+                    <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" severity="secondary"
+                      ariaLabel="Informe de empresa" title="Informe de empresa" [routerLink]="['/clientes', c.id, 'informe']"
+                      [queryParams]="{ anio }" [disabled]="!c.aplicaciones" />
+                    <p-button icon="pi pi-chart-pie" [rounded]="true" [text]="true" severity="secondary"
+                      ariaLabel="Estadísticas" title="Estadísticas" [routerLink]="['/clientes', c.id, 'estadisticas']"
+                      [queryParams]="{ anio }" [disabled]="!c.aplicaciones" />
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </p-card>
+      </div>
+    </div>
+  }
+
+  @case ('ADMIN') {
+    <div class="accesos">
+      <a class="acceso" routerLink="/clientes">
+        <i class="pi pi-building text-blue-500"></i>
+        <h3>Clientes</h3>
+        <p>Crear y editar empresas.</p>
+      </a>
+      <a class="acceso" routerLink="/administracion/usuarios">
+        <i class="pi pi-user text-orange-500"></i>
+        <h3>Usuarios</h3>
+        <p>Cuentas, roles y clientes asignados a cada psicólogo.</p>
+      </a>
+      <a class="acceso" routerLink="/administracion/evaluadores">
+        <i class="pi pi-id-card text-green-500"></i>
+        <h3>Evaluadores</h3>
+        <p>Profesionales que firman los informes.</p>
+      </a>
+      <a class="acceso" routerLink="/configuracion/cuestionarios">
+        <i class="pi pi-book text-purple-500"></i>
+        <h3>Configuración</h3>
+        <p>Catálogos y cuestionarios de la batería (consulta).</p>
+      </a>
+    </div>
+  }
+
+  @case ('CLIENTE') {
+    @if (usuario()?.idCliente; as idCliente) {
+      <div class="accesos">
+        <a class="acceso" [routerLink]="['/clientes', idCliente, 'informe']">
+          <i class="pi pi-chart-bar text-green-500"></i>
+          <h3>Informe de empresa</h3>
+          <p>Resultados, conclusiones y plan de acción de su empresa, por año.</p>
+        </a>
+        <a class="acceso" [routerLink]="['/clientes', idCliente, 'estadisticas']">
+          <i class="pi pi-chart-pie text-purple-500"></i>
+          <h3>Estadísticas</h3>
+          <p>Población, resultados intralaborales, extralaborales y de estrés.</p>
+        </a>
+      </div>
+    } @else {
+      <p-message severity="warn" text="Su usuario no tiene una empresa asociada. Comuníquese con el administrador." />
+    }
+  }
+}
+
+@if (desarrollo) {
+  <h2 class="mt-5">Desarrollo</h2>
+  <div class="grid">
+    <div class="col-12 md:col-6">
+      <p-card header="Sesión">
+        @if (usuario(); as u) {
+          <dl>
+            <dt>Nombre</dt><dd>{{ u.nombre }}</dd>
+            <dt>Usuario</dt><dd>{{ u.usuario }}</dd>
+            <dt>Rol</dt><dd>{{ nombreRol[u.rol] }}</dd>
+            @if (u.idEvaluador) { <dt>Evaluador</dt><dd>#{{ u.idEvaluador }}</dd> }
+            @if (u.idCliente) { <dt>Cliente</dt><dd>#{{ u.idCliente }}</dd> }
+          </dl>
+        } @else {
+          <p>Sin sesión. En desarrollo, revise los usuarios de <code>environment.development.ts</code>.</p>
+        }
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-6">
+      <p-card header="Conexión con el backend">
+        <p class="api">{{ apiUrl }}</p>
+        @switch (estadoConexion) {
+          @case ('cargando') { <p-tag value="Verificando…" severity="secondary" /> }
+          @case ('ok') { <p-tag value="Conectado" severity="success" icon="pi pi-check" /> }
+          @case ('error') {
+            <p-tag value="Sin conexión" severity="danger" icon="pi pi-times" />
+            <p class="error">{{ mensajeError }}</p>
+          }
+        }
+      </p-card>
+    </div>
+  </div>
+}

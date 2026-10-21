@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { EnConstruccionComponent } from './pages/en-construccion/en-construccion.component';
-import { InicioComponent } from './pages/inicio/inicio.component';
 
 const enConstruccion = (path: string, titulo: string) =>
   ({ path, component: EnConstruccionComponent, data: { titulo } });
@@ -11,7 +10,10 @@ export const routes: Routes = [
     path: '',
     component: MainLayoutComponent,
     children: [
-      { path: 'inicio', component: InicioComponent },
+      {
+        path: 'inicio',
+        loadComponent: () => import('./pages/inicio/inicio.component').then(m => m.InicioComponent)
+      },
 
       {
         path: 'clientes',

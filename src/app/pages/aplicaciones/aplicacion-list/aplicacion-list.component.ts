@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -75,6 +75,7 @@ export class AplicacionListComponent implements OnInit {
   calculadas: CalculoFila[] = [];
 
   constructor(
+    private route: ActivatedRoute,
     private aplicacionService: AplicacionService,
     private messageService: MessageService
   ) { }
@@ -84,7 +85,10 @@ export class AplicacionListComponent implements OnInit {
     this.cargar(true);
   }
 
-  /** @param inicial la primera vez el año arranca en el actual (o el más reciente con aplicaciones) */
+  /**
+   * @param inicial la primera vez los filtros salen de la URL (?anio=&estado=&idCliente=, desde Inicio) y, sin
+   *                año en la URL, el año arranca en el actual (o el más reciente con aplicaciones)
+   */
   cargar(inicial = false): void {
     this.cargando = true;
     this.aplicacionService.listado().subscribe({
@@ -100,8 +104,15 @@ export class AplicacionListComponent implements OnInit {
         }));
         this.armarOpciones();
         if (inicial) {
+          const parametros = this.route.snapshot.queryParamMap;
+          const pedido = Number(parametros.get('anio'));
           const actual = new Date().getFullYear();
-          this.filtroAnio = this.opcionesAnio.some(o => o.value === actual) ? actual : this.opcionesAnio[0]?.value ?? null;
+          this.filtroAnio = [pedido, actual].find(anio => this.opcionesAnio.some(o => o.value === anio))
+            ?? this.opcionesAnio[0]?.value ?? null;
+          const estado = parametros.get('estado') as EstadoAplicacion | null;
+          this.filtroEstado = estado && estado in ESTADO_APLICACION ? estado : null;
+          const idCliente = Number(parametros.get('idCliente'));
+          this.filtroCliente = this.opcionesCliente.some(o => o.value === idCliente) ? idCliente : null;
         }
         this.filtrar();
       },
