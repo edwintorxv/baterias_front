@@ -18,10 +18,15 @@
   }
 
   @if (usuario(); as u) {
-    <div class="usuario">
-      <span class="nombre">{{ u.nombre }}</span>
-      <span class="rol">{{ rol() }}</span>
-    </div>
+    <button type="button" class="usuario" (click)="menuUsuario.toggle($event)" aria-haspopup="true"
+      aria-label="Opciones del usuario">
+      <span class="datos">
+        <span class="nombre">{{ u.nombre }}</span>
+        <span class="rol">{{ rol() }}</span>
+      </span>
+      <i class="pi pi-angle-down"></i>
+    </button>
+    <p-menu #menuUsuario [model]="opcionesUsuario" [popup]="true" appendTo="body" />
   }
 
   <p-button

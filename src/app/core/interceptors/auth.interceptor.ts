@@ -1,5 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
@@ -10,13 +11,15 @@ const conToken = (req: HttpRequest<unknown>, token: string | null) =>
 
 /**
  * Pone el token en cada petición. Con 401 (token vencido o usuario desactivado): en desarrollo vuelve
- * a entrar con el usuario de prueba y repite la petición una vez; si no, cierra la sesión.
+ * a entrar con el usuario de prueba y repite la petición una vez; si no, cierra la sesión y lleva al login
+ * con "Su sesión terminó" (las pantallas no avisan el 401: ResponseHandlerUtil lo ignora).
  * 403 y "sin conexión" se avisan aquí; el resto de errores los maneja cada pantalla.
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     const authService = inject(AuthService);
     const messageService = inject(MessageService);
+    const router = inject(Router);
     const esLogin = req.url.endsWith('/auth/login');
 
     return next(conToken(req, authService.token())).pipe(
@@ -27,6 +30,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                     return reingreso.pipe(switchMap(() => next(conToken(req, authService.token()))));
                 }
                 authService.logout();
+                if (!router.url.startsWith('/login')) {
+                    router.navigate(['/login'], { queryParams: { motivo: 'sesion', volver: router.url } });
+                }
             }
             if (error.status === 403 || error.status === 0) {
                 ResponseHandlerUtil.handleError(error, messageService);

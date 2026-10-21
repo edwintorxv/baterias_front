@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { sesionGuard, sinSesionGuard } from './core/guards/sesion.guard';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { EnConstruccionComponent } from './pages/en-construccion/en-construccion.component';
 
@@ -7,8 +8,16 @@ const enConstruccion = (path: string, titulo: string) =>
 
 export const routes: Routes = [
   {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent),
+    canActivate: [sinSesionGuard]
+  },
+  {
     path: '',
     component: MainLayoutComponent,
+    // Cada navegación revisa la sesión (el token dura 8 h): vencida → /login?volver=
+    canActivate: [sesionGuard],
+    canActivateChild: [sesionGuard],
     children: [
       {
         path: 'inicio',

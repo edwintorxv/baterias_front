@@ -14,7 +14,11 @@ export class ResponseHandlerUtil {
         });
     }
 
+    /** El 401 no se avisa: el interceptor ya cierra la sesión y lleva al login (o reingresa en desarrollo). */
     static handleError(error: HttpErrorResponse, messageService: MessageService): void {
+        if (error.status === 401) {
+            return;
+        }
         const { titulo, detalle } = ResponseHandlerUtil.describir(error);
         messageService.add({
             severity: error.status === 409 || error.status === 400 ? 'warn' : 'error',

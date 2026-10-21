@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Output, Signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
@@ -14,7 +16,7 @@ import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [ButtonModule, SelectModule, TagModule, TooltipModule, FormsModule],
+  imports: [ButtonModule, MenuModule, SelectModule, TagModule, TooltipModule, FormsModule],
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.scss'
 })
@@ -29,10 +31,16 @@ export class TopbarComponent {
   usuario: Signal<UsuarioSesion | null>;
   rol: Signal<string>;
 
+  /** Menú del usuario (clic en su nombre). */
+  readonly opcionesUsuario: MenuItem[] = [
+    { label: 'Cerrar sesión', icon: 'pi pi-sign-out', command: () => this.cerrarSesion() }
+  ];
+
   constructor(
     private authService: AuthService,
     public themeService: ThemeService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router
   ) {
     this.usuariosPrueba = authService.usuariosPrueba();
     this.usuario = authService.usuario;
@@ -44,6 +52,15 @@ export class TopbarComponent {
 
   openMenu(): void {
     this.menuClick.emit();
+  }
+
+  /**
+   * Se cierra la sesión local (el token JWT no se revoca en el servidor: vence a las 8 h). Primero se borra la
+   * sesión y luego se navega: con la sesión vigente, el guard del login devolvería al Inicio.
+   */
+  cerrarSesion(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   cambiarUsuario(usuario: string): void {
