@@ -111,6 +111,41 @@
   }
 
   @case ('ADMIN') {
+    <div class="estados mb-3">
+      @for (c of contadores; track c.etiqueta) {
+        <a class="tarjeta" [routerLink]="c.enlace">
+          <span class="numero">{{ c.valor }}</span>
+          <span class="texto">{{ c.etiqueta }}</span>
+        </a>
+      }
+    </div>
+
+    <p-card styleClass="mb-3">
+      <div class="cabecera">
+        <h3>Configuración pendiente</h3>
+      </div>
+      @if (cargandoAdmin) {
+        <p class="secundario mb-0">Revisando…</p>
+      } @else if (!avisos.length) {
+        <p class="mb-0"><i class="pi pi-check-circle text-green-500 mr-2"></i>Todo en orden: cada cliente tiene psicólogo, cada psicólogo tiene clientes y los evaluadores activos tienen usuario y firma.</p>
+      } @else {
+        <ul class="lista">
+          @for (aviso of avisos; track aviso.texto) {
+            <li>
+              <i class="pi pi-exclamation-triangle text-orange-500"></i>
+              <div class="persona">
+                <span class="font-semibold">{{ aviso.texto }} ({{ aviso.nombres.length }})</span>
+                <small class="secundario">
+                  {{ aviso.nombres.slice(0, maximoNombres).join(', ') }}{{ aviso.nombres.length > maximoNombres ? ' y ' + (aviso.nombres.length - maximoNombres) + ' más' : '' }}
+                </small>
+              </div>
+              <a [routerLink]="aviso.enlace" class="white-space-nowrap">{{ aviso.accion }}</a>
+            </li>
+          }
+        </ul>
+      }
+    </p-card>
+
     <div class="accesos">
       <a class="acceso" routerLink="/clientes">
         <i class="pi pi-building text-blue-500"></i>

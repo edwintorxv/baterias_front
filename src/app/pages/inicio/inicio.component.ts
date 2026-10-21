@@ -10,6 +10,7 @@ import { MessageModule } from 'primeng/message';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
+import { forkJoin, map, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../core/models/api-response.model';
 import { NOMBRE_ROL, UsuarioSesion } from '../../core/models/sesion.model';
@@ -21,6 +22,7 @@ import { AplicacionService } from '../../features/aplicaciones/services/aplicaci
 import { Cliente } from '../../features/clientes/models/cliente.model';
 import { ClienteService } from '../../features/clientes/services/cliente.service';
 import { EvaluadorService } from '../../features/evaluadores/services/evaluador.service';
+import { UsuarioService } from '../../features/usuarios/services/usuario.service';
 
 /** Orden de las tarjetas: de lo que falta por hacer a lo terminado. */
 const ORDEN_ESTADOS: EstadoAplicacion[] = ['SIN_RESPUESTAS', 'INCOMPLETA', 'PENDIENTE_CALCULO', 'CALCULADA'];
@@ -32,6 +34,17 @@ interface AplicacionInicio extends AplicacionListado {
   anio: number;
   avance: number;
 }
+
+/** Algo de la configuración que impide trabajar o firmar, con los nombres afectados. */
+interface AvisoAdmin {
+  texto: string;
+  nombres: string[];
+  enlace: string;
+  accion: string;
+}
+
+/** Cuántos nombres se listan en un aviso antes de "y n más". */
+const MAXIMO_NOMBRES = 5;
 
 interface ClienteInicio {
   id: number;
@@ -90,6 +103,12 @@ export class InicioComponent {
   sinFirma: boolean | null = null;
   cargando = false;
 
+  // Administrador
+  contadores: { etiqueta: string; valor: number; enlace: string }[] = [];
+  avisos: AvisoAdmin[] = [];
+  cargandoAdmin = false;
+  readonly maximoNombres = MAXIMO_NOMBRES;
+
   // Desarrollo
   estadoConexion: 'cargando' | 'ok' | 'error' = 'cargando';
   mensajeError = '';
@@ -99,6 +118,7 @@ export class InicioComponent {
     private aplicacionService: AplicacionService,
     private clienteService: ClienteService,
     private evaluadorService: EvaluadorService,
+    private usuarioService: UsuarioService,
     private messageService: MessageService,
     authService: AuthService
   ) {
@@ -109,6 +129,9 @@ export class InicioComponent {
       const usuario = this.usuario();
       if (usuario?.rol === 'PSICOLOGO') {
         this.cargarPsicologo(usuario);
+      }
+      if (usuario?.rol === 'ADMIN') {
+        this.cargarAdmin();
       }
       if (this.desarrollo && usuario) {
         this.probarConexion();
@@ -193,6 +216,73 @@ export class InicioComponent {
         };
       })
       .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+  }
+
+  /**
+   * Contadores y avisos de configuración: evaluadores activos sin firma o sin usuario, psicólogos sin clientes
+   * y clientes sin psicólogo (solo usuarios activos). Los clientes de cada psicólogo salen de
+   * GET /usuarios/{id}/clientes, como en la pantalla de Usuarios.
+   */
+  private cargarAdmin(): void {
+    this.cargandoAdmin = true;
+    forkJoin({
+      usuarios: this.usuarioService.listar(),
+      evaluadores: this.evaluadorService.listar(),
+      clientes: this.clienteService.listar()
+    }).subscribe({
+      next: ({ usuarios, evaluadores, clientes }) => {
+        const activos = usuarios.filter(u => u.activo);
+        const psicologos = activos.filter(u => u.rol === 'PSICOLOGO');
+        const evaluadoresActivos = evaluadores.filter(e => e.activo);
+        (psicologos.length
+          ? forkJoin(psicologos.map(u => this.usuarioService.clientes(u.id).pipe(map(ids => [u, ids] as const))))
+          : of([])
+        ).subscribe({
+          next: asignaciones => {
+            this.cargandoAdmin = false;
+            const conCliente = new Set(asignaciones.flatMap(([, ids]) => ids));
+            const conUsuario = new Set(psicologos.map(u => u.idEvaluador));
+            const ordenar = (nombres: string[]) => nombres.sort((a, b) => a.localeCompare(b, 'es'));
+
+            this.contadores = [
+              { etiqueta: 'Clientes', valor: clientes.length, enlace: '/clientes' },
+              { etiqueta: 'Psicólogos activos', valor: psicologos.length, enlace: '/administracion/usuarios' },
+              { etiqueta: 'Usuarios de clientes', valor: activos.filter(u => u.rol === 'CLIENTE').length, enlace: '/administracion/usuarios' },
+              { etiqueta: 'Evaluadores activos', valor: evaluadoresActivos.length, enlace: '/administracion/evaluadores' }
+            ];
+            this.avisos = [
+              {
+                texto: 'Evaluadores activos sin firma: sus informes salen sin ella',
+                nombres: ordenar(evaluadoresActivos.filter(e => !e.tieneFirma).map(e => e.nombre)),
+                enlace: '/administracion/evaluadores', accion: 'Ir a Evaluadores'
+              },
+              {
+                texto: 'Evaluadores activos sin usuario: no pueden entrar a trabajar',
+                nombres: ordenar(evaluadoresActivos.filter(e => !conUsuario.has(e.id)).map(e => e.nombre)),
+                enlace: '/administracion/usuarios', accion: 'Ir a Usuarios'
+              },
+              {
+                texto: 'Psicólogos sin clientes asignados: no ven ninguna empresa',
+                nombres: ordenar(asignaciones.filter(([, ids]) => !ids.length).map(([u]) => u.nombre)),
+                enlace: '/administracion/usuarios', accion: 'Ir a Usuarios'
+              },
+              {
+                texto: 'Clientes sin psicólogo asignado: nadie puede trabajar con ellos',
+                nombres: ordenar(clientes.filter(c => !conCliente.has(c.id)).map(c => c.nombre)),
+                enlace: '/administracion/usuarios', accion: 'Ir a Usuarios'
+              }
+            ].filter(aviso => aviso.nombres.length);
+          },
+          error: error => this.falloAdmin(error)
+        });
+      },
+      error: error => this.falloAdmin(error)
+    });
+  }
+
+  private falloAdmin(error: HttpErrorResponse): void {
+    this.cargandoAdmin = false;
+    ResponseHandlerUtil.handleError(error, this.messageService);
   }
 
   private probarConexion(): void {
