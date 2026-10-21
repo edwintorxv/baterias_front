@@ -1,6 +1,6 @@
 /**
  * GET /clientes/{id}/informe?anio=: solo las partes que muestran las pantallas (informe y estadísticas); lo
- * que aún no se muestra —formas, concentración, extralaborales y síntomas por ciudad/área— va en el Word.
+ * que aún no se muestra —extralaborales y síntomas de estrés— va en el Word.
  */
 export interface InformeEmpresa {
     cliente: { id: number; nit: string; nombre: string };
@@ -11,6 +11,10 @@ export interface InformeEmpresa {
     pendientesCalculo: number;
     poblacion: Poblacion;
     resultadosGlobales: ResultadosGlobales;
+    /** Una por forma intralaboral presentada (A, B). */
+    formas: FormaIntralaboral[];
+    /** Formas A y B juntas. */
+    concentracionIntralaboral: ConcentracionIntralaboral;
     conclusiones: ConclusionesEmpresa;
 }
 
@@ -63,6 +67,50 @@ export interface NivelCantidad {
     nivel: string;
     cantidad: number;
     porcentaje: number;
+}
+
+/**
+ * Rankings: del más crítico al menos crítico sin sumar niveles (primero el mayor % en muy alto, luego alto…;
+ * empate: orden del cuestionario). Así vienen del backend.
+ */
+export interface FormaIntralaboral {
+    idCuestionario: number;
+    forma: string;
+    personas: number;
+    /** Ranking de dominios, cada uno con el ranking de sus dimensiones. */
+    dominios: DominioEmpresa[];
+}
+
+export interface DominioEmpresa {
+    idDominioCuestionario: number;
+    nombre: string;
+    distribucion: DistribucionNiveles;
+    dimensiones: DistribucionItem[];
+}
+
+export interface DistribucionItem {
+    id: number;
+    nombre: string;
+    distribucion: DistribucionNiveles;
+}
+
+export interface ConcentracionIntralaboral {
+    /** Ranking de los dominios (id = id del dominio). */
+    dominios: DistribucionItem[];
+    /** Nivel intralaboral total por ciudad de trabajo. */
+    porCiudad: DesgloseGrupos;
+    /** Nivel intralaboral total por área. */
+    porArea: DesgloseGrupos;
+}
+
+/** Grupos con menos de 2 personas se juntan en "Otras…" (al final); si aun juntos no llegan, se omiten. */
+export interface DesgloseGrupos {
+    /** De más a menos personas. */
+    grupos: { grupo: string; distribucion: DistribucionNiveles }[];
+    /** Grupos pequeños que se juntaron en "Otras…". */
+    agrupados: number;
+    /** Personas que no se muestran por confidencialidad. */
+    omitidos: number;
 }
 
 /** Res. 2764 de 2022, art. 3: anual si alguna forma queda en alto o muy alto. */

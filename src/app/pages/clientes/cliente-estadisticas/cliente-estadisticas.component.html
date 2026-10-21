@@ -32,6 +32,7 @@
     <p-tabs [(value)]="pestana">
       <p-tablist>
         <p-tab value="poblacion"><i class="pi pi-users mr-2"></i>Población</p-tab>
+        <p-tab value="intralaboral"><i class="pi pi-briefcase mr-2"></i>Intralaboral</p-tab>
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="poblacion">
@@ -88,6 +89,67 @@
             }
           </div>
 
+        </p-tabpanel>
+
+        <p-tabpanel value="intralaboral">
+          @if (!opcionesIntralaboral.length) {
+            <p-message severity="info" text="Aún no hay resultados intralaborales en este año." />
+          } @else {
+            <div class="selector-vista">
+              <p-selectbutton [options]="opcionesIntralaboral" [(ngModel)]="vistaIntralaboral" [allowEmpty]="false"
+                (onChange)="cambiarVistaIntralaboral()" />
+              @if (intralaboral?.forma) {
+                <span class="secundario">{{ intralaboral?.personas }} personas con resultado en la forma {{ intralaboral?.forma }}</span>
+              } @else {
+                <span class="secundario">Todas las personas con resultado intralaboral, cada una con el nivel de su forma</span>
+              }
+            </div>
+
+            @if (intralaboral; as vista) {
+              <div class="grid">
+                <div class="col-12">
+                  <p-card>
+                    <app-niveles-por-grupo [titulo]="vista.forma ? 'Ranking de dominios' : 'Dominios (A + B)'"
+                      columna="Dominio" [filas]="vista.dominios" [nota]="criterioRanking" />
+                  </p-card>
+                </div>
+
+                @if (vista.dimensiones) {
+                  <div class="col-12">
+                    <p-card>
+                      <app-niveles-por-grupo titulo="Ranking de dimensiones" columna="Dimensión" columnaDetalle="Dominio"
+                        [filas]="vista.dimensiones" [grafico]="false"
+                        [nota]="criterioRanking + ' El gráfico de cada dimensión está en su dominio, abajo.'" />
+                    </p-card>
+                  </div>
+                }
+
+                @for (ficha of vista.fichas ?? []; track ficha.nombre) {
+                  <div class="col-12">
+                    <p-card>
+                      <app-niveles-por-grupo [titulo]="ficha.nombre" columna="Dimensión" [filas]="ficha.dimensiones" />
+                    </p-card>
+                  </div>
+                }
+
+                @if (vista.porCiudad) {
+                  <div class="col-12">
+                    <p-card>
+                      <app-niveles-por-grupo titulo="Por ciudad de trabajo" columna="Ciudad" [filas]="vista.porCiudad"
+                        [nota]="vista.notaCiudad" />
+                    </p-card>
+                  </div>
+                }
+                @if (vista.porArea) {
+                  <div class="col-12">
+                    <p-card>
+                      <app-niveles-por-grupo titulo="Por área" columna="Área" [filas]="vista.porArea" [nota]="vista.notaArea" />
+                    </p-card>
+                  </div>
+                }
+              </div>
+            }
+          }
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

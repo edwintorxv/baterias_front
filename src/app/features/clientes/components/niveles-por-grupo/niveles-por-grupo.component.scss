@@ -1,0 +1,72 @@
+:host {
+    display: block;
+}
+
+.cabecera h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+}
+
+.nota {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--p-text-muted-color);
+}
+
+.secundario {
+    color: var(--p-text-muted-color);
+}
+
+.tabla {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th,
+    td {
+        padding: 0.35rem 0.5rem;
+        border-bottom: 1px solid var(--p-content-border-color);
+        text-align: left;
+    }
+
+    th {
+        font-weight: 600;
+        color: var(--p-text-muted-color);
+        white-space: nowrap;
+    }
+
+    tbody tr:hover td {
+        background: var(--p-content-hover-background);
+    }
+
+    .numero {
+        text-align: right;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .cero {
+        color: var(--p-text-muted-color);
+    }
+}
+
+.punto {
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-right: 0.35rem;
+    border-radius: 50%;
+}
+
+.desplazable {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.grafico {
+    height: 20rem;
+}

@@ -1,0 +1,45 @@
+<div class="cabecera">
+  <h3>{{ titulo }}</h3>
+</div>
+@if (nota) { <p class="nota">{{ nota }}</p> }
+
+<div class="tabla">
+  <table>
+    <thead>
+      <tr>
+        <th>{{ columna }}</th>
+        @if (columnaDetalle) { <th>{{ columnaDetalle }}</th> }
+        <th class="numero">Personas</th>
+        @for (nivel of niveles; track nivel) {
+          <th class="numero nivel">
+            <span class="punto" [style.background]="colorNivel[nivel]"></span>{{ nivelCorto[nivel] }}
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (fila of filas; track fila.nombre + (fila.detalle ?? '')) {
+        <tr>
+          <td>{{ fila.nombre }}</td>
+          @if (columnaDetalle) { <td class="secundario">{{ fila.detalle }}</td> }
+          <td class="numero">{{ fila.distribucion.total }}</td>
+          @for (nivel of niveles; track nivel) {
+            <td class="numero" [class.cero]="!cantidad(fila, nivel)"
+              [title]="cantidad(fila, nivel) + ' de ' + fila.distribucion.total + ' personas'">
+              {{ porcentaje(fila, nivel) | number: '1.1-1' }} %
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (grafico && datos && filas.length) {
+  <!-- Con muchas filas el gráfico pide más ancho que la tarjeta: se desplaza en horizontal. -->
+  <div class="desplazable">
+    <div class="grafico" [style.min-width.rem]="filas.length * 7">
+      <p-chart type="bar" [data]="datos" [options]="opciones" height="100%" />
+    </div>
+  </div>
+}
