@@ -1,7 +1,7 @@
 /** Usuario con el que el front entra solo en desarrollo (selector "Usuario de prueba"). */
 export interface UsuarioPrueba {
     etiqueta: string;
-    usuario: string;
+    correo: string;
     contrasena: string;
 }
 

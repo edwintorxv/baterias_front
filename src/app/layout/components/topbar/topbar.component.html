@@ -8,8 +8,8 @@
     <p-select
       [options]="usuariosPrueba"
       optionLabel="etiqueta"
-      optionValue="usuario"
-      [ngModel]="usuario()?.usuario"
+      optionValue="correo"
+      [ngModel]="usuario()?.correo"
       (ngModelChange)="cambiarUsuario($event)"
       [disabled]="cambiando"
       placeholder="Usuario de prueba"

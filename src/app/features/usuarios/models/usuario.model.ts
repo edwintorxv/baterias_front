@@ -6,7 +6,8 @@ import { Rol } from '../../../core/models/sesion.model';
  */
 export interface Usuario {
     id: number;
-    usuario: string;
+    /** Con él se ingresa (único, en minúsculas). */
+    correo: string;
     nombre: string;
     rol: Rol;
     idEvaluador: number | null;
@@ -24,7 +25,7 @@ export const SEVERIDAD_ROL: Record<Rol, 'contrast' | 'info' | 'success' | 'secon
 
 /** PUT /usuarios/{id}: sin contraseña (va por PUT /usuarios/{id}/contrasena). Un solo vínculo según el rol. */
 export interface UsuarioRequest {
-    usuario: string;
+    correo: string;
     nombre: string;
     rol: Rol;
     idEvaluador: number | null;

@@ -155,7 +155,7 @@ export class UsuarioListComponent {
     const termino = normalizar(this.searchControl.value.trim());
     this.lstUsuarios = this.usuarioOriginal.filter(u =>
       (!this.filtroRol || u.rol === this.filtroRol)
-      && (!termino || [u.usuario, u.nombre, u.vinculo].some(campo => normalizar(campo).includes(termino))));
+      && (!termino || [u.correo, u.nombre, u.vinculo].some(campo => normalizar(campo).includes(termino))));
   }
 
   /** Todos (sin filtros): el formulario los usa para saber qué evaluadores ya tienen usuario. */

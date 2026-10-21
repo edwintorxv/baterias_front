@@ -13,7 +13,6 @@ const MENSAJES: Record<string, (error: any) => string> = {
     telefono: () => 'De 7 a 10 dígitos, sin espacios',
     correoElectronico: () => 'Correo electrónico inválido',
     documento: () => 'Solo letras, números y guion, sin espacios ni puntos',
-    usuario: () => 'Solo minúsculas, números y . _ - sin espacios',
     igualA: () => 'Las contraseñas no coinciden',
     min: e => `Mínimo ${e.min}`,
     max: e => `Máximo ${e.max}`

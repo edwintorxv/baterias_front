@@ -4,7 +4,7 @@
       <i class="pi pi-shield"></i>
       <div>
         <h1>Batería de Riesgo Psicosocial</h1>
-        <span class="secundario">Ingrese con su usuario</span>
+        <span class="secundario">Ingrese con su correo electrónico</span>
       </div>
     </div>
 
@@ -17,10 +17,10 @@
 
     <form [formGroup]="form" (ngSubmit)="ingresar()">
       <div class="campo">
-        <label for="usuario">Usuario</label>
-        <input pInputText id="usuario" formControlName="usuario" autocomplete="username" autocapitalize="none"
-          maxlength="50" autofocus />
-        <app-error-campo [control]="form.controls.usuario" />
+        <label for="correo">Correo electrónico</label>
+        <input pInputText id="correo" type="email" formControlName="correo" autocomplete="username" autocapitalize="none"
+          inputmode="email" maxlength="100" placeholder="nombre@empresa.com" autofocus />
+        <app-error-campo [control]="form.controls.correo" />
       </div>
       <div class="campo">
         <label for="contrasena">Contraseña</label>
@@ -36,7 +36,7 @@
       <div class="desarrollo">
         <span class="secundario">Desarrollo: entrar como</span>
         <div class="botones">
-          @for (prueba of usuariosPrueba; track prueba.usuario) {
+          @for (prueba of usuariosPrueba; track prueba.correo) {
             <p-button [label]="prueba.etiqueta" size="small" severity="secondary" [outlined]="true"
               [disabled]="ingresando" (onClick)="entrarComo(prueba)" />
           }

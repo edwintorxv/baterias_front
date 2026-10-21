@@ -22,8 +22,8 @@ export class AuthService {
 
     constructor(private http: HttpClient) { }
 
-    login(usuario: string, contrasena: string): Observable<UsuarioSesion> {
-        return this.http.post<ApiResponse<LoginResponse>>(`${this.url}/login`, { usuario, contrasena }).pipe(
+    login(correo: string, contrasena: string): Observable<UsuarioSesion> {
+        return this.http.post<ApiResponse<LoginResponse>>(`${this.url}/login`, { correo, contrasena }).pipe(
             map(respuesta => respuesta.data),
             tap(sesion => this.guardar(sesion)),
             map(sesion => sesion.usuario)
@@ -61,14 +61,14 @@ export class AuthService {
         if (this.sesionVigente() || !inicial) {
             return of(null);
         }
-        return this.login(inicial.usuario, inicial.contrasena);
+        return this.login(inicial.correo, inicial.contrasena);
     }
 
     /** Vuelve a entrar con el mismo usuario de prueba (token vencido) o con el primero. */
     reingresar(): Observable<UsuarioSesion> | null {
         const usuarios = this.usuariosPrueba();
-        const actual = usuarios.find(u => u.usuario === this.usuario()?.usuario) ?? usuarios[0];
-        return actual ? this.login(actual.usuario, actual.contrasena) : null;
+        const actual = usuarios.find(u => u.correo === this.usuario()?.correo) ?? usuarios[0];
+        return actual ? this.login(actual.correo, actual.contrasena) : null;
     }
 
     private guardar(sesion: LoginResponse): void {

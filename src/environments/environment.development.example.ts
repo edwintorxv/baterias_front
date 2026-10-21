@@ -8,8 +8,8 @@ export const environment: Environment = {
     production: false,
     apiUrl: 'http://localhost:8080/api',
     usuariosPrueba: [
-        { etiqueta: 'Psicóloga', usuario: 'psicologa', contrasena: '' },
-        { etiqueta: 'Administrador', usuario: 'admin', contrasena: '' },
-        { etiqueta: 'Cliente (RRHH Cardins)', usuario: 'rrhh.cardins', contrasena: '' }
+        { etiqueta: 'Psicóloga', correo: 'psicologa@baterias.local', contrasena: '' },
+        { etiqueta: 'Administrador', correo: 'admin@baterias.local', contrasena: '' },
+        { etiqueta: 'Cliente (RRHH Cardins)', correo: 'rrhh.cardins@baterias.local', contrasena: '' }
     ]
 };

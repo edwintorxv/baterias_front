@@ -202,7 +202,7 @@
         @if (usuario(); as u) {
           <dl>
             <dt>Nombre</dt><dd>{{ u.nombre }}</dd>
-            <dt>Usuario</dt><dd>{{ u.usuario }}</dd>
+            <dt>Correo</dt><dd>{{ u.correo }}</dd>
             <dt>Rol</dt><dd>{{ nombreRol[u.rol] }}</dd>
             @if (u.idEvaluador) { <dt>Evaluador</dt><dd>#{{ u.idEvaluador }}</dd> }
             @if (u.idCliente) { <dt>Cliente</dt><dd>#{{ u.idCliente }}</dd> }

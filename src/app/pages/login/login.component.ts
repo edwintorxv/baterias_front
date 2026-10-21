@@ -12,9 +12,10 @@ import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { ResponseHandlerUtil } from '../../core/utils/response-handler.util';
 import { ErrorCampoComponent } from '../../shared/components/error-campo/error-campo.component';
+import { CustomValidators } from '../../shared/validators/custom-validators';
 
 /**
- * Inicio de sesión (fuera del layout). El error del backend se muestra tal cual: "Usuario o contraseña
+ * Inicio de sesión con el correo (fuera del layout). El error del backend se muestra tal cual: "Usuario o contraseña
  * incorrectos" (el mismo exista o no el usuario) o, tras varios intentos fallidos, "Demasiados intentos
  * fallidos. Intente de nuevo en N minutos" (429). Al entrar va a la página que se pidió (?volver=) o al Inicio.
  * En desarrollo se puede entrar con un clic como cualquiera de los usuarios de prueba.
@@ -29,7 +30,10 @@ import { ErrorCampoComponent } from '../../shared/components/error-campo/error-c
 export class LoginComponent {
 
   form = new FormGroup({
-    usuario: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(50)] }),
+    correo: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(100), CustomValidators.correoElectronico]
+    }),
     contrasena: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(100)] })
   });
 
@@ -57,19 +61,19 @@ export class LoginComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const { usuario, contrasena } = this.form.getRawValue();
-    this.entrar(usuario.trim(), contrasena);
+    const { correo, contrasena } = this.form.getRawValue();
+    this.entrar(correo.trim().toLowerCase(), contrasena);
   }
 
   /** Solo desarrollo. */
   entrarComo(prueba: UsuarioPrueba): void {
-    this.entrar(prueba.usuario, prueba.contrasena);
+    this.entrar(prueba.correo, prueba.contrasena);
   }
 
-  private entrar(usuario: string, contrasena: string): void {
+  private entrar(correo: string, contrasena: string): void {
     this.ingresando = true;
     this.error = null;
-    this.authService.login(usuario, contrasena).subscribe({
+    this.authService.login(correo, contrasena).subscribe({
       next: () => this.router.navigateByUrl(this.volver ?? '/inicio'),
       error: (error: HttpErrorResponse) => {
         this.ingresando = false;

@@ -12,7 +12,7 @@
     <div class="filtros">
       <p-iconfield>
         <p-inputicon styleClass="pi pi-search" />
-        <input type="text" pInputText placeholder="Usuario, nombre, vínculo…" [formControl]="searchControl" />
+        <input type="text" pInputText placeholder="Correo, nombre, vínculo…" [formControl]="searchControl" />
       </p-iconfield>
       <p-select [options]="opcionesRol" [(ngModel)]="filtroRol" (onChange)="filtrar()" placeholder="Rol" [showClear]="true" />
       <p-button icon="pi pi-filter-slash" severity="secondary" (onClick)="limpiar()" />
@@ -25,7 +25,7 @@
       [tableStyle]="{ 'min-width': '55rem' }">
       <ng-template #header>
         <tr>
-          <th pSortableColumn="usuario">Usuario <p-sortIcon field="usuario" /></th>
+          <th pSortableColumn="correo">Correo <p-sortIcon field="correo" /></th>
           <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre" /></th>
           <th pSortableColumn="nombreRol">Rol <p-sortIcon field="nombreRol" /></th>
           <th pSortableColumn="vinculo">Vínculo <p-sortIcon field="vinculo" /></th>
@@ -36,7 +36,7 @@
       </ng-template>
       <ng-template #body let-usuario>
         <tr [class.inactiva]="!usuario.activo">
-          <td class="font-semibold">{{ usuario.usuario }}</td>
+          <td class="font-semibold">{{ usuario.correo }}</td>
           <td>{{ usuario.nombre }}</td>
           <td><p-tag [value]="usuario.nombreRol" [severity]="usuario.severidadRol" /></td>
           <td>{{ usuario.vinculo || '—' }}</td>

@@ -68,7 +68,7 @@ export class UsuarioFormDialogComponent implements OnInit {
   ) {
     // Los largos máximos son los del backend (UsuarioCrearRequest / UsuarioRequest).
     this.usuarioForm = this.formBuilder.group({
-      usuario: ['', [Validators.required, Validators.maxLength(100), CustomValidators.usuario]],
+      correo: ['', [Validators.required, Validators.maxLength(100), CustomValidators.correoElectronico]],
       nombre: ['', [Validators.required, Validators.maxLength(200), CustomValidators.texto]],
       rol: [null as Rol | null, [Validators.required]],
       idEvaluador: [null as number | null],
@@ -108,7 +108,7 @@ export class UsuarioFormDialogComponent implements OnInit {
 
     if (this.usuario) {
       this.usuarioForm.patchValue({
-        usuario: this.usuario.usuario,
+        correo: this.usuario.correo,
         nombre: this.usuario.nombre,
         rol: this.usuario.rol,
         idEvaluador: this.usuario.idEvaluador,
@@ -206,7 +206,7 @@ export class UsuarioFormDialogComponent implements OnInit {
     const valor = this.usuarioForm.getRawValue();
     const rol = valor.rol as Rol;
     return {
-      usuario: valor.usuario.trim(),
+      correo: valor.correo.trim().toLowerCase(),
       nombre: valor.nombre.trim(),
       rol,
       idEvaluador: rol === 'PSICOLOGO' ? valor.idEvaluador : null,

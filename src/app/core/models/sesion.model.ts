@@ -10,7 +10,8 @@ export const NOMBRE_ROL: Record<Rol, string> = {
 /** GET /auth/yo y el usuario que viene en el login. */
 export interface UsuarioSesion {
     id: number;
-    usuario: string;
+    /** Con él se ingresa. */
+    correo: string;
     nombre: string;
     rol: Rol;
     idEvaluador: number | null;

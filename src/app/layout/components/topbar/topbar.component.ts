@@ -67,14 +67,14 @@ export class TopbarComponent {
     this.router.navigate(['/login']);
   }
 
-  cambiarUsuario(usuario: string): void {
-    const prueba = this.usuariosPrueba.find(u => u.usuario === usuario);
+  cambiarUsuario(correo: string): void {
+    const prueba = this.usuariosPrueba.find(u => u.correo === correo);
     if (!prueba) {
       return;
     }
     this.cambiando = true;
     const rolAnterior = this.usuario()?.rol;
-    this.authService.login(prueba.usuario, prueba.contrasena).subscribe({
+    this.authService.login(prueba.correo, prueba.contrasena).subscribe({
       next: sesion => {
         this.cambiando = false;
         // Con otro rol la pantalla actual puede no estar permitida (los guards solo corren al navegar).
