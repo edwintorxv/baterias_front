@@ -13,7 +13,7 @@
     @if (sinFirma) {
       <p-message severity="warn" styleClass="mb-3">
         Su firma no está cargada: los informes salen sin ella.
-        <a routerLink="/administracion/evaluadores" class="ml-1">Cargarla en Evaluadores</a>
+        <a routerLink="/mi-firma" class="ml-1">Cargar mi firma</a>
       </p-message>
     }
 
@@ -187,6 +187,10 @@
     } @else {
       <p-message severity="warn" text="Su usuario no tiene una empresa asociada. Comuníquese con el administrador." />
     }
+  }
+
+  @default {
+    <p-message severity="info" text="Aún no hay pantallas para su rol. Cuando esté disponible podrá responder sus cuestionarios en línea." />
   }
 }
 

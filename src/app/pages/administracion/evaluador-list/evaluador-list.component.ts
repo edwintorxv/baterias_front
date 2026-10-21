@@ -26,8 +26,8 @@ const normalizar = (texto: string | null | undefined) =>
   (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 /**
- * Evaluadores (los profesionales que firman los informes). Los ven ADMIN y PSICOLOGO; crear y editar,
- * solo el ADMIN; la firma, el ADMIN o el propio evaluador.
+ * Evaluadores (los profesionales que firman los informes): solo el ADMIN, que los crea, los edita y carga
+ * sus firmas. El psicólogo no ve a los demás: su firma la carga en "Mi firma".
  */
 @Component({
   selector: 'app-evaluador-list',
@@ -84,7 +84,7 @@ export class EvaluadorListComponent {
     authService: AuthService
   ) {
     this.esAdmin = computed(() => authService.usuario()?.rol === 'ADMIN');
-    this.puedeVer = computed(() => ['ADMIN', 'PSICOLOGO'].includes(authService.usuario()?.rol ?? ''));
+    this.puedeVer = computed(() => authService.usuario()?.rol === 'ADMIN');
     this.idEvaluadorPropio = computed(() => authService.usuario()?.idEvaluador ?? null);
     this.searchControl.valueChanges.subscribe(() => this.filtrar());
     // Se recarga al cambiar de usuario de prueba.

@@ -1,0 +1,23 @@
+.secundario {
+    color: var(--p-text-muted-color);
+}
+
+.bloque {
+    display: block;
+}
+
+dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1rem;
+    margin: 0;
+}
+
+dt {
+    color: var(--p-text-muted-color);
+}
+
+dd {
+    margin: 0;
+    font-weight: 500;
+}

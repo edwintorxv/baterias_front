@@ -31,10 +31,8 @@ export class TopbarComponent {
   usuario: Signal<UsuarioSesion | null>;
   rol: Signal<string>;
 
-  /** Menú del usuario (clic en su nombre). */
-  readonly opcionesUsuario: MenuItem[] = [
-    { label: 'Cerrar sesión', icon: 'pi pi-sign-out', command: () => this.cerrarSesion() }
-  ];
+  /** Menú del usuario (clic en su nombre): el psicólogo además tiene su firma. */
+  opcionesUsuario: Signal<MenuItem[]>;
 
   constructor(
     private authService: AuthService,
@@ -44,6 +42,12 @@ export class TopbarComponent {
   ) {
     this.usuariosPrueba = authService.usuariosPrueba();
     this.usuario = authService.usuario;
+    this.opcionesUsuario = computed(() => [
+      ...(this.usuario()?.rol === 'PSICOLOGO'
+        ? [{ label: 'Mi firma', icon: 'pi pi-pencil', command: () => this.router.navigate(['/mi-firma']) }]
+        : []),
+      { label: 'Cerrar sesión', icon: 'pi pi-sign-out', command: () => this.cerrarSesion() }
+    ]);
     this.rol = computed(() => {
       const usuario = this.usuario();
       return usuario ? NOMBRE_ROL[usuario.rol] : '';
@@ -69,9 +73,14 @@ export class TopbarComponent {
       return;
     }
     this.cambiando = true;
+    const rolAnterior = this.usuario()?.rol;
     this.authService.login(prueba.usuario, prueba.contrasena).subscribe({
       next: sesion => {
         this.cambiando = false;
+        // Con otro rol la pantalla actual puede no estar permitida (los guards solo corren al navegar).
+        if (sesion.rol !== rolAnterior) {
+          this.router.navigateByUrl('/inicio');
+        }
         this.messageService.add({
           severity: 'info', summary: 'Usuario de prueba', detail: `Ahora es ${sesion.nombre}`, life: 3000
         });

@@ -1,0 +1,40 @@
+<div class="encabezado">
+  <h1>Mi firma</h1>
+</div>
+
+@if (sinEvaluador) {
+  <p-message severity="warn" text="Su usuario no está vinculado a un evaluador. Comuníquese con el administrador." />
+} @else if (cargando && !evaluador) {
+  <p class="secundario"><i class="pi pi-spin pi-spinner mr-2"></i>Cargando…</p>
+} @else if (evaluador) {
+  <div class="grid">
+    <div class="col-12 lg:col-5">
+      <p-card header="Mis datos de evaluador">
+        <dl>
+          <dt>Nombre</dt><dd>{{ evaluador.nombre }}</dd>
+          <dt>Documento</dt><dd>{{ evaluador.numeroIdentificacion }}</dd>
+          <dt>Profesión</dt><dd>{{ evaluador.profesion }}</dd>
+          @if (evaluador.posgrado) { <dt>Posgrado</dt><dd>{{ evaluador.posgrado }}</dd> }
+          <dt>Tarjeta profesional</dt><dd>{{ evaluador.tarjetaProfesional }}</dd>
+          <dt>Licencia SO</dt>
+          <dd>
+            {{ evaluador.licenciaSaludOcupacional }}
+            @if (evaluador.fechaExpedicionLicencia) {
+              <small class="secundario">· expedida {{ evaluador.fechaExpedicionLicencia | date: 'dd/MM/yyyy' }}</small>
+            }
+          </dd>
+          <dt>Firma</dt>
+          <dd>
+            <p-tag [value]="evaluador.tieneFirma ? 'Cargada' : 'Sin firma'" [severity]="evaluador.tieneFirma ? 'success' : 'warn'" />
+          </dd>
+        </dl>
+        <small class="secundario bloque mt-3">Estos datos salen en los informes. Si hay que corregir algo, lo hace el administrador.</small>
+      </p-card>
+    </div>
+    <div class="col-12 lg:col-7">
+      <p-card header="Firma">
+        <app-evaluador-firma-dialog [evaluador]="evaluador" (saved)="firmaGuardada($event)" (cancel)="volver()" />
+      </p-card>
+    </div>
+  </div>
+}
