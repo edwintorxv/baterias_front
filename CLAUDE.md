@@ -10,6 +10,7 @@
 - Lo arranca el usuario. Verificar con `pnpm build` (las páginas van con `loadComponent` para no pasar el presupuesto de 1,5 MB del bundle inicial).
 - `src/environments/environment.development.ts` está en `.gitignore` (contraseñas de los usuarios de prueba de la BD local); se copia de `environment.development.example.ts`. El primero de `usuariosPrueba` entra solo al arrancar.
 - `ng test` (Karma) no corre en el entorno de Claude (Chrome headless no arranca).
+- **Ayudas de desarrollo** (selector "Usuario de prueba", botones "entrar como" del login, auto-login y reingreso ante 401): solo con `environment.production = false`. Se quedan hasta producción (decisión del usuario 2026-10-21); ahí se decide si se quitan del código.
 
 ## Estructura y patrones (los del proyecto del usuario `control_documental_front`, con sus errores corregidos)
 ```
