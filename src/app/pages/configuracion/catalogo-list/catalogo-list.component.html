@@ -1,0 +1,63 @@
+<div class="encabezado">
+  <h1>Catálogos</h1>
+</div>
+
+@if (!puedeVer()) {
+  <p-message severity="warn" styleClass="mb-3" text="Solo el administrador y los psicólogos consultan los catálogos." />
+} @else {
+  <p-message severity="secondary" styleClass="mb-3" icon="pi pi-info-circle"
+    text="Solo lectura: son datos maestros de la batería y se actualizan con el sistema." />
+
+  <div class="contenido">
+    <p-listbox [options]="grupos" [group]="true" optionLabel="nombre" optionGroupLabel="label" optionGroupChildren="items"
+      [ngModel]="catalogo" (ngModelChange)="seleccionar($event)" styleClass="lista-catalogos" scrollHeight="none">
+      <ng-template let-grupo #group>
+        <span class="grupo">{{ grupo.label }}</span>
+      </ng-template>
+    </p-listbox>
+
+    <div class="detalle">
+      <div class="table-header">
+        <div>
+          <h2>{{ catalogo.nombre }}</h2>
+          @if (catalogo.ayuda) { <small class="secundario">{{ catalogo.ayuda }}</small> }
+        </div>
+        <div class="filtros">
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-search" />
+            <input type="text" pInputText placeholder="Buscar…" [formControl]="searchControl" />
+          </p-iconfield>
+          <span class="secundario">{{ lstFilas.length }} registro(s)</span>
+        </div>
+      </div>
+
+      <p-card>
+        <p-table [value]="lstFilas" dataKey="id" [loading]="cargando" [rows]="25" [paginator]="lstFilas.length > 25">
+          <ng-template #header>
+            <tr>
+              <th style="width: 6rem">Código</th>
+              <th>Nombre</th>
+              @for (columna of catalogo.columnas; track columna.campo) {
+                <th>{{ columna.titulo }}</th>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #body let-fila>
+            <tr>
+              <td class="secundario">{{ fila.id }}</td>
+              <td>{{ fila.nombre }}</td>
+              @for (columna of catalogo.columnas; track columna.campo) {
+                <td>{{ fila[columna.campo] }}</td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td [attr.colspan]="2 + catalogo.columnas.length" class="text-center p-4">No hay registros con esta búsqueda.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  </div>
+}

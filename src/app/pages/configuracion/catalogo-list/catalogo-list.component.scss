@@ -1,0 +1,54 @@
+.secundario {
+    color: var(--p-text-muted-color);
+}
+
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.contenido {
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+
+    @media (max-width: 960px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+:host ::ng-deep .lista-catalogos {
+    width: 100%;
+}
+
+.grupo {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    h2 {
+        margin: 0;
+    }
+}
+
+.filtros {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    input {
+        width: 16rem;
+    }
+}

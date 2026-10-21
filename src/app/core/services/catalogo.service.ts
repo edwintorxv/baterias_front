@@ -84,6 +84,18 @@ export class CatalogoService {
         return this.listar<Catalogo>('tipo-salario', 'id');
     }
 
+    // Catálogos de la batería (solo se consultan en Configuración).
+
+    /** Los cinco niveles, de "sin riesgo" a "muy alto" (en estrés se muestran como Muy bajo…Muy alto). */
+    nivelesRiesgo(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('niveles-riesgos', 'id');
+    }
+
+    /** 1 → forma A (jefes, profesionales y técnicos); 2 → forma B (auxiliares y operarios). */
+    gruposOcupacionales(): Observable<Catalogo[]> {
+        return this.listar<Catalogo>('grupo-ocupacional', 'id');
+    }
+
     private listar<T extends Catalogo>(ruta: string, orden: 'nombre' | 'id' = 'nombre'): Observable<T[]> {
         if (!this.cache.has(ruta)) {
             const comparar = orden === 'id'

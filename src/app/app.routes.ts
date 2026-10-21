@@ -52,7 +52,11 @@ export const routes: Routes = [
           .then(m => m.EvaluadorListComponent)
       },
 
-      enConstruccion('configuracion/catalogos', 'Catálogos'),
+      {
+        path: 'configuracion/catalogos',
+        loadComponent: () => import('./pages/configuracion/catalogo-list/catalogo-list.component')
+          .then(m => m.CatalogoListComponent)
+      },
       enConstruccion('configuracion/cuestionarios', 'Cuestionarios'),
 
       { path: '', redirectTo: 'inicio', pathMatch: 'full' }
