@@ -34,6 +34,7 @@
         <p-tab value="poblacion"><i class="pi pi-users mr-2"></i>Población</p-tab>
         <p-tab value="intralaboral"><i class="pi pi-briefcase mr-2"></i>Intralaboral</p-tab>
         <p-tab value="extralaboral"><i class="pi pi-home mr-2"></i>Extralaboral</p-tab>
+        <p-tab value="estres"><i class="pi pi-heart mr-2"></i>Estrés</p-tab>
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="poblacion">
@@ -184,6 +185,61 @@
                     [nota]="extralaboral.notaArea" />
                 </p-card>
               </div>
+            </div>
+          }
+        </p-tabpanel>
+
+        <p-tabpanel value="estres">
+          @if (!inf.resultadosGlobales.estres.total || !estres) {
+            <p-message severity="info" text="Aún no hay resultados de estrés en este año." />
+          } @else {
+            <p class="secundario nota mt-2">
+              El manual del cuestionario de estrés solo trae baremos del total: el nivel (Muy bajo … Muy alto) es del
+              total; por dimensión y por síntoma se muestra con qué frecuencia se reportan.
+            </p>
+            <div class="grid">
+              <div class="col-12 lg:col-6 xl:col-4">
+                <p-card>
+                  <app-distribucion-niveles titulo="Nivel de síntomas de estrés" [distribucion]="inf.resultadosGlobales.estres" />
+                </p-card>
+              </div>
+              <div class="col-12">
+                <p-card>
+                  <app-barras-por-grupo titulo="Frecuencia de síntomas por dimensión" columna="Dimensión"
+                    columnaTotal="Respuestas (personas × ítems)" unidad="respuestas" [series]="estres.series"
+                    [filas]="estres.dimensiones"
+                    [nota]="'Cada persona responde varios ítems por dimensión: los % son sobre todas esas respuestas (personas × ítems), no sobre las personas. De la dimensión con síntomas más frecuentes a la de menos: ' + criterioFrecuencia" />
+                </p-card>
+              </div>
+              <div class="col-12">
+                <p-card>
+                  <app-niveles-por-grupo titulo="Por ciudad de trabajo" columna="Ciudad" [filas]="estres.porCiudad"
+                    [nota]="estres.notaCiudad" [estres]="true" />
+                </p-card>
+              </div>
+              <div class="col-12">
+                <p-card>
+                  <app-niveles-por-grupo titulo="Por área" columna="Área" [filas]="estres.porArea" [nota]="estres.notaArea"
+                    [estres]="true" />
+                </p-card>
+              </div>
+            </div>
+
+            <h3 class="mt-4 mb-1">Síntomas de estrés por ítem</h3>
+            <p class="secundario nota">
+              % de personas que respondió cada frecuencia en cada síntoma ({{ estres.personas }} personas); aquí cada
+              persona cuenta una vez por síntoma. Dimensiones en el orden del cuestionario; dentro de cada una, del
+              síntoma más frecuente al menos: {{ criterioFrecuencia }}
+            </p>
+            <div class="grid">
+              @for (dimension of estres.porItem; track dimension.nombre) {
+                <div class="col-12">
+                  <p-card>
+                    <app-barras-por-grupo [titulo]="dimension.nombre" columna="Síntoma" [series]="estres.series"
+                      [filas]="dimension.items" />
+                  </p-card>
+                </div>
+              }
             </div>
           }
         </p-tabpanel>

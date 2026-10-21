@@ -1,6 +1,6 @@
 /**
- * GET /clientes/{id}/informe?anio=: solo las partes que muestran las pantallas (informe y estadísticas); lo
- * que aún no se muestra —síntomas de estrés— va en el Word.
+ * GET /clientes/{id}/informe?anio=: lo que muestran las pantallas de informe y estadísticas (el Word trae lo
+ * mismo, más textos e interpretación).
  */
 export interface InformeEmpresa {
     cliente: { id: number; nit: string; nombre: string };
@@ -16,6 +16,7 @@ export interface InformeEmpresa {
     /** Formas A y B juntas. */
     concentracionIntralaboral: ConcentracionIntralaboral;
     factoresExtralaborales: FactoresExtralaborales;
+    sintomasEstres: SintomasEstres;
     conclusiones: ConclusionesEmpresa;
 }
 
@@ -112,6 +113,58 @@ export interface FactoresExtralaborales {
     /** Nivel extralaboral total por área. */
     porArea: DesgloseGrupos;
 }
+
+/**
+ * El manual de estrés no trae baremos por dimensión: por dimensión e ítem se muestra la frecuencia de cada
+ * respuesta (Siempre … Nunca); el nivel (Muy bajo … Muy alto) es solo del total.
+ */
+export interface SintomasEstres {
+    /** Personas con resultado de estrés. */
+    personas: number;
+    /** De la dimensión con síntomas más frecuentes a la de menos. */
+    dimensiones: FrecuenciaDimension[];
+    /** Cada dimensión en el orden del cuestionario, con sus síntomas del más frecuente al menos. */
+    porItem: SintomasDimension[];
+    porCiudad: DesgloseGrupos;
+    porArea: DesgloseGrupos;
+}
+
+/** El % es sobre todas las respuestas de la dimensión (personas × ítems), no sobre las personas. */
+export interface FrecuenciaDimension {
+    idDimensionCuestionario: number;
+    nombre: string;
+    personas: number;
+    items: number;
+    respuestas: number;
+    frecuencias: ConteoFrecuencia[];
+}
+
+export interface ConteoFrecuencia {
+    /** 1 Siempre, 2 Casi siempre, 3 Algunas veces, 5 Nunca (el cuestionario de estrés no usa "Casi nunca"). */
+    idOpcion: number;
+    opcion: string;
+    cantidad: number;
+    porcentaje: number;
+}
+
+export interface SintomasDimension {
+    idDimensionCuestionario: number;
+    nombre: string;
+    items: FrecuenciaItem[];
+}
+
+/** El % es sobre las personas que respondieron el ítem. */
+export interface FrecuenciaItem {
+    idPregunta: number;
+    /** Solo de referencia: no se muestra (al ir ordenados por frecuencia quedaría salteado). */
+    numero: number;
+    descripcion: string;
+    personas: number;
+    frecuencias: ConteoFrecuencia[];
+}
+
+/** Frecuencias con el semáforo del Word (DocxInformeEmpresaGenerator.colorFrecuencia): Siempre en rojo … Nunca en verde. */
+export const colorFrecuencia = (idOpcion: number): string => COLOR_NIVEL[6 - idOpcion] ?? '#9e9e9e';
 
 /** Grupos con menos de 2 personas se juntan en "Otras…" (al final); si aun juntos no llegan, se omiten. */
 export interface DesgloseGrupos {

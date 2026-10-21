@@ -9,10 +9,10 @@
       <tr>
         <th>{{ columna }}</th>
         @if (columnaDetalle) { <th>{{ columnaDetalle }}</th> }
-        <th class="numero">Personas</th>
-        @for (nivel of niveles; track nivel) {
-          <th class="numero nivel">
-            <span class="punto" [style.background]="colorNivel[nivel]"></span>{{ nivelCorto[nivel] }}
+        <th class="numero">{{ columnaTotal }}</th>
+        @for (serie of series; track serie.id) {
+          <th class="numero serie">
+            <span class="punto" [style.background]="serie.color"></span>{{ serie.corto }}
           </th>
         }
       </tr>
@@ -22,11 +22,11 @@
         <tr>
           <td>{{ fila.nombre }}</td>
           @if (columnaDetalle) { <td class="secundario">{{ fila.detalle }}</td> }
-          <td class="numero">{{ fila.distribucion.total }}</td>
-          @for (nivel of niveles; track nivel) {
-            <td class="numero" [class.cero]="!cantidad(fila, nivel)"
-              [title]="cantidad(fila, nivel) + ' de ' + fila.distribucion.total + ' personas'">
-              {{ porcentaje(fila, nivel) | number: '1.1-1' }} %
+          <td class="numero">{{ fila.totalTexto ?? fila.total }}</td>
+          @for (serie of series; track serie.id) {
+            <td class="numero" [class.cero]="!valor(fila, serie.id)?.cantidad"
+              [title]="(valor(fila, serie.id)?.cantidad ?? 0) + ' de ' + fila.total + ' ' + unidad">
+              {{ (valor(fila, serie.id)?.porcentaje ?? 0) | number: '1.1-1' }} %
             </td>
           }
         </tr>
@@ -38,7 +38,7 @@
 @if (grafico && datos && filas.length) {
   <!-- Con muchas filas el gráfico pide más ancho que la tarjeta: se desplaza en horizontal. -->
   <div class="desplazable">
-    <div class="grafico" [style.min-width.rem]="filas.length * 7">
+    <div class="grafico" [style.min-width.rem]="filas.length * series.length * 1.4 + 2">
       <p-chart type="bar" [data]="datos" [options]="opciones" height="100%" />
     </div>
   </div>

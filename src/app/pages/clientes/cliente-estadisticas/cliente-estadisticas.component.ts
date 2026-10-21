@@ -12,9 +12,16 @@ import { TabsModule } from 'primeng/tabs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
 import { DistribucionNivelesComponent } from '../../../features/clientes/components/distribucion-niveles/distribucion-niveles.component';
+import { BarrasPorGrupoComponent, FilaBarras, SerieBarras } from '../../../features/clientes/components/barras-por-grupo/barras-por-grupo.component';
 import { DistribucionCategoriasComponent } from '../../../features/clientes/components/distribucion-categorias/distribucion-categorias.component';
 import { FilaNiveles, NivelesPorGrupoComponent } from '../../../features/clientes/components/niveles-por-grupo/niveles-por-grupo.component';
-import { DesgloseGrupos, DistribucionNiveles, InformeEmpresa } from '../../../features/clientes/models/informe-empresa.model';
+import {
+  ConteoFrecuencia,
+  DesgloseGrupos,
+  DistribucionNiveles,
+  InformeEmpresa,
+  colorFrecuencia
+} from '../../../features/clientes/models/informe-empresa.model';
 import { InformeEmpresaService } from '../../../features/clientes/services/informe-empresa.service';
 
 const CONCENTRACION = 'AB';
@@ -44,6 +51,21 @@ interface VistaExtralaboral {
   porArea: FilaNiveles[];
   notaArea: string;
 }
+
+interface VistaEstres {
+  personas: number;
+  /** Siempre … Nunca, en su color. */
+  series: SerieBarras[];
+  dimensiones: FilaBarras[];
+  porItem: { nombre: string; items: FilaBarras[] }[];
+  porCiudad: FilaNiveles[];
+  notaCiudad: string;
+  porArea: FilaNiveles[];
+  notaArea: string;
+}
+
+const CRITERIO_FRECUENCIA = 'primero la de mayor % de respuestas "Siempre"; si hay empate, la de mayor % en "Casi siempre", '
+  + 'y así sucesivamente.';
 
 /** El mismo orden del backend (DistribucionNiveles.masCriticaPrimero): del nivel más alto hacia abajo. */
 const masCriticaPrimero = (a: DistribucionNiveles, b: DistribucionNiveles): number => {
@@ -90,6 +112,7 @@ const notaDesglose = (desglose: DesgloseGrupos, que: string): string => {
     SelectModule,
     SelectButtonModule,
     TabsModule,
+    BarrasPorGrupoComponent,
     DistribucionCategoriasComponent,
     DistribucionNivelesComponent,
     NivelesPorGrupoComponent
@@ -115,8 +138,12 @@ export class ClienteEstadisticasComponent implements OnInit {
   /** Extralaboral (formas A y B juntas: el cuestionario es el mismo; cambia el baremo). */
   extralaboral: VistaExtralaboral | null = null;
 
+  /** Estrés: frecuencias por dimensión e ítem, y nivel total por ciudad y área. */
+  estres: VistaEstres | null = null;
+
   readonly CONCENTRACION = CONCENTRACION;
   readonly criterioRanking = CRITERIO_RANKING;
+  readonly criterioFrecuencia = CRITERIO_FRECUENCIA;
 
   /** El cliente no tiene acceso a /clientes: no se le muestra el botón de volver al listado. */
   puedeVolver: Signal<boolean>;
@@ -168,6 +195,7 @@ export class ClienteEstadisticasComponent implements OnInit {
         this.sinInforme = null;
         this.prepararIntralaboral();
         this.prepararExtralaboral();
+        this.prepararEstres();
         this.cargando = false;
       },
       error: error => this.mostrarError(error)
@@ -233,6 +261,34 @@ export class ClienteEstadisticasComponent implements OnInit {
       notaCiudad: notaDesglose(f.porCiudad, 'ciudades'),
       porArea: grupos(f.porArea),
       notaArea: notaDesglose(f.porArea, 'áreas')
+    };
+  }
+
+  private prepararEstres(): void {
+    const s = this.informe?.sintomasEstres;
+    if (!s || !s.dimensiones.length) {
+      this.estres = null;
+      return;
+    }
+    const valores = (frecuencias: ConteoFrecuencia[]) =>
+      frecuencias.map(f => ({ id: f.idOpcion, nombre: f.opcion, cantidad: f.cantidad, porcentaje: f.porcentaje }));
+    this.estres = {
+      personas: s.personas,
+      series: s.dimensiones[0].frecuencias.map(f => ({ id: f.idOpcion, corto: f.opcion, color: colorFrecuencia(f.idOpcion) })),
+      dimensiones: s.dimensiones.map(d => ({
+        nombre: d.nombre,
+        total: d.respuestas,
+        totalTexto: `${d.respuestas.toLocaleString('es-CO')} (${d.personas} × ${d.items})`,
+        valores: valores(d.frecuencias)
+      })),
+      porItem: s.porItem.map(d => ({
+        nombre: d.nombre,
+        items: d.items.map(i => ({ nombre: i.descripcion, total: i.personas, valores: valores(i.frecuencias) }))
+      })),
+      porCiudad: grupos(s.porCiudad),
+      notaCiudad: notaDesglose(s.porCiudad, 'ciudades'),
+      porArea: grupos(s.porArea),
+      notaArea: notaDesglose(s.porArea, 'áreas')
     };
   }
 
