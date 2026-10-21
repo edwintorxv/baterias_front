@@ -1,0 +1,30 @@
+@if (filas.length) {
+  <table class="baremos">
+    <thead>
+      <tr>
+        <th>Nivel</th>
+        @for (grupo of grupos; track grupo) {
+          <th>{{ nombresGrupo[grupo] ?? 'Grupo ' + grupo }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (fila of filas; track fila.idNivel) {
+        <tr>
+          <td>
+            <span class="punto" [style.background]="colorNivel[fila.idNivel]"></span>{{ fila.nivel }}
+          </td>
+          @for (rango of fila.rangos; track $index) {
+            <td class="rango">
+              @if (rango) {
+                {{ rango.valorMinimo | number: '1.1-1' }} – {{ rango.valorMaximo | number: '1.1-1' }}
+              } @else { — }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+} @else {
+  <small class="secundario">Sin baremos.</small>
+}
