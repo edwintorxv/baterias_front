@@ -1,0 +1,95 @@
+<div class="encabezado">
+  <div class="titulo">
+    @if (puedeVolver()) {
+      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/clientes" ariaLabel="Volver a clientes" />
+    }
+    <div>
+      <h1>Estadísticas</h1>
+      @if (informe) {
+        <span class="secundario">{{ informe.cliente.nombre }} · NIT {{ informe.cliente.nit }} · Año {{ informe.anio }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="herramientas">
+    <p-select [options]="lstAnios" [(ngModel)]="anio" (onChange)="cambiarAnio()" placeholder="Año"
+      [disabled]="!lstAnios.length" />
+    <p-button label="Informe de empresa" icon="pi pi-file" severity="secondary" [outlined]="true"
+      [routerLink]="['/clientes', idCliente, 'informe']" [queryParams]="anio ? { anio } : {}" />
+  </div>
+</div>
+
+@if (sinInforme) {
+  <p-message severity="warn" [text]="sinInforme" styleClass="mb-3" />
+}
+
+@if (cargando && !informe) {
+  <p class="secundario"><i class="pi pi-spin pi-spinner mr-2"></i>Cargando estadísticas…</p>
+}
+
+@if (informe; as inf) {
+  <div [class.recargando]="cargando">
+    <p-tabs [(value)]="pestana">
+      <p-tablist>
+        <p-tab value="poblacion"><i class="pi pi-users mr-2"></i>Población</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="poblacion">
+
+          <div class="resumen">
+            <div class="tarjeta">
+              <span class="numero">{{ inf.cobertura.esperados }}</span>
+              <span class="texto">Personas esperadas</span>
+            </div>
+            <div class="tarjeta exito">
+              <span class="numero">{{ inf.cobertura.evaluados }}</span>
+              <span class="texto">Evaluadas · {{ inf.cobertura.porcentaje | number: '1.1-1' }} %</span>
+            </div>
+            <div class="tarjeta" [class.aviso]="inf.pendientesCalculo > 0">
+              <span class="numero">{{ inf.pendientesCalculo }}</span>
+              <span class="texto">Pendientes de cálculo</span>
+            </div>
+          </div>
+
+          <p class="secundario nota">
+            Características de las {{ inf.poblacion.personas }} personas evaluadas (área, ciudad y nivel académico
+            son los de su vinculación). Los porcentajes son sobre el total de cada tabla.
+          </p>
+
+          <div class="grid">
+            <div class="col-12 xl:col-6">
+              <p-card>
+                <div class="cabecera">
+                  <h3>Cobertura por ciudad</h3>
+                  <span class="secundario">evaluadas / esperadas</span>
+                </div>
+                <table class="cobertura">
+                  <tbody>
+                    @for (ciudad of inf.coberturaPorCiudad; track ciudad.ciudad) {
+                      <tr [title]="ciudad.ciudad + ': ' + ciudad.evaluados + ' de ' + ciudad.esperados">
+                        <td>{{ ciudad.ciudad }}</td>
+                        <td class="numero">{{ ciudad.evaluados }} / {{ ciudad.esperados }}</td>
+                        <td class="numero porcentaje">{{ ciudad.porcentaje | number: '1.1-1' }} %</td>
+                        <td class="barra"><span [style.width.%]="ciudad.porcentaje"></span></td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </p-card>
+            </div>
+
+            @for (variable of inf.poblacion.variables; track variable.nombre) {
+              <div class="col-12 xl:col-6">
+                <p-card>
+                  <app-distribucion-categorias [titulo]="variable.nombre" [categorias]="variable.categorias"
+                    [total]="inf.poblacion.personas" />
+                </p-card>
+              </div>
+            }
+          </div>
+
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+}

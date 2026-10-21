@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, Signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -59,7 +59,8 @@ export class ClienteInformeComponent implements OnInit {
   readonly idCliente: number;
 
   constructor(
-    route: ActivatedRoute,
+    private route: ActivatedRoute,
+    private router: Router,
     private informeEmpresaService: InformeEmpresaService,
     private messageService: MessageService,
     authService: AuthService
@@ -70,11 +71,12 @@ export class ClienteInformeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const anioPedido = Number(this.route.snapshot.queryParamMap.get('anio'));
     this.cargando = true;
     this.informeEmpresaService.anios(this.idCliente).subscribe({
       next: anios => {
         this.lstAnios = anios;
-        this.anio = anios[0] ?? null;
+        this.anio = anios.includes(anioPedido) ? anioPedido : anios[0] ?? null;
         if (this.anio) {
           this.cargarInforme();
         } else {
@@ -84,6 +86,12 @@ export class ClienteInformeComponent implements OnInit {
       },
       error: error => this.mostrarError(error)
     });
+  }
+
+  /** El año va en la URL (?anio=) para ir y volver a las estadísticas sin perderlo. */
+  cambiarAnio(): void {
+    this.router.navigate([], { relativeTo: this.route, queryParams: { anio: this.anio }, replaceUrl: true });
+    this.cargarInforme();
   }
 
   cargarInforme(): void {

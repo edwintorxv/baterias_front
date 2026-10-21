@@ -1,6 +1,6 @@
 /**
- * GET /clientes/{id}/informe?anio=: solo las partes que muestra la pantalla (el resto del JSON —formas,
- * concentración, extralaborales y síntomas por ciudad/área— va completo en el Word).
+ * GET /clientes/{id}/informe?anio=: solo las partes que muestran las pantallas (informe y estadísticas); lo
+ * que aún no se muestra —formas, concentración, extralaborales y síntomas por ciudad/área— va en el Word.
  */
 export interface InformeEmpresa {
     cliente: { id: number; nit: string; nombre: string };
@@ -9,6 +9,7 @@ export interface InformeEmpresa {
     coberturaPorCiudad: CoberturaCiudad[];
     /** Respondieron pero aún no tienen resultados: cuentan como evaluados, no entran en las tablas. */
     pendientesCalculo: number;
+    poblacion: Poblacion;
     resultadosGlobales: ResultadosGlobales;
     conclusiones: ConclusionesEmpresa;
 }
@@ -30,6 +31,25 @@ export interface ResultadosGlobales {
     extralaboral: DistribucionNiveles;
     totalGeneral: DistribucionNiveles;
     estres: DistribucionNiveles;
+}
+
+/** Características de las personas evaluadas (forma, sexo, edad, nivel académico, tipo de cargo y contrato). */
+export interface Poblacion {
+    /** Personas evaluadas: el total de cada variable. */
+    personas: number;
+    variables: VariablePoblacion[];
+}
+
+export interface VariablePoblacion {
+    nombre: string;
+    categorias: CategoriaCantidad[];
+}
+
+/** El % es sobre el total de la variable. */
+export interface CategoriaCantidad {
+    categoria: string;
+    cantidad: number;
+    porcentaje: number;
 }
 
 /** Personas por nivel de riesgo; el % es sobre el total de la tabla. */

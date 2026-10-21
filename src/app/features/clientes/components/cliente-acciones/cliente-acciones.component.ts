@@ -20,5 +20,7 @@ export class ClienteAccionesComponent {
   @Output() editar = new EventEmitter<ClienteFila>();
   @Output() personas = new EventEmitter<ClienteFila>();
   @Output() informe = new EventEmitter<ClienteFila>();
+  /** Mismo permiso que el informe: salen del mismo cálculo. */
+  @Output() estadisticas = new EventEmitter<ClienteFila>();
 
 }

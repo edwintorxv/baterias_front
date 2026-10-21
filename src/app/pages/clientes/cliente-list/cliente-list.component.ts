@@ -142,6 +142,11 @@ export class ClienteListComponent {
     this.router.navigate(['/clientes', cliente.id, 'informe']);
   }
 
+  verEstadisticas(cliente: ClienteFila): void {
+    this.displayAccionesDialog = false;
+    this.router.navigate(['/clientes', cliente.id, 'estadisticas']);
+  }
+
   clienteSaved(_cliente: Cliente): void {
     this.displayFormDialog = false;
     this.cargarClientes();

@@ -1,7 +1,7 @@
 <p class="mt-0 mb-3 secundario">{{ cliente.nombre }} · NIT {{ cliente.nit }}</p>
 
 <div class="grid">
-  <div class="col-12 md:col-4">
+  <div class="col-12 md:col-6">
     <button type="button" class="action-card" [disabled]="!puedeEditar" (click)="editar.emit(cliente)">
       <i class="pi pi-pencil action-icon text-orange-500"></i>
       <h3>Editar datos</h3>
@@ -9,7 +9,7 @@
     </button>
   </div>
 
-  <div class="col-12 md:col-4">
+  <div class="col-12 md:col-6">
     <button type="button" class="action-card" [disabled]="!puedeVerPersonas" (click)="personas.emit(cliente)">
       <i class="pi pi-users action-icon text-blue-500"></i>
       <h3>Personas</h3>
@@ -17,11 +17,19 @@
     </button>
   </div>
 
-  <div class="col-12 md:col-4">
+  <div class="col-12 md:col-6">
     <button type="button" class="action-card" [disabled]="!puedeVerInforme" (click)="informe.emit(cliente)">
       <i class="pi pi-chart-bar action-icon text-green-500"></i>
       <h3>Informe de empresa</h3>
       <p>{{ puedeVerInforme ? 'Resultados, conclusiones y Word.' : 'Solo el psicólogo.' }}</p>
+    </button>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <button type="button" class="action-card" [disabled]="!puedeVerInforme" (click)="estadisticas.emit(cliente)">
+      <i class="pi pi-chart-pie action-icon text-purple-500"></i>
+      <h3>Estadísticas</h3>
+      <p>{{ puedeVerInforme ? 'Población y resultados por año, en pantalla.' : 'Solo el psicólogo.' }}</p>
     </button>
   </div>
 </div>

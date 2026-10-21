@@ -12,8 +12,10 @@
   </div>
 
   <div class="herramientas">
-    <p-select [options]="lstAnios" [(ngModel)]="anio" (onChange)="cargarInforme()" placeholder="Año"
+    <p-select [options]="lstAnios" [(ngModel)]="anio" (onChange)="cambiarAnio()" placeholder="Año"
       [disabled]="!lstAnios.length" />
+    <p-button label="Estadísticas" icon="pi pi-chart-pie" severity="secondary" [outlined]="true"
+      [routerLink]="['/clientes', idCliente, 'estadisticas']" [queryParams]="anio ? { anio } : {}" />
     <p-button label="Descargar Word" icon="pi pi-file-word" [loading]="descargando"
       [disabled]="!puedeDescargar || cargando" (onClick)="descargarWord()" />
   </div>

@@ -1,0 +1,17 @@
+<div class="cabecera">
+  <h3>{{ titulo }}</h3>
+  @if (total !== undefined) { <span class="secundario">{{ total }} personas</span> }
+</div>
+
+<table>
+  <tbody>
+    @for (fila of categorias; track fila.categoria) {
+      <tr [title]="fila.categoria + ': ' + fila.cantidad + ' (' + (fila.porcentaje | number: '1.1-1') + ' %)'">
+        <td class="categoria">{{ fila.categoria }}</td>
+        <td class="numero">{{ fila.cantidad }}</td>
+        <td class="numero porcentaje">{{ fila.porcentaje | number: '1.1-1' }} %</td>
+        <td class="barra"><span [style.width.%]="fila.porcentaje"></span></td>
+      </tr>
+    }
+  </tbody>
+</table>

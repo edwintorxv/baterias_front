@@ -23,7 +23,7 @@
   @if (displayAccionesDialog && selectedCliente) {
     <app-cliente-acciones [cliente]="selectedCliente" [puedeEditar]="esAdmin()" [puedeVerPersonas]="esPsicologo()"
       [puedeVerInforme]="esPsicologo()" (editar)="openFormEditDialog($event)" (personas)="verPersonas($event)"
-      (informe)="verInforme($event)" />
+      (informe)="verInforme($event)" (estadisticas)="verEstadisticas($event)" />
   }
 </p-dialog>
 
