@@ -33,6 +33,7 @@
       <p-tablist>
         <p-tab value="poblacion"><i class="pi pi-users mr-2"></i>Población</p-tab>
         <p-tab value="intralaboral"><i class="pi pi-briefcase mr-2"></i>Intralaboral</p-tab>
+        <p-tab value="extralaboral"><i class="pi pi-home mr-2"></i>Extralaboral</p-tab>
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="poblacion">
@@ -149,6 +150,41 @@
                 }
               </div>
             }
+          }
+        </p-tabpanel>
+
+        <p-tabpanel value="extralaboral">
+          @if (!inf.resultadosGlobales.extralaboral.total || !extralaboral) {
+            <p-message severity="info" text="Aún no hay resultados extralaborales en este año." />
+          } @else {
+            <p class="secundario nota mt-2">
+              Formas A y B juntas: el cuestionario extralaboral es el mismo; cada persona con el baremo de su grupo ocupacional.
+            </p>
+            <div class="grid">
+              <div class="col-12 lg:col-6 xl:col-4">
+                <p-card>
+                  <app-distribucion-niveles titulo="Nivel extralaboral total" [distribucion]="inf.resultadosGlobales.extralaboral" />
+                </p-card>
+              </div>
+              <div class="col-12">
+                <p-card>
+                  <app-niveles-por-grupo titulo="Ranking de dimensiones" columna="Dimensión" [filas]="extralaboral.dimensiones"
+                    [nota]="criterioRanking" />
+                </p-card>
+              </div>
+              <div class="col-12">
+                <p-card>
+                  <app-niveles-por-grupo titulo="Por ciudad de trabajo" columna="Ciudad" [filas]="extralaboral.porCiudad"
+                    [nota]="extralaboral.notaCiudad" />
+                </p-card>
+              </div>
+              <div class="col-12">
+                <p-card>
+                  <app-niveles-por-grupo titulo="Por área" columna="Área" [filas]="extralaboral.porArea"
+                    [nota]="extralaboral.notaArea" />
+                </p-card>
+              </div>
+            </div>
           }
         </p-tabpanel>
       </p-tabpanels>

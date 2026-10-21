@@ -1,6 +1,6 @@
 /**
  * GET /clientes/{id}/informe?anio=: solo las partes que muestran las pantallas (informe y estadísticas); lo
- * que aún no se muestra —extralaborales y síntomas de estrés— va en el Word.
+ * que aún no se muestra —síntomas de estrés— va en el Word.
  */
 export interface InformeEmpresa {
     cliente: { id: number; nit: string; nombre: string };
@@ -15,6 +15,7 @@ export interface InformeEmpresa {
     formas: FormaIntralaboral[];
     /** Formas A y B juntas. */
     concentracionIntralaboral: ConcentracionIntralaboral;
+    factoresExtralaborales: FactoresExtralaborales;
     conclusiones: ConclusionesEmpresa;
 }
 
@@ -100,6 +101,15 @@ export interface ConcentracionIntralaboral {
     /** Nivel intralaboral total por ciudad de trabajo. */
     porCiudad: DesgloseGrupos;
     /** Nivel intralaboral total por área. */
+    porArea: DesgloseGrupos;
+}
+
+export interface FactoresExtralaborales {
+    /** Ranking de las dimensiones extralaborales. */
+    dimensiones: DistribucionItem[];
+    /** Nivel extralaboral total por ciudad de trabajo. */
+    porCiudad: DesgloseGrupos;
+    /** Nivel extralaboral total por área. */
     porArea: DesgloseGrupos;
 }
 

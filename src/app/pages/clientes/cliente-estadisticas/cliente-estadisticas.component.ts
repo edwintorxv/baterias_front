@@ -11,6 +11,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { TabsModule } from 'primeng/tabs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { DistribucionNivelesComponent } from '../../../features/clientes/components/distribucion-niveles/distribucion-niveles.component';
 import { DistribucionCategoriasComponent } from '../../../features/clientes/components/distribucion-categorias/distribucion-categorias.component';
 import { FilaNiveles, NivelesPorGrupoComponent } from '../../../features/clientes/components/niveles-por-grupo/niveles-por-grupo.component';
 import { DesgloseGrupos, DistribucionNiveles, InformeEmpresa } from '../../../features/clientes/models/informe-empresa.model';
@@ -34,6 +35,14 @@ interface VistaIntralaboral {
   notaCiudad?: string;
   porArea?: FilaNiveles[];
   notaArea?: string;
+}
+
+interface VistaExtralaboral {
+  dimensiones: FilaNiveles[];
+  porCiudad: FilaNiveles[];
+  notaCiudad: string;
+  porArea: FilaNiveles[];
+  notaArea: string;
 }
 
 /** El mismo orden del backend (DistribucionNiveles.masCriticaPrimero): del nivel más alto hacia abajo. */
@@ -82,6 +91,7 @@ const notaDesglose = (desglose: DesgloseGrupos, que: string): string => {
     SelectButtonModule,
     TabsModule,
     DistribucionCategoriasComponent,
+    DistribucionNivelesComponent,
     NivelesPorGrupoComponent
   ],
   templateUrl: './cliente-estadisticas.component.html',
@@ -102,6 +112,9 @@ export class ClienteEstadisticasComponent implements OnInit {
   opcionesIntralaboral: { label: string; value: number | string }[] = [];
   /** Filas ya armadas de la vista elegida (se arman una vez: el gráfico se rehace si cambia la referencia). */
   intralaboral: VistaIntralaboral | null = null;
+  /** Extralaboral (formas A y B juntas: el cuestionario es el mismo; cambia el baremo). */
+  extralaboral: VistaExtralaboral | null = null;
+
   readonly CONCENTRACION = CONCENTRACION;
   readonly criterioRanking = CRITERIO_RANKING;
 
@@ -154,6 +167,7 @@ export class ClienteEstadisticasComponent implements OnInit {
         this.informe = informe;
         this.sinInforme = null;
         this.prepararIntralaboral();
+        this.prepararExtralaboral();
         this.cargando = false;
       },
       error: error => this.mostrarError(error)
@@ -208,6 +222,17 @@ export class ClienteEstadisticasComponent implements OnInit {
         nombre: d.nombre,
         dimensiones: d.dimensiones.map(dim => ({ nombre: dim.nombre, distribucion: dim.distribucion }))
       }))
+    };
+  }
+
+  private prepararExtralaboral(): void {
+    const f = this.informe?.factoresExtralaborales;
+    this.extralaboral = !f ? null : {
+      dimensiones: f.dimensiones.map(d => ({ nombre: d.nombre, distribucion: d.distribucion })),
+      porCiudad: grupos(f.porCiudad),
+      notaCiudad: notaDesglose(f.porCiudad, 'ciudades'),
+      porArea: grupos(f.porArea),
+      notaArea: notaDesglose(f.porArea, 'áreas')
     };
   }
 
