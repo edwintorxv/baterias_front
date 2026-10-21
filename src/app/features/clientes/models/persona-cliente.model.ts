@@ -17,7 +17,6 @@ export interface PersonaCliente {
 export interface UltimaAplicacion {
     id: number;
     fecha: string;
-    estado: string | null;
     /** La persona ya respondió; sin respuestas la aplicación solo está creada. */
     conRespuestas: boolean;
     /** Ya se calcularon sus resultados (si no, el informe individual aún no sale). */

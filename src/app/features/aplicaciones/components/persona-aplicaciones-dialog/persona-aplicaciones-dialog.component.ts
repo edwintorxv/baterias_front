@@ -134,7 +134,6 @@ export class PersonaAplicacionesDialogComponent implements OnInit {
       fechaAplicacion: this.fechaHora(valor.fecha),
       observaciones: null,
       recomendaciones: null,
-      estado: null,
       atiendeClientes: valor.atiendeClientes,
       esJefe: valor.fkGrupoOcupacional === 1 ? valor.esJefe : null,
       fkEvaluador: valor.fkEvaluador
