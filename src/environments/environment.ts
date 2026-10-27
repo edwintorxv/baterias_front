@@ -6,6 +6,6 @@ import { Environment } from './environment.model';
  */
 export const environment: Environment = {
     production: true,
-    apiUrl: 'https://baterias-backend.onrender.com/api',
+    apiUrl: 'https://baterias-backend-2810.onrender.com/api',
     usuariosPrueba: []
 };
