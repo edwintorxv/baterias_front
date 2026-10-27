@@ -11,6 +11,7 @@
 - `src/environments/environment.development.ts` está en `.gitignore` (contraseñas de los usuarios de prueba de la BD local); se copia de `environment.development.example.ts`. El primero de `usuariosPrueba` entra solo al arrancar.
 - `ng test` (Karma) no corre en el entorno de Claude (Chrome headless no arranca).
 - **Ayudas de desarrollo** (selector "Usuario de prueba", botones "entrar como" del login, auto-login y reingreso ante 401): solo con `environment.production = false`. Se quedan hasta producción (decisión del usuario 2026-10-21); ahí se decide si se quitan del código.
+- **Despliegue (en curso, 2026-10-27)**: static site de Render desde la rama `despliegue` (se crea tras las pruebas). `environment.ts` apunta a `https://baterias-backend.onrender.com/api` (cambiar si Render asigna otro nombre). Node en `.node-version` (24) y pnpm en `packageManager`. En Render: build `corepack enable && pnpm install --frozen-lockfile && pnpm run build`, publish `dist/baterias_front/browser`, regla *Rewrite* `/*` → `/index.html`. El backend debe tener la URL del front en `APP_CORS_ORIGENES`.
 
 ## Estructura y patrones (los del proyecto del usuario `control_documental_front`, con sus errores corregidos)
 ```
