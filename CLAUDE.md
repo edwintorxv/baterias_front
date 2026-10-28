@@ -6,7 +6,7 @@
 > **Para retomar**: se ingresa con **correo** (V20 del backend, 2026-10-21); antes, login real, guards y menú por rol, evaluadores solo del ADMIN ("Mi firma"). Siguiente: correo con Brevo (el usuario valida cuenta y remitente) y "Cambiar mi contraseña" (ver backend, "Para retomar").
 
 ## Puesta en marcha
-- Angular 19 + PrimeNG 19 (tema Aura, `@primeuix/themes`), primeflex, primeicons. **pnpm** (`pnpm install`, `pnpm run dev` → 4200). Scripts de build aprobados en `pnpm-workspace.yaml` (`allowBuilds`).
+- Angular 19 + PrimeNG 19 (tema Aura, `@primeuix/themes`), primeflex, primeicons. **pnpm** (`pnpm install`, `pnpm run dev` → 4201, propio para no compartir caché ni sesión con otros proyectos en localhost:4200). Scripts de build aprobados en `pnpm-workspace.yaml` (`allowBuilds`).
 - Lo arranca el usuario. Verificar con `pnpm build` (las páginas van con `loadComponent` para no pasar el presupuesto de 1,5 MB del bundle inicial).
 - `src/environments/environment.development.ts` está en `.gitignore` (contraseñas de los usuarios de prueba de la BD local); se copia de `environment.development.example.ts`. El primero de `usuariosPrueba` entra solo al arrancar.
 - `ng test` (Karma) no corre en el entorno de Claude (Chrome headless no arranca).

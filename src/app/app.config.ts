@@ -4,7 +4,6 @@ import localeEsCo from '@angular/common/locales/es-CO';
 import { ApplicationConfig, LOCALE_ID, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
-import Aura from '@primeuix/themes/aura';
 import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { catchError, of } from 'rxjs';
@@ -13,6 +12,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { AuthService } from './core/services/auth.service';
 import { ThemeService } from './core/services/theme.service';
+import { PsicoBateriaPreset } from './core/theme/psicobateria.preset';
 import { ResponseHandlerUtil } from './core/utils/response-handler.util';
 
 registerLocaleData(localeEsCo);
@@ -37,7 +37,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: PsicoBateriaPreset,
         options: {
           darkModeSelector: '.dark'
         }

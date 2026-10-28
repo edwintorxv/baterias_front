@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- PsicoBatería: cabeza (lo psicosocial) con el medidor del nivel de riesgo, de bajo (claro) a alto (oscuro) -->
+  <rect width="64" height="64" rx="14" fill="#1e3a8a"/>
+  <path fill="#fff" d="M22 54V45C14.5 41.5 11 35 11 28 11 17 19.5 9 31 9 42.5 9 50 17 50 26.5L54.5 34C55.3 35.5 54.6 37 53 37H50V42.5C50 45.5 48 47.5 45 47.5H40V54Z"/>
+  <g fill="none" stroke-width="4.6" stroke-linecap="round">
+    <path d="M18.5 36A11.5 11.5 0 0 1 22.6 27.2" stroke="#93c5fd"/>
+    <path d="M25.1 25.6A11.5 11.5 0 0 1 34.9 25.6" stroke="#3b82f6"/>
+    <path d="M37.4 27.2A11.5 11.5 0 0 1 41.5 36" stroke="#1e40af"/>
+  </g>
+  <line x1="30" y1="36" x2="35.6" y2="29.4" stroke="#1e3a8a" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="30" cy="36" r="3.2" fill="#1e3a8a"/>
+</svg>

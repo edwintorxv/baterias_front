@@ -8,7 +8,7 @@ Angular 19 + PrimeNG 19 (tema Aura), primeflex y primeicons. Backend: `baterias_
 pnpm install
 cp src/environments/environment.development.example.ts src/environments/environment.development.ts
 # poner las contraseñas de los usuarios de prueba de la BD local
-pnpm dev             # http://localhost:4200 (o pnpm start)
+pnpm dev             # http://localhost:4201 (o pnpm start)
 ```
 
 `environment.development.ts` está en `.gitignore` (lleva contraseñas). En desarrollo la app entra sola con el
