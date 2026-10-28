@@ -2,11 +2,11 @@
 
 > Forma de trabajo: **paso a paso** (diseño → código → el usuario revisa → commit cuando lo pide).
 > Backend y reglas de negocio: `/Users/edwingacha/proyectos/backend/baterias_backend/CLAUDE.md` (sección 7 = estado del front).
-> Repo `https://github.com/edwintorxv/baterias_front.git`, rama `main`. Última actualización: 2026-10-21.
-> **Para retomar**: se ingresa con **correo** (V20 del backend, 2026-10-21); antes, login real, guards y menú por rol, evaluadores solo del ADMIN ("Mi firma"). Siguiente: correo con Brevo (el usuario valida cuenta y remitente) y "Cambiar mi contraseña" (ver backend, "Para retomar").
+> Repo `https://github.com/edwintorxv/baterias_front.git`, rama `main`. Última actualización: 2026-10-28.
+> **Para retomar (2026-10-28)**: desplegado en `https://baterias-front.onrender.com` (rama `despliegue`). Hoy: marca **PsicoBatería** (logo, favicon, tema azul, login y menú) y puerto 4201. Siguiente: prueba punta a punta con el cliente 4 y correo con Brevo; opcional: Administración → Ingresos (tabla `registro_ingreso` del backend, V22). Antes: se ingresa con **correo** (V20 del backend, 2026-10-21); antes, login real, guards y menú por rol, evaluadores solo del ADMIN ("Mi firma"). Siguiente: correo con Brevo (el usuario valida cuenta y remitente) y "Cambiar mi contraseña" (ver backend, "Para retomar").
 
 ## Puesta en marcha
-- Angular 19 + PrimeNG 19 (tema Aura, `@primeuix/themes`), primeflex, primeicons. **pnpm** (`pnpm install`, `pnpm run dev` → 4201, propio para no compartir caché ni sesión con otros proyectos en localhost:4200). Scripts de build aprobados en `pnpm-workspace.yaml` (`allowBuilds`).
+- Angular 19 + PrimeNG 19 (tema Aura con primario azul `blue` en `core/theme/psicobateria.preset.ts`, `@primeuix/themes`), primeflex, primeicons. **pnpm** (`pnpm install`, `pnpm run dev` → 4201, propio para no compartir caché ni sesión con otros proyectos en localhost:4200). Scripts de build aprobados en `pnpm-workspace.yaml` (`allowBuilds`).
 - Lo arranca el usuario. Verificar con `pnpm build` (las páginas van con `loadComponent` para no pasar el presupuesto de 1,5 MB del bundle inicial).
 - `src/environments/environment.development.ts` está en `.gitignore` (contraseñas de los usuarios de prueba de la BD local); se copia de `environment.development.example.ts`. El primero de `usuariosPrueba` entra solo al arrancar.
 - `ng test` (Karma) no corre en el entorno de Claude (Chrome headless no arranca).
@@ -53,4 +53,5 @@ layout/    main-layout (menú lateral fijo + topbar), menu.ts
 - ✅ Evaluadores solo ADMIN (decisión del usuario 2026-10-21; el backend también: listado solo ADMIN y `/{id}` solo el propio). **Mi firma** (`/mi-firma`, PSICOLOGO): sus datos en lectura + `app-evaluador-firma-dialog`; desde el menú de su nombre y el aviso del Inicio.
 - ✅ Ingreso con correo (V20): login con "Correo electrónico" (`CustomValidators.correoElectronico`, se envía en minúsculas), sesión y `UsuarioPrueba` con `correo` (actualizar `environment.development.ts` si cambian los correos de prueba), Usuarios con columna/buscador/formulario de correo; se quitó el validador `usuario`.
 - ✅ Ajustes menores (V21 del backend): `estado` fuera de los modelos de aplicación y de persona; `AplicacionRequest` documenta que el PUT reemplaza observaciones, recomendaciones y preguntas filtro (por eso siempre GET + PUT).
+- ✅ Marca **PsicoBatería** (2026-10-28): `public/logo.svg` (cabeza con medidor del nivel de riesgo, fondo `#1e3a8a`), `favicon.ico` (16/32/48, esquinas transparentes) y `apple-touch-icon.png` (cuadrado: iOS lo redondea); `index.html` con título, descripción, `theme-color` e íconos con `?v=2` (subir la versión si cambia el logo: Safari cachea los favicons por origen); logo y nombre (“Psico” + “Batería” en azul) en el login y el encabezado del menú lateral. Los `green` que quedan son semánticos (éxito/en orden), no la marca.
 - ⬜ Siguiente: ver la lista completa en el CLAUDE.md del backend, sección 7.
