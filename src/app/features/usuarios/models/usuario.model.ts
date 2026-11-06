@@ -23,7 +23,10 @@ export const SEVERIDAD_ROL: Record<Rol, 'contrast' | 'info' | 'success' | 'secon
     EVALUADO: 'secondary'
 };
 
-/** PUT /usuarios/{id}: sin contraseña (va por PUT /usuarios/{id}/contrasena). Un solo vínculo según el rol. */
+/**
+ * PUT /usuarios/{id}. Un solo vínculo según el rol. Nunca lleva contraseña: el administrador no la ve ni la
+ * escribe; el usuario la define con el enlace que le llega por correo.
+ */
 export interface UsuarioRequest {
     correo: string;
     nombre: string;
@@ -34,10 +37,8 @@ export interface UsuarioRequest {
     activo: boolean | null;
 }
 
-/** POST /usuarios */
-export interface UsuarioCrearRequest extends UsuarioRequest {
-    contrasena: string;
-}
+/** POST /usuarios: se crea sin contraseña y, si queda activo, recibe la invitación por correo. */
+export type UsuarioCrearRequest = UsuarioRequest;
 
 /** Roles que se pueden crear desde la pantalla: EVALUADO queda para cuando se responda en línea. */
 export const ROLES_CREABLES: Rol[] = ['ADMIN', 'PSICOLOGO', 'CLIENTE'];

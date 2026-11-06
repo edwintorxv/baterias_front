@@ -1,14 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
-import { PasswordModule } from 'primeng/password';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { NOMBRE_ROL, Rol } from '../../../../core/models/sesion.model';
-import { CONTRASENA_MAXIMO, CONTRASENA_MINIMO, generarContrasena } from '../../../../core/utils/contrasena.util';
 import { ResponseHandlerUtil } from '../../../../core/utils/response-handler.util';
 import { ErrorCampoComponent } from '../../../../shared/components/error-campo/error-campo.component';
 import { CustomValidators } from '../../../../shared/validators/custom-validators';
@@ -29,13 +27,14 @@ const VINCULO: Record<Rol, 'idEvaluador' | 'idCliente' | 'idEvaluado' | null> = 
  * Crear o editar un usuario (solo ADMIN). El vínculo cambia con el rol: evaluador activo sin usuario
  * (PSICOLOGO) o empresa (CLIENTE). EVALUADO no se crea desde aquí (queda para responder en línea); los que
  * existan se editan sin cambiar la persona. Nadie se cambia el rol ni se inactiva a sí mismo (el backend
- * también lo exige, junto con que quede al menos un ADMIN activo).
+ * también lo exige, junto con que quede al menos un ADMIN activo). Sin contraseña: al crearlo, el usuario recibe
+ * por correo el enlace para definirla.
  */
 @Component({
   selector: 'app-usuario-form-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, MessageModule, PasswordModule, SelectModule,
-    ToggleSwitchModule, ErrorCampoComponent],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, MessageModule, SelectModule, ToggleSwitchModule,
+    ErrorCampoComponent],
   templateUrl: './usuario-form-dialog.component.html',
   styleUrl: './usuario-form-dialog.component.scss'
 })
@@ -53,12 +52,9 @@ export class UsuarioFormDialogComponent implements OnInit {
   @Output() saved = new EventEmitter<Usuario>();
   @Output() cancel = new EventEmitter<void>();
 
-  readonly contrasenaMinimo = CONTRASENA_MINIMO;
-
   usuarioForm: FormGroup;
   lstRoles: { label: string; value: Rol }[] = [];
   lstEvaluadores: Evaluador[] = [];
-  contrasenaGenerada: string | null = null;
   guardando = false;
 
   constructor(
@@ -74,8 +70,6 @@ export class UsuarioFormDialogComponent implements OnInit {
       idEvaluador: [null as number | null],
       idCliente: [null as number | null],
       idEvaluado: [null as number | null],
-      contrasena: [''],
-      confirmacion: [''],
       activo: [true]
     });
   }
@@ -123,13 +117,6 @@ export class UsuarioFormDialogComponent implements OnInit {
       if (this.esYo) {
         this.usuarioForm.get('activo')?.disable();
       }
-    } else {
-      const contrasena: ValidatorFn[] = [Validators.required, Validators.minLength(CONTRASENA_MINIMO),
-        Validators.maxLength(CONTRASENA_MAXIMO)];
-      this.usuarioForm.get('contrasena')?.setValidators(contrasena);
-      this.usuarioForm.get('confirmacion')?.setValidators([Validators.required, CustomValidators.igualA('contrasena')]);
-      this.usuarioForm.get('contrasena')?.valueChanges
-        .subscribe(() => this.usuarioForm.get('confirmacion')?.updateValueAndValidity({ emitEvent: false }));
     }
     this.aplicarVinculo(this.rol);
   }
@@ -143,19 +130,6 @@ export class UsuarioFormDialogComponent implements OnInit {
       .forEach(campo => this.usuarioForm.get(campo)?.setValue(null));
   }
 
-  generar(): void {
-    const contrasena = generarContrasena();
-    this.contrasenaGenerada = contrasena;
-    this.usuarioForm.patchValue({ contrasena, confirmacion: contrasena });
-    this.usuarioForm.get('contrasena')?.markAsDirty();
-  }
-
-  copiar(texto: string): void {
-    navigator.clipboard.writeText(texto).then(
-      () => this.messageService.add({ severity: 'info', summary: 'Copiada', detail: 'La contraseña quedó en el portapapeles.' }),
-      () => this.messageService.add({ severity: 'warn', summary: 'No se pudo copiar', detail: 'Cópiela a mano.' }));
-  }
-
   guardar(): void {
     if (this.usuarioForm.invalid) {
       this.usuarioForm.markAllAsTouched();
@@ -163,10 +137,9 @@ export class UsuarioFormDialogComponent implements OnInit {
     }
 
     const request = this.toRequest();
-    const valor = this.usuarioForm.getRawValue();
     const peticion = this.usuario
       ? this.usuarioService.actualizar(this.usuario.id, request)
-      : this.usuarioService.crear({ ...request, contrasena: valor.contrasena });
+      : this.usuarioService.crear(request);
 
     this.guardando = true;
     peticion.subscribe({

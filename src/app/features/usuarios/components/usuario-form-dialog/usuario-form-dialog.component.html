@@ -62,31 +62,8 @@
 
   @if (!isEditMode) {
     <h4 class="seccion">Contraseña</h4>
-    <div class="grid">
-      <div class="col-12 md:col-5">
-        <label for="contrasena">Contraseña * <small class="nota">(mínimo {{ contrasenaMinimo }})</small></label>
-        <p-password inputId="contrasena" styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true"
-          [feedback]="false" autocomplete="new-password" formControlName="contrasena" />
-        <app-error-campo [control]="usuarioForm.get('contrasena')" />
-      </div>
-      <div class="col-12 md:col-5">
-        <label for="confirmacion">Confirmar contraseña *</label>
-        <p-password inputId="confirmacion" styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true"
-          [feedback]="false" autocomplete="new-password" formControlName="confirmacion" />
-        <app-error-campo [control]="usuarioForm.get('confirmacion')" />
-      </div>
-      <div class="col-12 md:col-2 flex align-items-start">
-        <p-button label="Generar" icon="pi pi-refresh" severity="secondary" [outlined]="true" styleClass="w-full boton-alineado"
-          (onClick)="generar()" />
-      </div>
-    </div>
-    @if (contrasenaGenerada && usuarioForm.get('contrasena')?.value === contrasenaGenerada) {
-      <div class="generada">
-        <span>Contraseña generada: <code>{{ contrasenaGenerada }}</code></span>
-        <p-button icon="pi pi-copy" [text]="true" size="small" ariaLabel="Copiar" (onClick)="copiar(contrasenaGenerada)" />
-        <small class="secundario">Entréguela al usuario por un medio seguro.</small>
-      </div>
-    }
+    <p-message severity="info" styleClass="w-full"
+      text="Al guardar, el usuario recibirá en su correo un enlace para definir su contraseña. El enlace sirve una sola vez y vence a las 48 horas; si vence, genérele otro desde sus acciones." />
   }
 
   @if (isEditMode) {

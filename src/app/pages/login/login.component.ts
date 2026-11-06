@@ -41,6 +41,8 @@ export class LoginComponent {
   error: string | null = null;
   /** La sesión anterior venció o el usuario fue desactivado (lo manda el interceptor). */
   readonly sesionTerminada: boolean;
+  /** Viene de definir la contraseña con el enlace del correo (trae ?correo= para no escribirlo de nuevo). */
+  readonly contrasenaDefinida: boolean;
   readonly usuariosPrueba: UsuarioPrueba[];
   private readonly volver: string | null;
 
@@ -52,6 +54,11 @@ export class LoginComponent {
   ) {
     const parametros = route.snapshot.queryParamMap;
     this.sesionTerminada = parametros.get('motivo') === 'sesion';
+    this.contrasenaDefinida = parametros.get('motivo') === 'contrasena';
+    const correo = parametros.get('correo');
+    if (correo) {
+      this.form.controls.correo.setValue(correo);
+    }
     this.volver = rutaInterna(parametros.get('volver'));
     this.usuariosPrueba = authService.usuariosPrueba();
   }

@@ -7,6 +7,9 @@
     </div>
     <p class="secundario indicacion">Ingrese con su correo electrónico</p>
 
+    @if (contrasenaDefinida && !error) {
+      <p-message severity="success" styleClass="mb-3" text="Contraseña definida. Ya puede ingresar." />
+    }
     @if (sesionTerminada && !error) {
       <p-message severity="info" styleClass="mb-3" text="Su sesión terminó. Vuelva a ingresar." />
     }

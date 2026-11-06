@@ -21,7 +21,7 @@ import { Cliente } from '../../../features/clientes/models/cliente.model';
 import { Evaluador } from '../../../features/evaluadores/models/evaluador.model';
 import { ClientesAsignadosDialogComponent } from '../../../features/usuarios/components/clientes-asignados-dialog/clientes-asignados-dialog.component';
 import { UsuarioAccionesComponent } from '../../../features/usuarios/components/usuario-acciones/usuario-acciones.component';
-import { UsuarioContrasenaDialogComponent } from '../../../features/usuarios/components/usuario-contrasena-dialog/usuario-contrasena-dialog.component';
+import { UsuarioEnlaceDialogComponent } from '../../../features/usuarios/components/usuario-enlace-dialog/usuario-enlace-dialog.component';
 import { UsuarioFormDialogComponent } from '../../../features/usuarios/components/usuario-form-dialog/usuario-form-dialog.component';
 import { SEVERIDAD_ROL, Usuario } from '../../../features/usuarios/models/usuario.model';
 import { UsuarioService } from '../../../features/usuarios/services/usuario.service';
@@ -60,7 +60,7 @@ const normalizar = (texto: string | null | undefined) =>
     TagModule,
     ClientesAsignadosDialogComponent,
     UsuarioAccionesComponent,
-    UsuarioContrasenaDialogComponent,
+    UsuarioEnlaceDialogComponent,
     UsuarioFormDialogComponent
   ],
   templateUrl: './usuario-list.component.html',
@@ -86,7 +86,7 @@ export class UsuarioListComponent {
   displayAccionesDialog = false;
   displayClientesDialog = false;
   displayFormDialog = false;
-  displayContrasenaDialog = false;
+  displayEnlaceDialog = false;
   selectedUsuario?: UsuarioFila;
 
   constructor(
@@ -188,9 +188,9 @@ export class UsuarioListComponent {
     this.displayFormDialog = true;
   }
 
-  openContrasenaDialog(): void {
+  openEnlaceDialog(): void {
     this.displayAccionesDialog = false;
-    this.displayContrasenaDialog = true;
+    this.displayEnlaceDialog = true;
   }
 
   usuarioGuardado(): void {

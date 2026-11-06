@@ -28,9 +28,13 @@ export class UsuarioService {
         return this.http.put<ApiResponse<Usuario>>(`${this.url}/${id}`, request);
     }
 
-    /** El administrador asigna una contraseña nueva (8 a 72 caracteres). */
-    cambiarContrasena(id: number, contrasena: string): Observable<ApiResponse<Usuario>> {
-        return this.http.put<ApiResponse<Usuario>>(`${this.url}/${id}/contrasena`, { contrasena });
+    /**
+     * Envía al usuario por correo el enlace para definir su contraseña (vence a las 48 h, un solo uso). Desde ya
+     * su contraseña anterior deja de servir y sus sesiones se cierran. La respuesta no trae el enlace.
+     * 409 si el usuario está inactivo o es uno mismo.
+     */
+    generarEnlaceContrasena(id: number): Observable<ApiResponse<Usuario>> {
+        return this.http.post<ApiResponse<Usuario>>(`${this.url}/${id}/enlace-contrasena`, null);
     }
 
     /** Ids de los clientes que ve el psicólogo. */

@@ -18,10 +18,10 @@
   </div>
 
   <div class="col-12 md:col-4">
-    <button type="button" class="action-card" (click)="contrasena.emit(usuario)">
-      <i class="pi pi-key action-icon text-green-500"></i>
-      <h3>Cambiar contraseña</h3>
-      <p>Asignar una contraseña nueva (la anterior deja de servir).</p>
+    <button type="button" class="action-card" [disabled]="!!motivoSinEnlace" (click)="enlace.emit(usuario)">
+      <i class="pi pi-envelope action-icon text-green-500"></i>
+      <h3>Enlace de contraseña</h3>
+      <p>{{ motivoSinEnlace ?? 'Enviarle por correo un enlace para definir su contraseña.' }}</p>
     </button>
   </div>
 </div>

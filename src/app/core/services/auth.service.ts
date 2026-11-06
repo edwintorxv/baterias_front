@@ -4,6 +4,7 @@ import { Observable, map, of, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { UsuarioPrueba } from '../../../environments/environment.model';
 import { ApiResponse } from '../models/api-response.model';
+import { EnlaceContrasena } from '../models/enlace-contrasena.model';
 import { LoginResponse, UsuarioSesion } from '../models/sesion.model';
 
 const CLAVE_TOKEN = 'token';
@@ -28,6 +29,21 @@ export class AuthService {
             tap(sesion => this.guardar(sesion)),
             map(sesion => sesion.usuario)
         );
+    }
+
+    /** Público: si el enlace de contraseña sirve y para quién (siempre 200; el estado dice si se puede usar). */
+    consultarEnlace(codigo: string): Observable<EnlaceContrasena> {
+        return this.http.get<ApiResponse<EnlaceContrasena>>(`${this.url}/enlace`, { params: { codigo } })
+            .pipe(map(respuesta => respuesta.data));
+    }
+
+    /**
+     * Público: define la contraseña con el enlace (un solo uso) y cierra las sesiones abiertas del usuario.
+     * Devuelve su correo para llevarlo al inicio de sesión. 409 si el enlace ya no está vigente.
+     */
+    definirContrasena(codigo: string, contrasena: string): Observable<string> {
+        return this.http.post<ApiResponse<string>>(`${this.url}/enlace`, { codigo, contrasena })
+            .pipe(map(respuesta => respuesta.data));
     }
 
     logout(): void {

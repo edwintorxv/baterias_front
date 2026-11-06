@@ -10,6 +10,12 @@ const conToken = (req: HttpRequest<unknown>, token: string | null) =>
     token ? req.clone({ headers: req.headers.set('Authorization', `Bearer ${token}`) }) : req;
 
 /**
+ * Rutas públicas que no llevan token: con una sesión vencida guardada, el backend respondería 401 aunque la
+ * ruta sea abierta (el enlace de contraseña se abre muchas veces sin haber ingresado nunca).
+ */
+const esPublica = (req: HttpRequest<unknown>) => req.url.endsWith('/auth/login') || /\/auth\/enlace(\?|$)/.test(req.url);
+
+/**
  * Pone el token en cada petición. Con 401 (token vencido o usuario desactivado): en desarrollo vuelve
  * a entrar con el usuario de prueba y repite la petición una vez; si no, cierra la sesión y lleva al login
  * con "Su sesión terminó" (las pantallas no avisan el 401: ResponseHandlerUtil lo ignora).
@@ -20,11 +26,20 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authService = inject(AuthService);
     const messageService = inject(MessageService);
     const router = inject(Router);
-    const esLogin = req.url.endsWith('/auth/login');
+    if (esPublica(req)) {
+        return next(req).pipe(
+            catchError((error: HttpErrorResponse) => {
+                if (error.status === 0) {
+                    ResponseHandlerUtil.handleError(error, messageService);
+                }
+                return throwError(() => error);
+            })
+        );
+    }
 
     return next(conToken(req, authService.token())).pipe(
         catchError((error: HttpErrorResponse) => {
-            if (error.status === 401 && !esLogin) {
+            if (error.status === 401) {
                 const reingreso = authService.reingresar();
                 if (reingreso) {
                     return reingreso.pipe(switchMap(() => next(conToken(req, authService.token()))));

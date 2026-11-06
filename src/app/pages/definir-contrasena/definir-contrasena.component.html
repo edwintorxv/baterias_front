@@ -1,0 +1,52 @@
+<div class="pagina">
+  <div class="caja">
+    <div class="marca">
+      <img src="logo.svg" alt="" width="72" height="72" />
+      <h1>Psico<span>Batería</span></h1>
+      <span class="lema">Evaluación de factores de riesgo psicosocial</span>
+    </div>
+
+    @if (cargando) {
+      <div class="flex justify-content-center p-3">
+        <p-progress-spinner strokeWidth="4" [style]="{ width: '2.5rem', height: '2.5rem' }" ariaLabel="Cargando" />
+      </div>
+    } @else if (bloqueo) {
+      <p-message severity="warn" styleClass="mb-3" [text]="bloqueo" />
+    } @else if (enlace) {
+      <p class="indicacion">
+        {{ invitacion ? 'Bienvenido(a)' : 'Hola' }}, <strong>{{ enlace.nombre }}</strong>.
+        {{ invitacion ? 'Defina la contraseña con la que ingresará' : 'Defina su nueva contraseña' }}
+        con el correo <strong>{{ enlace.correo }}</strong>.
+      </p>
+
+      @if (error) {
+        <p-message severity="error" styleClass="mb-3" [text]="error" />
+      }
+
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <!-- Para que el navegador asocie la contraseña al correo al ofrecer guardarla. -->
+        <input type="email" name="correo" autocomplete="username" [value]="enlace.correo" hidden />
+        <div class="campo">
+          <label for="contrasena">Contraseña nueva <span class="secundario">(mínimo {{ contrasenaMinimo }} caracteres)</span></label>
+          <p-password inputId="contrasena" formControlName="contrasena" [feedback]="false" [toggleMask]="true"
+            autocomplete="new-password" [maxlength]="72" styleClass="w-full" inputStyleClass="w-full" [autofocus]="true" />
+          <app-error-campo [control]="form.controls.contrasena" />
+        </div>
+        <div class="campo">
+          <label for="confirmacion">Confirmar contraseña</label>
+          <p-password inputId="confirmacion" formControlName="confirmacion" [feedback]="false" [toggleMask]="true"
+            autocomplete="new-password" [maxlength]="72" styleClass="w-full" inputStyleClass="w-full" />
+          <app-error-campo [control]="form.controls.confirmacion" />
+        </div>
+        <p-button type="submit" label="Guardar contraseña" icon="pi pi-check" [loading]="guardando" styleClass="w-full mt-2" />
+      </form>
+
+      <p class="secundario mt-3 mb-0">
+        El enlace sirve una sola vez y vence el {{ enlace.vence | date: "d 'de' MMMM 'a las' h:mm a" }}.
+      </p>
+    }
+  </div>
+
+  <p-button [icon]="themeService.tema() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'" [text]="true" [rounded]="true"
+    (onClick)="themeService.toggle()" ariaLabel="Cambiar tema" styleClass="tema" />
+</div>

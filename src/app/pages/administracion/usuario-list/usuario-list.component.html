@@ -62,8 +62,8 @@
 <p-dialog header="Acciones del usuario" [(visible)]="displayAccionesDialog" [modal]="true"
   [style]="{ width: '50rem' }" [breakpoints]="{ '768px': '95vw' }">
   @if (displayAccionesDialog && selectedUsuario) {
-    <app-usuario-acciones [usuario]="selectedUsuario" (clientes)="openClientesDialog()" (editar)="openEditarDialog()"
-      (contrasena)="openContrasenaDialog()" />
+    <app-usuario-acciones [usuario]="selectedUsuario" [idUsuarioSesion]="idUsuarioSesion()"
+      (clientes)="openClientesDialog()" (editar)="openEditarDialog()" (enlace)="openEnlaceDialog()" />
   }
 </p-dialog>
 
@@ -76,11 +76,11 @@
   }
 </p-dialog>
 
-<p-dialog header="Cambiar contraseña" [(visible)]="displayContrasenaDialog" [modal]="true"
-  [style]="{ width: '44rem' }" [breakpoints]="{ '768px': '95vw' }">
-  @if (displayContrasenaDialog && selectedUsuario) {
-    <app-usuario-contrasena-dialog [usuario]="selectedUsuario" (done)="displayContrasenaDialog = false"
-      (cancel)="displayContrasenaDialog = false" />
+<p-dialog header="Enlace de contraseña" [(visible)]="displayEnlaceDialog" [modal]="true"
+  [style]="{ width: '36rem' }" [breakpoints]="{ '640px': '95vw' }">
+  @if (displayEnlaceDialog && selectedUsuario) {
+    <app-usuario-enlace-dialog [usuario]="selectedUsuario" (done)="displayEnlaceDialog = false"
+      (cancel)="displayEnlaceDialog = false" />
   }
 </p-dialog>
 

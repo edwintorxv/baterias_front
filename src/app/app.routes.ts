@@ -21,6 +21,12 @@ export const routes: Routes = [
     canActivate: [sinSesionGuard]
   },
   {
+    // Pública (sin sesión): el enlace que llega por correo para definir la contraseña.
+    path: 'definir-contrasena',
+    loadComponent: () => import('./pages/definir-contrasena/definir-contrasena.component')
+      .then(m => m.DefinirContrasenaComponent)
+  },
+  {
     path: '',
     component: MainLayoutComponent,
     // Cada navegación revisa la sesión (el token dura 8 h; vencida → /login?volver=) y el rol (data.roles).
