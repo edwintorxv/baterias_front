@@ -3,12 +3,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { UsuarioPrueba } from '../../../../environments/environment.model';
 import { NOMBRE_ROL, UsuarioSesion } from '../../../core/models/sesion.model';
+import { CambiarContrasenaDialogComponent } from '../../../features/cuenta/components/cambiar-contrasena-dialog/cambiar-contrasena-dialog.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
@@ -16,7 +18,8 @@ import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [ButtonModule, MenuModule, SelectModule, TagModule, TooltipModule, FormsModule],
+  imports: [ButtonModule, DialogModule, MenuModule, SelectModule, TagModule, TooltipModule, FormsModule,
+    CambiarContrasenaDialogComponent],
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.scss'
 })
@@ -33,6 +36,7 @@ export class TopbarComponent {
 
   /** Menú del usuario (clic en su nombre): el psicólogo además tiene su firma. */
   opcionesUsuario: Signal<MenuItem[]>;
+  displayContrasenaDialog = false;
 
   constructor(
     private authService: AuthService,
@@ -46,6 +50,8 @@ export class TopbarComponent {
       ...(this.usuario()?.rol === 'PSICOLOGO'
         ? [{ label: 'Mi firma', icon: 'pi pi-pencil', command: () => this.router.navigate(['/mi-firma']) }]
         : []),
+      { label: 'Cambiar mi contraseña', icon: 'pi pi-key', command: () => this.displayContrasenaDialog = true },
+      { separator: true },
       { label: 'Cerrar sesión', icon: 'pi pi-sign-out', command: () => this.cerrarSesion() }
     ]);
     this.rol = computed(() => {

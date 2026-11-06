@@ -46,6 +46,18 @@ export class AuthService {
             .pipe(map(respuesta => respuesta.data));
     }
 
+    /**
+     * Cambia la propia contraseña. El backend cierra las sesiones de los demás equipos y devuelve un token nuevo, que
+     * reemplaza al actual (el anterior ya no sirve). 400 si la actual no coincide o la nueva es igual; 429 tras varios
+     * intentos fallidos (mismo freno del login). Devuelve el mensaje del backend.
+     */
+    cambiarContrasena(actual: string, nueva: string): Observable<string> {
+        return this.http.put<ApiResponse<LoginResponse>>(`${this.url}/contrasena`, { actual, nueva }).pipe(
+            tap(respuesta => this.guardar(respuesta.data)),
+            map(respuesta => respuesta.message)
+        );
+    }
+
     logout(): void {
         localStorage.removeItem(CLAVE_TOKEN);
         localStorage.removeItem(CLAVE_EXPIRA);

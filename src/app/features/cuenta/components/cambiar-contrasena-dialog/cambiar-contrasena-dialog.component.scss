@@ -1,0 +1,15 @@
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+
+    label {
+        font-weight: 500;
+    }
+}
+
+.secundario {
+    font-size: 0.85rem;
+    color: var(--p-text-muted-color);
+}

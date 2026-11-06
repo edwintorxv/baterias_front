@@ -29,6 +29,13 @@
     <p-menu #menuUsuario [model]="opcionesUsuario()" [popup]="true" appendTo="body" />
   }
 
+  <p-dialog header="Cambiar mi contraseña" [(visible)]="displayContrasenaDialog" [modal]="true"
+    [style]="{ width: '28rem' }" [breakpoints]="{ '640px': '95vw' }">
+    @if (displayContrasenaDialog) {
+      <app-cambiar-contrasena-dialog (done)="displayContrasenaDialog = false" (cancel)="displayContrasenaDialog = false" />
+    }
+  </p-dialog>
+
   <p-button
     [icon]="themeService.tema() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
     [text]="true"
