@@ -43,7 +43,8 @@ export const menuPara = (usuario: UsuarioSesion | null): MenuItem[] => {
                     expanded: true,
                     items: [
                         { label: 'Usuarios', icon: 'pi pi-user', routerLink: '/administracion/usuarios' },
-                        { label: 'Evaluadores', icon: 'pi pi-id-card', routerLink: '/administracion/evaluadores' }
+                        { label: 'Evaluadores', icon: 'pi pi-id-card', routerLink: '/administracion/evaluadores' },
+                        { label: 'Ingresos', icon: 'pi pi-sign-in', routerLink: '/administracion/ingresos' }
                     ]
                 },
                 configuracion

@@ -80,6 +80,12 @@ export const routes: Routes = [
           .then(m => m.UsuarioListComponent)
       },
       {
+        path: 'administracion/ingresos',
+        data: { roles: ADMIN },
+        loadComponent: () => import('./pages/administracion/ingreso-list/ingreso-list.component')
+          .then(m => m.IngresoListComponent)
+      },
+      {
         path: 'administracion/evaluadores',
         data: { roles: ADMIN },
         loadComponent: () => import('./pages/administracion/evaluador-list/evaluador-list.component')

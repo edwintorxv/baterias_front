@@ -85,4 +85,3 @@ Para agregar una decisión: va en su tema, con la fecha (`AAAA-MM-DD`) y el moti
 | Tema | Estado |
 |---|---|
 | Pruebas automatizadas: solo existe la prueba que genera el Angular CLI | Hoy se verifica con `pnpm build` y probando cada rol a mano |
-| Pantalla Administración → Ingresos (`registro_ingreso` del backend) | Opcional |

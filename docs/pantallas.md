@@ -17,6 +17,7 @@ Este documento es el mapa de la aplicación: qué pantallas hay, quién las ve, 
 | `/aplicaciones/:id` | Digitar una aplicación | PSICOLOGO | `pages/aplicaciones/aplicacion-digitar` |
 | `/administracion/usuarios` | Usuarios | ADMIN | `pages/administracion/usuario-list` |
 | `/administracion/evaluadores` | Evaluadores | ADMIN | `pages/administracion/evaluador-list` |
+| `/administracion/ingresos` | Ingresos | ADMIN | `pages/administracion/ingreso-list` |
 | `/configuracion/catalogos` | Catálogos | ADMIN, PSICOLOGO | `pages/configuracion/catalogo-list` |
 | `/configuracion/cuestionarios` | Cuestionarios | ADMIN, PSICOLOGO | `pages/configuracion/cuestionario-estructura` |
 | `/mi-firma` | Mi firma | PSICOLOGO | `pages/perfil/mi-firma` |
@@ -28,7 +29,7 @@ El CLIENTE, además, solo entra a las rutas `/clientes/:id/...` de **su** empres
 | Rol | Menú lateral |
 |---|---|
 | PSICOLOGO | Inicio · **Trabajo** (Clientes, Aplicaciones) · **Configuración** (Catálogos, Cuestionarios) |
-| ADMIN | Inicio · Clientes · **Administración** (Usuarios, Evaluadores) · **Configuración** (Catálogos, Cuestionarios) |
+| ADMIN | Inicio · Clientes · **Administración** (Usuarios, Evaluadores, Ingresos) · **Configuración** (Catálogos, Cuestionarios) |
 | CLIENTE | Inicio · **Mi empresa** (Informe de empresa, Estadísticas) |
 | EVALUADO | Inicio |
 
@@ -161,6 +162,15 @@ Al generar un enlace, el listado se recarga y el usuario pasa a *Pendiente*.
 ### Evaluadores (`/administracion/evaluadores`)
 
 Listado con estado y si tienen la firma cargada. ⚙️ → **Editar datos** (`app-evaluador-form-dialog`, con aviso al inactivar) y **Firma** (`app-evaluador-firma-dialog`: la actual y la nueva sobre fondo blanco; PNG o JPG de hasta 1 MB).
+
+### Ingresos (`/administracion/ingresos`)
+
+Los intentos de inicio de sesión (`GET /registro-ingresos`), solo para el ADMIN porque incluyen la IP, que es un dato personal. Se guardan 12 meses y no se exportan.
+
+- **Rango de fechas** (calendario de rango, arranca en los últimos 30 días, sin fechas futuras): consulta al backend cuando están los dos extremos. Si pasa de 2.000 intentos, un aviso pide acortarlo.
+- **Tarjetas** Intentos, Exitosos, Fallidos y Bloqueados con los totales del rango; cada una filtra la tabla.
+- **Correos con más intentos fallidos**: los 5 correos con más fallidos y bloqueados del rango, con su usuario y el último intento. Sirve para notar a alguien intentando adivinar una contraseña. Clic en el correo → la tabla muestra todos sus intentos. Se calcula en el front con las filas recibidas.
+- **Buscador** por correo, usuario o IP y **tabla**: fecha y hora, correo, usuario ("—" si el correo no es de nadie), IP, navegador resumido ("Chrome · macOS", el `User-Agent` completo en el tooltip, `navegadorCorto` en `features/ingresos/models`) y resultado (verde, amarillo, rojo).
 
 ### Mi firma (`/mi-firma`)
 

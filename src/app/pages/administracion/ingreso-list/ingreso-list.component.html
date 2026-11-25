@@ -1,0 +1,103 @@
+<div class="encabezado">
+  <div>
+    <h1>Ingresos</h1>
+    <span class="secundario">Intentos de inicio de sesión · se guardan 12 meses</span>
+  </div>
+  <p-datepicker [(ngModel)]="rango" selectionMode="range" [readonlyInput]="true" [maxDate]="hoy"
+    dateFormat="dd/mm/yy" [showIcon]="true" (onSelect)="rangoElegido()" />
+</div>
+
+@if (!esAdmin()) {
+  <p-message severity="warn" text="Solo el administrador consulta los ingresos." />
+} @else {
+  @if (avisoTruncado) {
+    <p-message severity="warn" styleClass="mb-3" [text]="avisoTruncado" />
+  }
+
+  <!-- Totales del rango; cada tarjeta filtra la tabla -->
+  <div class="resumen">
+    <button type="button" class="tarjeta" [class.activa]="filtroResultado === null" (click)="filtrarPorResultado(null)">
+      <span class="numero">{{ total }}</span>
+      <span class="texto">Intentos</span>
+    </button>
+    @for (resultado of ordenResultados; track resultado) {
+      <button type="button" class="tarjeta" [class]="resultado" [class.activa]="filtroResultado === resultado"
+        (click)="filtrarPorResultado(resultado)">
+        <span class="numero">{{ totales[resultado] }}</span>
+        <span class="texto">{{ resultados[resultado].etiqueta }}</span>
+      </button>
+    }
+  </div>
+
+  @if (sospechosos.length) {
+    <p-card styleClass="mb-3">
+      <h3 class="mt-0 mb-2">Correos con más intentos fallidos</h3>
+      <p class="secundario mt-0">Muchos fallidos seguidos o bloqueos pueden ser alguien intentando adivinar la contraseña.</p>
+      <p-table [value]="sospechosos" [tableStyle]="{ 'min-width': '40rem' }" styleClass="p-datatable-sm">
+        <ng-template #header>
+          <tr>
+            <th>Correo</th>
+            <th>Usuario</th>
+            <th class="text-right">Fallidos</th>
+            <th class="text-right">Bloqueados</th>
+            <th>Último intento</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-s>
+          <tr>
+            <td><a class="enlace" (click)="verCorreo(s.correo)" pTooltip="Ver sus intentos">{{ s.correo }}</a></td>
+            <td>{{ s.nombreUsuario || '—' }}</td>
+            <td class="text-right">{{ s.fallidos }}</td>
+            <td class="text-right">{{ s.bloqueados }}</td>
+            <td>{{ s.ultimo | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  }
+
+  <div class="table-header">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search" />
+      <input type="text" pInputText placeholder="Correo, usuario o IP…" [formControl]="searchControl" />
+    </p-iconfield>
+    <span class="secundario">{{ lstIngresos.length }} de {{ original.length }}</span>
+  </div>
+
+  <p-card>
+    <p-table [value]="lstIngresos" dataKey="id" [loading]="cargando" [rows]="25" [paginator]="lstIngresos.length > 25"
+      [rowsPerPageOptions]="[25, 50, 100]" [tableStyle]="{ 'min-width': '60rem' }">
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="fecha">Fecha y hora <p-sortIcon field="fecha" /></th>
+          <th pSortableColumn="correo">Correo <p-sortIcon field="correo" /></th>
+          <th pSortableColumn="nombreUsuario">Usuario <p-sortIcon field="nombreUsuario" /></th>
+          <th pSortableColumn="ip">IP <p-sortIcon field="ip" /></th>
+          <th pSortableColumn="navegadorCorto">Navegador <p-sortIcon field="navegadorCorto" /></th>
+          <th pSortableColumn="resultado">Resultado <p-sortIcon field="resultado" /></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-f>
+        <tr>
+          <td>{{ f.fecha | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td class="font-semibold">{{ f.correo }}</td>
+          <td>
+            @if (f.nombreUsuario) {
+              {{ f.nombreUsuario }}
+            } @else {
+              <span class="secundario" pTooltip="El correo no es de ningún usuario">—</span>
+            }
+          </td>
+          <td>{{ f.ip }}</td>
+          <td><span [pTooltip]="f.navegador">{{ f.navegadorCorto }}</span></td>
+          <td><p-tag [value]="f.etiqueta" [severity]="f.severidad" /></td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="6" class="text-center p-4">No hay intentos con estos filtros.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+}
