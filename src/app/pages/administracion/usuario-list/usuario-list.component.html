@@ -15,6 +15,8 @@
         <input type="text" pInputText placeholder="Correo, nombre, vínculo…" [formControl]="searchControl" />
       </p-iconfield>
       <p-select [options]="opcionesRol" [(ngModel)]="filtroRol" (onChange)="filtrar()" placeholder="Rol" [showClear]="true" />
+      <p-select [options]="opcionesContrasena" [(ngModel)]="filtroContrasena" (onChange)="filtrar()"
+        placeholder="Contraseña" [showClear]="true" />
       <p-button icon="pi pi-filter-slash" severity="secondary" (onClick)="limpiar()" />
     </div>
     <span class="secundario">{{ lstUsuarios.length }} usuario(s)</span>
@@ -22,7 +24,7 @@
 
   <p-card>
     <p-table [value]="lstUsuarios" dataKey="id" [loading]="cargando" [rows]="25" [paginator]="lstUsuarios.length > 25"
-      [tableStyle]="{ 'min-width': '55rem' }">
+      [tableStyle]="{ 'min-width': '64rem' }">
       <ng-template #header>
         <tr>
           <th pSortableColumn="correo">Correo <p-sortIcon field="correo" /></th>
@@ -30,6 +32,7 @@
           <th pSortableColumn="nombreRol">Rol <p-sortIcon field="nombreRol" /></th>
           <th pSortableColumn="vinculo">Vínculo <p-sortIcon field="vinculo" /></th>
           <th pSortableColumn="clientesAsignados" class="text-right">Clientes <p-sortIcon field="clientesAsignados" /></th>
+          <th pSortableColumn="estadoContrasena">Contraseña <p-sortIcon field="estadoContrasena" /></th>
           <th>Estado</th>
           <th style="width: 4rem"></th>
         </tr>
@@ -42,6 +45,24 @@
           <td>{{ usuario.vinculo || '—' }}</td>
           <td class="text-right">{{ usuario.clientesAsignados ?? '—' }}</td>
           <td>
+            @switch (usuario.estadoContrasena) {
+              @case ('DEFINIDA') {
+                <span class="secundario">{{ nombreEstadoContrasena.DEFINIDA }}</span>
+              }
+              @case ('PENDIENTE') {
+                <p-tag [value]="nombreEstadoContrasena.PENDIENTE" severity="warn"
+                  pTooltip="Tiene un enlace sin usar. Si no le llegó el correo, genere otro desde ⚙️." />
+                <div class="vence secundario">Vence {{ usuario.venceEnlace | date: 'dd/MM/yyyy HH:mm' }}</div>
+              }
+              @case ('SIN_ENLACE') {
+                <p-tag [value]="nombreEstadoContrasena.SIN_ENLACE" severity="danger"
+                  [pTooltip]="usuario.activo
+                    ? 'No ha definido su contraseña y su enlace venció o se anuló: genere otro desde ⚙️.'
+                    : 'No ha definido su contraseña. Al activarlo, genere el enlace desde ⚙️.'" />
+              }
+            }
+          </td>
+          <td>
             <p-tag [value]="usuario.activo ? 'Activo' : 'Inactivo'" [severity]="usuario.activo ? 'success' : 'secondary'" />
           </td>
           <td>
@@ -52,7 +73,7 @@
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="7" class="text-center p-4">No hay usuarios con estos filtros.</td>
+          <td colspan="8" class="text-center p-4">No hay usuarios con estos filtros.</td>
         </tr>
       </ng-template>
     </p-table>
@@ -79,7 +100,7 @@
 <p-dialog header="Enlace de contraseña" [(visible)]="displayEnlaceDialog" [modal]="true"
   [style]="{ width: '36rem' }" [breakpoints]="{ '640px': '95vw' }">
   @if (displayEnlaceDialog && selectedUsuario) {
-    <app-usuario-enlace-dialog [usuario]="selectedUsuario" (done)="displayEnlaceDialog = false"
+    <app-usuario-enlace-dialog [usuario]="selectedUsuario" (done)="enlaceGenerado()"
       (cancel)="displayEnlaceDialog = false" />
   }
 </p-dialog>

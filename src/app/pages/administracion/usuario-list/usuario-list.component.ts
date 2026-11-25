@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, Signal, computed, effect } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -11,6 +12,7 @@ import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { forkJoin, map, of } from 'rxjs';
 import { NOMBRE_ROL, Rol } from '../../../core/models/sesion.model';
 import { AuthService } from '../../../core/services/auth.service';
@@ -24,7 +26,9 @@ import { ClientesAsignadosDialogComponent } from '../../../features/usuarios/com
 import { UsuarioAccionesComponent } from '../../../features/usuarios/components/usuario-acciones/usuario-acciones.component';
 import { UsuarioEnlaceDialogComponent } from '../../../features/usuarios/components/usuario-enlace-dialog/usuario-enlace-dialog.component';
 import { UsuarioFormDialogComponent } from '../../../features/usuarios/components/usuario-form-dialog/usuario-form-dialog.component';
-import { SEVERIDAD_ROL, Usuario } from '../../../features/usuarios/models/usuario.model';
+import {
+  EstadoContrasena, NOMBRE_ESTADO_CONTRASENA, SEVERIDAD_ROL, Usuario
+} from '../../../features/usuarios/models/usuario.model';
 import { UsuarioService } from '../../../features/usuarios/services/usuario.service';
 
 /** Fila de la tabla: el usuario con su rol y su vínculo ya resueltos para mostrar. */
@@ -37,13 +41,15 @@ interface UsuarioFila extends Usuario {
 }
 
 /**
- * Usuarios del sistema (solo ADMIN): listado, crear y editar (rol, vínculo y estado), cambiar la contraseña
- * y clientes asignados a cada psicólogo.
+ * Usuarios del sistema (solo ADMIN): listado, crear y editar (rol, vínculo y estado), enlace de contraseña
+ * y clientes asignados a cada psicólogo. La columna Contraseña dice quién aún no la definió y si su enlace
+ * sigue vigente, para saber a quién reenviárselo.
  */
 @Component({
   selector: 'app-usuario-list',
   standalone: true,
   imports: [
+    DatePipe,
     FormsModule,
     ReactiveFormsModule,
     ButtonModule,
@@ -56,6 +62,7 @@ interface UsuarioFila extends Usuario {
     SelectModule,
     TableModule,
     TagModule,
+    TooltipModule,
     ClientesAsignadosDialogComponent,
     UsuarioAccionesComponent,
     UsuarioEnlaceDialogComponent,
@@ -68,8 +75,13 @@ export class UsuarioListComponent {
 
   readonly opcionesRol = (Object.keys(NOMBRE_ROL) as Rol[]).map(rol => ({ label: NOMBRE_ROL[rol], value: rol }));
 
+  readonly nombreEstadoContrasena = NOMBRE_ESTADO_CONTRASENA;
+  readonly opcionesContrasena = (['PENDIENTE', 'SIN_ENLACE', 'DEFINIDA'] as EstadoContrasena[])
+    .map(estado => ({ label: NOMBRE_ESTADO_CONTRASENA[estado], value: estado }));
+
   searchControl = new FormControl('', { nonNullable: true });
   filtroRol: Rol | null = null;
+  filtroContrasena: EstadoContrasena | null = null;
 
   private usuarioOriginal: UsuarioFila[] = [];
   /** Para el formulario: evaluadores sin usuario y empresas a vincular. */
@@ -153,6 +165,7 @@ export class UsuarioListComponent {
     const termino = normalizar(this.searchControl.value.trim());
     this.lstUsuarios = this.usuarioOriginal.filter(u =>
       (!this.filtroRol || u.rol === this.filtroRol)
+      && (!this.filtroContrasena || u.estadoContrasena === this.filtroContrasena)
       && (!termino || [u.correo, u.nombre, u.vinculo].some(campo => normalizar(campo).includes(termino))));
   }
 
@@ -163,6 +176,7 @@ export class UsuarioListComponent {
 
   limpiar(): void {
     this.filtroRol = null;
+    this.filtroContrasena = null;
     this.searchControl.setValue('');
   }
 
@@ -189,6 +203,12 @@ export class UsuarioListComponent {
   openEnlaceDialog(): void {
     this.displayAccionesDialog = false;
     this.displayEnlaceDialog = true;
+  }
+
+  /** Generado el enlace, el usuario pasa a Pendiente: se recarga para verlo. */
+  enlaceGenerado(): void {
+    this.displayEnlaceDialog = false;
+    this.cargar();
   }
 
   usuarioGuardado(): void {

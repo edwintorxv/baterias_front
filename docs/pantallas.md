@@ -143,7 +143,14 @@ Los grupos con menos de 2 personas se juntan en "Otras ciudades/áreas" o se omi
 
 ### Usuarios (`/administracion/usuarios`)
 
-Listado con rol, vínculo (evaluador o empresa) y clientes asignados de cada psicólogo, con buscador y filtro por rol.
+Listado con rol, vínculo (evaluador o empresa), clientes asignados de cada psicólogo y **estado de la contraseña**, con buscador y filtros por rol y por contraseña.
+
+La columna **Contraseña** responde "¿ya puede ingresar?":
+- *Definida*, en gris: ya tiene contraseña.
+- *Pendiente*, en amarillo, con la fecha en que vence su enlace: tiene uno sin usar. Si dice que no le llegó el correo, se le genera otro.
+- *Sin enlace vigente*, en rojo: no tiene contraseña y su enlace venció o se anuló. Hay que generarle otro (si está inactivo, al activarlo).
+
+Al generar un enlace, el listado se recarga y el usuario pasa a *Pendiente*.
 
 | Acción | Componente | Qué hace |
 |---|---|---|

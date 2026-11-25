@@ -1,6 +1,18 @@
 import { Rol } from '../../../core/models/sesion.model';
 
 /**
+ * Si el usuario ya puede ingresar: DEFINIDA (tiene contraseña), PENDIENTE (tiene un enlace sin usar, que vence en
+ * `venceEnlace`) o SIN_ENLACE (su enlace venció o se anuló: hay que generarle otro).
+ */
+export type EstadoContrasena = 'DEFINIDA' | 'PENDIENTE' | 'SIN_ENLACE';
+
+export const NOMBRE_ESTADO_CONTRASENA: Record<EstadoContrasena, string> = {
+    DEFINIDA: 'Definida',
+    PENDIENTE: 'Pendiente',
+    SIN_ENLACE: 'Sin enlace vigente'
+};
+
+/**
  * GET /usuarios (solo ADMIN). El vínculo depende del rol: PSICOLOGO → evaluador, CLIENTE → cliente,
  * EVALUADO → persona; ADMIN sin vínculo.
  */
@@ -14,6 +26,9 @@ export interface Usuario {
     idCliente: number | null;
     idEvaluado: number | null;
     activo: boolean;
+    estadoContrasena: EstadoContrasena;
+    /** Solo si está PENDIENTE: vencimiento del enlace (hora local, yyyy-MM-ddTHH:mm:ss). */
+    venceEnlace: string | null;
 }
 
 export const SEVERIDAD_ROL: Record<Rol, 'contrast' | 'info' | 'success' | 'secondary'> = {
