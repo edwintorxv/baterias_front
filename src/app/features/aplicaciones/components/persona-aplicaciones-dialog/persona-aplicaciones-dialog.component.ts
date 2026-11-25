@@ -11,6 +11,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { catchError, forkJoin, of } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CatalogoService } from '../../../../core/services/catalogo.service';
+import { fechaHoraLocal } from '../../../../core/utils/fecha.util';
 import { ResponseHandlerUtil } from '../../../../core/utils/response-handler.util';
 import { ErrorCampoComponent } from '../../../../shared/components/error-campo/error-campo.component';
 import { PersonaCliente } from '../../../clientes/models/persona-cliente.model';
@@ -131,7 +132,7 @@ export class PersonaAplicacionesDialogComponent implements OnInit {
     this.aplicacionService.crear({
       fkEvaluadoCliente: this.persona.idRelacion,
       fkGrupoOcupacional: valor.fkGrupoOcupacional,
-      fechaAplicacion: this.fechaHora(valor.fecha),
+      fechaAplicacion: fechaHoraLocal(valor.fecha),
       observaciones: null,
       recomendaciones: null,
       atiendeClientes: valor.atiendeClientes,
@@ -148,14 +149,6 @@ export class PersonaAplicacionesDialogComponent implements OnInit {
         ResponseHandlerUtil.handleError(error, this.messageService);
       }
     });
-  }
-
-  /** El día elegido con la hora actual, en hora local (yyyy-MM-ddTHH:mm:ss, sin cambiar de día por la zona). */
-  private fechaHora(fecha: Date): string {
-    const ahora = new Date();
-    const dos = (n: number) => String(n).padStart(2, '0');
-    return `${fecha.getFullYear()}-${dos(fecha.getMonth() + 1)}-${dos(fecha.getDate())}`
-      + `T${dos(ahora.getHours())}:${dos(ahora.getMinutes())}:${dos(ahora.getSeconds())}`;
   }
 
 }

@@ -11,15 +11,12 @@ import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { normalizar } from '../../../core/utils/texto.util';
 import { ClienteAccionesComponent } from '../../../features/clientes/components/cliente-acciones/cliente-acciones.component';
 import { ClienteFormDialogComponent } from '../../../features/clientes/components/cliente-form-dialog/cliente-form-dialog.component';
 import { ClienteTableComponent } from '../../../features/clientes/components/cliente-table/cliente-table.component';
 import { Cliente, ClienteFila } from '../../../features/clientes/models/cliente.model';
 import { ClienteService } from '../../../features/clientes/services/cliente.service';
-
-/** Sin mayúsculas ni tildes, para buscar "medellin" y encontrar "MEDELLÍN". */
-const normalizar = (texto: string | null | undefined) =>
-  (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 @Component({
   selector: 'app-cliente-list',

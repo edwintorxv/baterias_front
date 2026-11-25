@@ -15,6 +15,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { catchError, concatMap, from, map, of } from 'rxjs';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { normalizar } from '../../../core/utils/texto.util';
 import { AplicacionListado } from '../../../features/aplicaciones/models/aplicacion-listado.model';
 import { ESTADO_APLICACION, EstadoAplicacion } from '../../../features/aplicaciones/models/formulario-aplicacion.model';
 import { AplicacionService } from '../../../features/aplicaciones/services/aplicacion.service';
@@ -33,9 +34,6 @@ interface CalculoFila {
   fila: AplicacionFila;
   error: string | null;
 }
-
-const normalizar = (texto: string | null | undefined) =>
-  (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 /**
  * Listado general de aplicaciones de los clientes asignados al psicólogo: filtros por empresa, año, estado y

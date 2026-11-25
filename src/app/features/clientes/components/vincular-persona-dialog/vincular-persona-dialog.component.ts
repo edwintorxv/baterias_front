@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { Observable, forkJoin, of, switchMap } from 'rxjs';
 import { CatalogoService } from '../../../../core/services/catalogo.service';
+import { fechaLocal } from '../../../../core/utils/fecha.util';
 import { ResponseHandlerUtil } from '../../../../core/utils/response-handler.util';
 import { ErrorCampoComponent } from '../../../../shared/components/error-campo/error-campo.component';
 import { Catalogo } from '../../../../shared/models/catalogo.model';
@@ -311,9 +312,7 @@ export class VincularPersonaDialogComponent implements OnInit {
       fkTipoContrato: valor.fkTipoContrato,
       fkHorasLabor: valor.fkHorasLabor,
       fkTipoSalario: valor.fkTipoSalario,
-      fechaVinculacion: fecha
-        ? `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`
-        : null
+      fechaVinculacion: fecha ? fechaLocal(fecha) : null
     };
   }
 

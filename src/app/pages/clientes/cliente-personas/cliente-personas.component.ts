@@ -15,6 +15,7 @@ import { TagModule } from 'primeng/tag';
 import { forkJoin } from 'rxjs';
 import { guardarArchivo } from '../../../core/utils/archivo.util';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { normalizar } from '../../../core/utils/texto.util';
 import { CargaPersonasDialogComponent } from '../../../features/clientes/components/carga-personas-dialog/carga-personas-dialog.component';
 import { PersonaAplicacionesDialogComponent } from '../../../features/aplicaciones/components/persona-aplicaciones-dialog/persona-aplicaciones-dialog.component';
 import { InformeIndividualDialogComponent } from '../../../features/clientes/components/informe-individual-dialog/informe-individual-dialog.component';
@@ -40,9 +41,6 @@ interface PersonaFila extends PersonaCliente {
 }
 
 type FiltroEstado = 'ACTIVOS' | 'INACTIVOS' | 'TODOS';
-
-const normalizar = (texto: string | null | undefined) =>
-  (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 /** Personas de un cliente (solo el psicólogo): quiénes son, dónde trabajan y en qué va su aplicación. */
 @Component({

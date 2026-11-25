@@ -16,6 +16,7 @@ import { TagModule } from 'primeng/tag';
 import { AuthService } from '../../../core/services/auth.service';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { normalizar } from '../../../core/utils/texto.util';
 import { TablaBaremosComponent } from '../../../features/cuestionarios/components/tabla-baremos/tabla-baremos.component';
 import {
   CONDICION_APLICACION,
@@ -36,9 +37,6 @@ interface PreguntaEncontrada {
   dimension: string;
   dominio: string | null;
 }
-
-const normalizar = (texto: string | null | undefined) =>
-  (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 /**
  * Configuración de los cuestionarios en solo lectura (ADMIN y PSICOLOGO): una pestaña por cuestionario con su

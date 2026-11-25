@@ -6,6 +6,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { fechaLocal } from '../../../../core/utils/fecha.util';
 import { ResponseHandlerUtil } from '../../../../core/utils/response-handler.util';
 import { ErrorCampoComponent } from '../../../../shared/components/error-campo/error-campo.component';
 import { CustomValidators } from '../../../../shared/validators/custom-validators';
@@ -115,8 +116,7 @@ export class EvaluadorFormDialogComponent implements OnInit {
       posgrado: valor.posgrado?.trim() || null,
       tarjetaProfesional: valor.tarjetaProfesional.trim(),
       licenciaSaludOcupacional: valor.licenciaSaludOcupacional.trim(),
-      fechaExpedicionLicencia:
-        `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`,
+      fechaExpedicionLicencia: fechaLocal(fecha),
       activo: valor.activo
     };
   }

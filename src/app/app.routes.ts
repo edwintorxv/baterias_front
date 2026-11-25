@@ -3,10 +3,6 @@ import { rolGuard } from './core/guards/rol.guard';
 import { sesionGuard, sinSesionGuard } from './core/guards/sesion.guard';
 import { Rol } from './core/models/sesion.model';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
-import { EnConstruccionComponent } from './pages/en-construccion/en-construccion.component';
-
-const enConstruccion = (path: string, titulo: string) =>
-  ({ path, component: EnConstruccionComponent, data: { titulo } });
 
 // Roles de cada pantalla (la tabla de permisos del backend; ver rolGuard).
 const ADMIN_PSICOLOGO: Rol[] = ['ADMIN', 'PSICOLOGO'];

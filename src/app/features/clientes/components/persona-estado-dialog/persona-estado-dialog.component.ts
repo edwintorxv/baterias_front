@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { MessageModule } from 'primeng/message';
+import { fechaLocal } from '../../../../core/utils/fecha.util';
 import { ResponseHandlerUtil } from '../../../../core/utils/response-handler.util';
 import { EvaluadoCliente } from '../../../evaluados/models/evaluado-cliente.model';
 import { EvaluadoClienteService } from '../../../evaluados/services/evaluado-cliente.service';
@@ -14,9 +15,6 @@ const aFecha = (texto: string) => {
   const [anio, mes, dia] = texto.split('-').map(Number);
   return new Date(anio, mes - 1, dia);
 };
-
-const aTexto = (fecha: Date) =>
-  `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
 
 /**
  * Inactivar (con fecha de retiro) o activar la relación de una persona con el cliente. Se manda la relación
@@ -69,7 +67,7 @@ export class PersonaEstadoDialogComponent implements OnInit {
       ...datos,
       fechaVinculacion: null,
       activo: !this.inactivar,
-      fechaRetiro: this.inactivar ? aTexto(this.fechaRetiro) : null
+      fechaRetiro: this.inactivar ? fechaLocal(this.fechaRetiro) : null
     }).subscribe({
       next: () => {
         this.guardando = false;

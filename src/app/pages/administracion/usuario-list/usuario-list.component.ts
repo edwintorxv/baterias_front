@@ -15,6 +15,7 @@ import { forkJoin, map, of } from 'rxjs';
 import { NOMBRE_ROL, Rol } from '../../../core/models/sesion.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { normalizar } from '../../../core/utils/texto.util';
 import { ClienteService } from '../../../features/clientes/services/cliente.service';
 import { EvaluadorService } from '../../../features/evaluadores/services/evaluador.service';
 import { Cliente } from '../../../features/clientes/models/cliente.model';
@@ -34,9 +35,6 @@ interface UsuarioFila extends Usuario {
   /** Solo psicólogos: cuántos clientes ve. */
   clientesAsignados: number | null;
 }
-
-const normalizar = (texto: string | null | undefined) =>
-  (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 /**
  * Usuarios del sistema (solo ADMIN): listado, crear y editar (rol, vínculo y estado), cambiar la contraseña

@@ -32,7 +32,7 @@ src/app/
 │   ├── models/                  ApiResponse/ApiError, sesión, enlace de contraseña
 │   ├── services/                AuthService, CatalogoService (con caché), ThemeService
 │   ├── theme/                   preset PsicoBatería de PrimeNG
-│   └── utils/                   ResponseHandlerUtil, archivo.util, contrasena.util
+│   └── utils/                   ResponseHandlerUtil, archivo, fecha, texto, contrasena
 ├── shared/                      piezas sin estado que usan varios módulos
 │   ├── components/error-campo/  mensaje de validación debajo de cada campo
 │   ├── validators/              CustomValidators + mensajes en español

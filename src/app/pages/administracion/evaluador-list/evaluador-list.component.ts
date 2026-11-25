@@ -14,6 +14,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { AuthService } from '../../../core/services/auth.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { normalizar } from '../../../core/utils/texto.util';
 import { EvaluadorAccionesComponent } from '../../../features/evaluadores/components/evaluador-acciones/evaluador-acciones.component';
 import { EvaluadorFirmaDialogComponent } from '../../../features/evaluadores/components/evaluador-firma-dialog/evaluador-firma-dialog.component';
 import { EvaluadorFormDialogComponent } from '../../../features/evaluadores/components/evaluador-form-dialog/evaluador-form-dialog.component';
@@ -21,9 +22,6 @@ import { Evaluador } from '../../../features/evaluadores/models/evaluador.model'
 import { EvaluadorService } from '../../../features/evaluadores/services/evaluador.service';
 
 type FiltroEstado = 'ACTIVOS' | 'INACTIVOS' | 'TODOS';
-
-const normalizar = (texto: string | null | undefined) =>
-  (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 /**
  * Evaluadores (los profesionales que firman los informes): solo el ADMIN, que los crea, los edita y carga

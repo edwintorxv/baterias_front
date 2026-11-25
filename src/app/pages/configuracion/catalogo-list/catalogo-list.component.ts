@@ -13,6 +13,7 @@ import { Observable, forkJoin, map } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { ResponseHandlerUtil } from '../../../core/utils/response-handler.util';
+import { normalizar } from '../../../core/utils/texto.util';
 import { Catalogo } from '../../../shared/models/catalogo.model';
 
 /** Una fila de cualquier catálogo: id, nombre y las columnas propias de ese catálogo. */
@@ -36,9 +37,6 @@ interface GrupoCatalogos {
   label: string;
   items: DefinicionCatalogo[];
 }
-
-const normalizar = (texto: string | number | null | undefined) =>
-  String(texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 const FORMA_POR_GRUPO: Record<number, string> = { 1: 'A', 2: 'B' };
 

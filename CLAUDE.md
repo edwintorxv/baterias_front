@@ -3,6 +3,7 @@
 > Forma de trabajo: **paso a paso** (diseño → código → el usuario revisa → commit cuando lo pide).
 > Backend y reglas de negocio: `/Users/edwingacha/proyectos/backend/baterias_backend/CLAUDE.md` (sección 7 = estado del front).
 > Repo `https://github.com/edwintorxv/baterias_front.git`, rama `main`. Última actualización: 2026-11-25.
+> **Limpieza (2026-11-25)**: `normalizar` en `core/utils/texto.util.ts` y `fechaLocal`/`fechaHoraLocal` en `core/utils/fecha.util.ts` (usarlas; no copiar otra versión); se borró `pages/en-construccion`.
 > **Documentación técnica (2026-11-25)**: `README.md` + `docs/` (arquitectura, pantallas, seguridad, patrones, gráficos y tema, despliegue, decisiones; diagramas Mermaid). **Mantenerla al día**: un cambio de pantallas, rutas, permisos, patrones o despliegue actualiza el documento que corresponda en el mismo commit; una decisión nueva del usuario va en `docs/decisiones.md` (fecha y motivo). Versión en Word con la herramienta del backend (`herramientas/manuales`, `npm run generar:front`): regenerarla si cambia un `.md`. Las referencias a documentos del backend se escriben `baterias_backend/docs/x.md` (así el Word no las confunde con un capítulo del front).
 > **Para retomar (2026-11-06)**: correo con Brevo **completo y desplegado** (enlace de contraseña, página pública `/definir-contrasena`, "Cambiar mi contraseña" en el menú del nombre). Siguiente: por elegir (ver backend, sección 7). Sin "¿Olvidó su contraseña?" (decisión del usuario). El backend local **envía correos de verdad** (clave de Brevo en su `.env`): no generar enlaces a correos `@baterias.local`; para probar, correo real con alias de Gmail y actualizar `environment.development.ts`. Opcional: Administración → Ingresos (tabla `registro_ingreso`, V22). Hecho el 2026-10-29: prueba punta a punta del cliente 4; los datos locales son la **demo para reuniones** (todo se carga por pantalla, sin scripts). El 2026-10-28: marca **PsicoBatería** y puerto 4201. Antes: se ingresa con **correo** (V20 del backend, 2026-10-21); antes, login real, guards y menú por rol, evaluadores solo del ADMIN ("Mi firma"). Siguiente: correo con Brevo (el usuario valida cuenta y remitente) y "Cambiar mi contraseña" (ver backend, "Para retomar").
 
@@ -11,12 +12,12 @@
 - Lo arranca el usuario. Verificar con `pnpm build` (las páginas van con `loadComponent` para no pasar el presupuesto de 1,5 MB del bundle inicial).
 - `src/environments/environment.development.ts` está en `.gitignore` (contraseñas de los usuarios de prueba de la BD local); se copia de `environment.development.example.ts`. El primero de `usuariosPrueba` entra solo al arrancar.
 - `ng test` (Karma) no corre en el entorno de Claude (Chrome headless no arranca).
-- **Ayudas de desarrollo** (selector "Usuario de prueba", botones "entrar como" del login, auto-login y reingreso ante 401): solo con `environment.production = false`. Se quedan hasta producción (decisión del usuario 2026-10-21); ahí se decide si se quitan del código.
+- **Ayudas de desarrollo** (selector "Usuario de prueba", botones "entrar como" del login, auto-login y reingreso ante 401): solo con `environment.production = false`. Se quedan en el código (decisión del usuario 2026-11-25, reemplaza la del 2026-10-21).
 - **Despliegue (en curso, 2026-10-27)**: static site de Render desde la rama `despliegue` (se crea tras las pruebas). `environment.ts` apunta a `https://baterias-backend-2810.onrender.com/api` (cambiar si Render asigna otro nombre). Node en `.node-version` (24) y pnpm en `packageManager`. En Render: build `npx --yes pnpm@12.9.1 install --frozen-lockfile && npx --yes pnpm@12.9.1 run build` (Render trae pnpm en /usr/bin, de solo lectura: `corepack enable` falla con EROFS), publish `dist/baterias_front/browser`, regla *Rewrite* `/*` → `/index.html`. El backend debe tener la URL del front en `APP_CORS_ORIGENES`.
 
 ## Estructura y patrones (los del proyecto del usuario `control_documental_front`, con sus errores corregidos)
 ```
-core/      models (ApiResponse/ApiError, sesión), services (auth, theme, catalogo con caché), interceptors, utils/response-handler
+core/      models (ApiResponse/ApiError, sesión), services (auth, theme, catalogo con caché), interceptors, utils (response-handler, archivo, fecha, texto, contrasena)
 shared/    validators (CustomValidators + mensajes-validacion), components/error-campo, models (catálogos)
 features/{modulo}/   models, services, components (x-table, x-form-dialog, x-acciones)
 pages/{modulo}/      páginas (x-list, …)

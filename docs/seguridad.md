@@ -104,6 +104,6 @@ Solo funcionan con `environment.production = false`, es decir, con `pnpm dev`:
 | Reingreso automático ante un 401 | `authInterceptor` |
 | Datos de sesión y prueba de conexión | Inicio |
 
-`AuthService.usuariosPrueba()` devuelve una lista vacía en producción, y `environment.ts` tampoco trae usuarios, así que ninguna de estas ayudas aparece en el build de producción. Siguen en el código hasta que se decida si se quitan antes de producción (ver [Decisiones](decisiones.md)).
+`AuthService.usuariosPrueba()` devuelve una lista vacía en producción, y `environment.ts` tampoco trae usuarios, así que ninguna de estas ayudas aparece en el build de producción. Se dejan en el código a propósito (ver [Decisiones](decisiones.md)).
 
 **Las contraseñas de los usuarios de prueba** están en `environment.development.ts`, que no va a git. Si cambia la contraseña de uno de esos usuarios, hay que actualizarla ahí; si no, falla el auto-login o el reingreso.

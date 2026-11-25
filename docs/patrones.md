@@ -29,7 +29,7 @@ Este documento reúne las formas de hacer las cosas que se repiten en todo el fr
 - **El botón Guardar está siempre habilitado.** Si el formulario es inválido, `markAllAsTouched()` hace aparecer todos los errores de una vez, en vez de dejar un botón gris sin explicar por qué.
 - **Largos máximos iguales a los del backend** (las columnas de la base y los `@Size` de los DTO).
 - Los campos vacíos se envían como `null`, no como cadena vacía.
-- Las fechas se envían en **hora local**: `yyyy-MM-dd` o `yyyy-MM-ddTHH:mm:ss`, armadas a mano con `getFullYear()`, `getMonth()`… `toISOString()` las pasaría a UTC y una fecha de la noche quedaría en el día siguiente.
+- Las fechas se envían en **hora local**: `fechaLocal(fecha)` → `yyyy-MM-dd` y `fechaHoraLocal(fecha)` → `yyyy-MM-ddTHH:mm:ss` (`core/utils/fecha.util.ts`). Nunca `toISOString()`: pasa a UTC y una fecha de la noche quedaría en el día siguiente.
 - Mientras se guarda, `guardando = true` deshabilita el botón para evitar el doble envío.
 
 ### Validadores propios
@@ -73,7 +73,7 @@ Las tablas no tienen una fila de botones: cada fila tiene un botón ⚙️ que a
 ## Listados y búsquedas
 
 - El listado se pide completo al backend y se **filtra en el front**: los volúmenes son de cientos de filas por empresa.
-- **Búsqueda sin mayúsculas ni tildes**: "medellin" encuentra "MEDELLÍN". Cada pantalla tiene su función `normalizar` (`normalize('NFD')` + quitar diacríticos + minúsculas).
+- **Búsqueda sin mayúsculas ni tildes**: "medellin" encuentra "MEDELLÍN". Se compara con `normalizar` (`core/utils/texto.util.ts`: `normalize('NFD')` + quitar diacríticos + minúsculas), aplicada al texto buscado y a cada campo.
 - Las tarjetas de resumen de arriba (por estado, por situación) también filtran la tabla.
 - Los filtros que sirven para enlazar pantallas van en la URL (`?anio=`, `?estado=`, `?idCliente=`).
 

@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { forkJoin } from 'rxjs';
 import { ResponseHandlerUtil } from '../../../../core/utils/response-handler.util';
+import { normalizar } from '../../../../core/utils/texto.util';
 import { Cliente } from '../../../clientes/models/cliente.model';
 import { ClienteService } from '../../../clientes/services/cliente.service';
 import { Usuario } from '../../models/usuario.model';
@@ -18,9 +19,6 @@ interface OpcionCliente {
   cliente: Cliente;
   marcado: boolean;
 }
-
-const normalizar = (texto: string | null | undefined) =>
-  (texto ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 /**
  * Clientes que ve un psicólogo (solo ADMIN): todos los clientes con casillas; al guardar se reemplaza la

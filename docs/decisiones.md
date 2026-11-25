@@ -21,6 +21,9 @@ Para agregar una decisión: va en su tema, con la fecha (`AAAA-MM-DD`) y el moti
 **Todas las páginas con `loadComponent`.**
 - *Motivo*: el bundle inicial tiene un presupuesto de 1,5 MB, y PrimeNG con chart.js lo pasan si se cargan todas las páginas al inicio.
 
+**2026-11-25 · Funciones comunes en `core/utils`**: `normalizar` (búsqueda sin tildes, `texto.util.ts`) y `fechaLocal` / `fechaHoraLocal` (`fecha.util.ts`), que estaban copiadas en 8 y 4 archivos. Se borró la página `en-construccion`, que ya no usaba ninguna ruta.
+- *Motivo*: una sola versión de cada regla; un cambio (por ejemplo, cómo se busca) se hace en un solo lugar.
+
 **pnpm, y puerto 4201 en desarrollo** (2026-10-28).
 - *Motivo del puerto*: el 4200 lo usan otros proyectos del responsable, y el navegador compartía con ellos el `localStorage` (la sesión) y el favicon guardado.
 
@@ -38,8 +41,8 @@ Para agregar una decisión: va en su tema, con la fecha (`AAAA-MM-DD`) y el moti
 **2026-10-21 · Los evaluadores solo los ve el ADMIN.** El psicólogo carga su firma en **Mi firma**, desde el menú de su nombre.
 - *Motivo*: los evaluadores son los demás psicólogos; uno no necesita ver los datos ni la firma de otro.
 
-**2026-10-21 · Las ayudas de desarrollo se quedan hasta producción**: auto-login, selector "Usuario de prueba", botones "Entrar como" y reingreso ante un 401. Solo funcionan con `environment.production = false`.
-- *Motivo*: agilizan las pruebas con los tres roles. Al pasar a producción se decide si se quitan del código (ver *Por decidir*).
+**2026-11-25 · Las ayudas de desarrollo se quedan en el código**: auto-login, selector "Usuario de prueba", botones "Entrar como" y reingreso ante un 401. Solo funcionan con `environment.production = false`; en el build de producción no aparecen. *Reemplaza* a la del 2026-10-21 ("se quedan hasta producción y ahí se decide").
+- *Motivo*: agilizan las pruebas en local con los tres roles, y en producción ya están apagadas porque `environment.ts` no trae usuarios de prueba.
 
 **2026-10-29 · Contraseñas solo por enlace y sin "¿Olvidó su contraseña?".** El administrador nunca ve ni escribe contraseñas; genera un enlace que llega por correo. Quien olvida la suya llama por teléfono al administrador.
 - *Motivo*: una contraseña enviada por correo quedaría en la bandeja y en los registros de Brevo.
@@ -81,9 +84,6 @@ Para agregar una decisión: va en su tema, con la fecha (`AAAA-MM-DD`) y el moti
 
 | Tema | Estado |
 |---|---|
-| Quitar del código las ayudas de desarrollo antes de producción | Se quedan por ahora (2026-10-21) |
 | Pruebas automatizadas: solo existe la prueba que genera el Angular CLI | Hoy se verifica con `pnpm build` y probando cada rol a mano |
-| Código sin uso: `enConstruccion` en `app.routes.ts` y `pages/en-construccion` | Hallazgo del 2026-11-25 |
-| Funciones repetidas: `normalizar` (búsqueda sin tildes) en 6 archivos y el formato de fecha local en 3, que podrían ir a `core/utils` | Hallazgo del 2026-11-25 |
 | Marcar en Usuarios a quien aún no definió su contraseña (requiere `contrasenaDefinida` en el backend) | Opcional |
 | Pantalla Administración → Ingresos (`registro_ingreso` del backend) | Opcional |
